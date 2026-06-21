@@ -11,3 +11,7 @@ Thumbs.db
 
 # Python server artifacts
 __pycache__/
+
+# Project planning and guidelines
+CLAUDE.md
+implementation_plan.md
