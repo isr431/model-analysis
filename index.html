@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive comparison of large language models across providers — pricing, benchmarks, and value analysis.">
+  <title>LLM Model Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>LLM Model Analysis</h1>
+      <p class="subtitle">Interactive comparison of 22 language models across 10 providers</p>
+    </header>
+
+    <!-- CONTROLS BAR -->
+    <div class="controls-bar glass" id="controlsBar">
+      <div class="control-group" id="pSliderGroup">
+        <label>Cost Sensitivity (P): <span id="pValue">0.20</span></label>
+        <div class="control-input-wrap">
+          <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.2">
+        </div>
+        <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
+      </div>
+      <div class="control-group" id="searchGroup">
+        <label>Search</label>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search models or providers...">
+      </div>
+      <div class="control-group" id="priceRangeGroup">
+        <label>Price Range: $<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">12.00</span></label>
+        <div class="dual-slider">
+          <div class="dual-slider-track"></div>
+          <div class="dual-slider-range" id="priceRangeHighlight"></div>
+          <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;">
+          <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;">
+        </div>
+      </div>
+      <div class="control-group" id="perfThresholdGroup">
+        <label>Min Performance: <span id="perfThresholdVal">0</span></label>
+        <div class="control-input-wrap">
+          <input type="range" id="perfThreshold" min="0" max="100" step="1" value="0">
+        </div>
+      </div>
+      <div class="control-group full-width" id="providerFilters">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
+          <label style="margin-bottom: 0;">Providers</label>
+          <div class="provider-actions" style="display: flex; gap: 12px;">
+            <button id="providerSelectAll" class="action-link" style="background: none; border: none; cursor: pointer; color: var(--slider-thumb); font-size: 11px; font-weight: 500; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; padding: 0;">Select All</button>
+            <button id="providerClearAll" class="action-link" style="background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 500; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; padding: 0;">Clear All</button>
+          </div>
+        </div>
+        <div class="pill-container" id="providerPills"></div>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <nav class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="charts">Charts</button>
+      <button class="tab-btn" data-tab="table">Table</button>
+    </nav>
+
+    <!-- TAB: OVERVIEW -->
+    <section class="tab-content active" id="tab-overview">
+      <div class="summary-cards" id="summaryCards">
+        <div class="summary-card glass" id="cardBestValue">
+          <div class="card-icon">🏆</div>
+          <div class="card-label">Best Value</div>
+          <div class="card-model" id="bestValueModel">—</div>
+          <div class="card-stat green" id="bestValueStat">—</div>
+        </div>
+        <div class="summary-card glass" id="cardBestPerf">
+          <div class="card-icon">⚡</div>
+          <div class="card-label">Best Performance</div>
+          <div class="card-model" id="bestPerfModel">—</div>
+          <div class="card-stat amber" id="bestPerfStat">—</div>
+        </div>
+        <div class="summary-card glass" id="cardCheapest">
+          <div class="card-icon">💰</div>
+          <div class="card-label">Cheapest</div>
+          <div class="card-model" id="cheapestModel">—</div>
+          <div class="card-stat blue" id="cheapestStat">—</div>
+        </div>
+        <div class="summary-card glass" id="cardExpensive">
+          <div class="card-icon">📊</div>
+          <div class="card-label">Most Expensive</div>
+          <div class="card-model" id="expensiveModel">—</div>
+          <div class="card-stat red" id="expensiveStat">—</div>
+        </div>
+      </div>
+
+      <div class="overview-leaderboard glass" id="overviewLeaderboard">
+        <h2>Performance Leaderboard</h2>
+        <div class="leaderboard-list" id="leaderboardList"></div>
+        <button class="leaderboard-expand" id="leaderboardExpand" onclick="toggleLeaderboard()">
+          Show All <span class="arrow">▼</span>
+        </button>
+      </div>
+
+      <div class="formula-card glass" id="formulaCard">
+        <h2>How Scores Are Calculated</h2>
+        <div class="formula-item">
+          <div class="formula-label">Blended Cost</div>
+          <code>0.9573 × Input Price + 0.0427 × Output Price</code>
+          <div class="formula-desc">Weighted for a 37:1 input-to-output token ratio</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-label">Performance</div>
+          <code>50% × Normalized(LiveBench) + 50% × Normalized(Artificial Analysis)</code>
+          <div class="formula-desc">Min-max normalized across all models, scaled 0–100</div>
+        </div>
+        <div class="formula-item">
+          <div class="formula-label">Value</div>
+          <code>Performance / Blended Cost<sup>P</sup></code>
+          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.20</span>)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: CHARTS -->
+    <section class="tab-content" id="tab-charts">
+      <div class="charts-grid">
+        <div class="chart-container glass" id="scatterContainer">
+          <h2>Performance vs. Cost</h2>
+          <div class="chart-canvas-wrap-scatter">
+            <canvas id="scatterChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-container glass" id="barContainer">
+          <div class="chart-header">
+            <h2>Model Rankings</h2>
+            <select id="barMetricSelect" class="metric-select">
+              <option value="value" selected>Value Score</option>
+              <option value="performance">Performance</option>
+              <option value="blended">Blended Cost</option>
+              <option value="livebench">LiveBench</option>
+              <option value="aaScore">AA Score</option>
+            </select>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: TABLE -->
+    <section class="tab-content" id="tab-table">
+      <div class="table-wrapper glass">
+        <table id="modelTable">
+          <thead>
+            <tr>
+              <th data-sort="provider">Provider</th>
+              <th data-sort="model">Model</th>
+              <th data-sort="inputPrice" class="num">Input $/1M</th>
+              <th data-sort="outputPrice" class="num">Output $/1M</th>
+              <th data-sort="blended" class="num">Blended $/1M</th>
+              <th data-sort="livebench" class="num">LiveBench</th>
+              <th data-sort="aaScore" class="num">AA Score</th>
+              <th data-sort="performance" class="num">Performance</th>
+              <th data-sort="value" class="num">Value</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
