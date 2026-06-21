@@ -74,15 +74,20 @@ When you update `data.json`, also update the `FALLBACK_DATA` constant in `app.js
 - **Value**: `Performance / Blended Cost^P` (where P represents the cost-sensitivity slider parameter).
 
 ## Coding & UI/UX Conventions
-- **Glassmorphism Design System**: Follow the predefined CSS variables (e.g., `--bg-primary: #0f0f1a`, `--glass-bg: rgba(255,255,255,0.04)`, `--glass-border: rgba(255,255,255,0.08)`).
+- **Glassmorphism Design System**: Follow the CSS variables (e.g., `--bg-primary`, `--glass-bg`). In Light Theme (`data-theme="light"`), the colors swap to slate/white variables while preserving spacing and structure.
+- **Theme Toggle**: Switch themes via `setTheme()`. Chart scales, grids, ticks, and tooltips are dynamically updated via `updateChartColors(theme)` as Canvas elements do not parse CSS themes directly. Theme defaults to `prefers-color-scheme` and persists in `localStorage`.
+- **Skeleton Shimmer / Pulse**: Use `.skeleton-element` with the `.pulse` animation for elements loading in the background. A minimum loading timer of 600ms is used in `init()` to display skeletons smoothly and prevent visual flickering.
+- **Bidirectional Highlighting**:
+  - Highlights sync across views via `toggleHighlight(modelName)` and `updateHighlights()`.
+  - Clicks on scatter chart points, rank bar elements, table rows, and leaderboard rows all trigger this central highlight state.
+  - Active highlights dim non-selected models to focus attention on the clicked model.
 - **Dynamic Slider Bounds**: The price range slider max is computed from the data on load. Adding expensive models will automatically expand the slider range.
-- **Dual Slider Implementation**: 
-  - Standard dual-sliders use absolute-positioned inputs on top of each other.
-  - The range highlight between the thumbs is updated dynamically via `updatePriceRangeSliderHighlight()` updating a `.dual-slider-range` div.
-  - Layering conflicts must be prevented by dynamically swapping z-indices (e.g., setting the active input to `z-index: 10` on `input` events).
+- **Dual Slider & Overlap Fix**: 
+  - The range highlight between the thumbs is updated dynamically via `updatePriceRangeSliderHighlight()`.
+  - To prevent thumbs from blocking each other when overlapping, container-level `mousedown` and `touchstart` events calculate which thumb is closer and assign it a higher `z-index` before dragging starts.
 - **Scatter Chart Mapping**:
   - Uses `type: 'category'` for the X-axis (`scales.x`) to space blended costs equally.
-  - Dynamic category labels must be recalculated in `updateScatterChart(filtered)` using unique sorted string values.
-  - The dataset point coordinates must map to the string label on the X-axis, while preserving raw numeric values as `blended` for high-precision tooltips.
+  - Dynamic category labels are recalculated in `updateScatterChart(filtered)` using unique sorted string values.
+  - The dataset point coordinates map to the string label on the X-axis, while preserving raw numeric values as `blended` for high-precision tooltips.
 - **Robustness**: Always check for empty arrays (e.g., `filtered.length === 0`) in UI rendering functions (like `updateTable` and `updateLeaderboard`) to prevent NaN or division-by-zero, and render the custom `.reset-btn` matching the theme.
 - **Script Loading**: Both the Chart.js CDN and `app.js` use `defer` to ensure correct execution order without blocking HTML parsing.

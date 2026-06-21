@@ -106,6 +106,14 @@ function applyData(data) {
       ALL_PROVIDERS.push(name);
     }
   }
+
+  if (data.lastUpdated) {
+    const formatted = formatLastUpdated(data.lastUpdated);
+    const container = document.getElementById('lastUpdatedVal');
+    if (container) {
+      container.textContent = `Data as of ${formatted}`;
+    }
+  }
 }
 
 function updateSliderBounds() {
@@ -153,10 +161,6 @@ function reinitProviderPills() {
 }
 
 async function loadData() {
-  // Phase 1: Immediately apply fallback data
-  applyData(FALLBACK_DATA);
-
-  // Phase 2: Attempt to fetch fresh data in the background
   try {
     const response = await fetch('./data.json');
     if (!response.ok) {
@@ -167,24 +171,9 @@ async function loadData() {
 
     if (!validateData(data)) {
       console.warn('[LLM Analysis] Fetched data.json failed schema validation — using fallback data.');
-      return false;
+      return FALLBACK_DATA;
     }
-
-    // Check if the data is actually different from the fallback
-    const fallbackStr = JSON.stringify(FALLBACK_DATA.models);
-    const fetchedStr = JSON.stringify(data.models);
-
-    if (fallbackStr !== fetchedStr || JSON.stringify(FALLBACK_DATA.providers) !== JSON.stringify(data.providers)) {
-      applyData(data);
-      updateSliderBounds();
-      reinitProviderPills();
-      updateAll();
-      console.info('[LLM Analysis] Data loaded from data.json successfully.');
-    } else {
-      console.info('[LLM Analysis] data.json matches fallback — no update needed.');
-    }
-
-    return true;
+    return data;
   } catch (err) {
     if (window.location.protocol === 'file:') {
       console.warn(
@@ -195,7 +184,7 @@ async function loadData() {
     } else {
       console.warn('[LLM Analysis] Failed to load data.json — using fallback data.', err.message);
     }
-    return false;
+    return FALLBACK_DATA;
   }
 }
 
@@ -210,6 +199,13 @@ const state = {
   sortColumn: 'value',
   sortDirection: 'desc',
   barMetric: 'value',
+  highlightedModel: null,
+  cardValues: {
+    bestValue: 0,
+    bestPerf: 0,
+    cheapest: 0,
+    expensive: 0,
+  },
 };
 
 // ===== COMPUTATION =====
@@ -306,6 +302,16 @@ function initCharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const datasetIndex = elements[0].datasetIndex;
+          const modelData = scatterChart.data.datasets[datasetIndex].data[index];
+          toggleHighlight(modelData.model);
+        } else {
+          toggleHighlight(null);
+        }
+      },
       scales: {
         x: {
           type: 'category',
@@ -346,6 +352,15 @@ function initCharts() {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const modelName = barChart.data.labels[index];
+          toggleHighlight(modelName);
+        } else {
+          toggleHighlight(null);
+        }
+      },
       scales: {
         x: {
           title: { display: true, text: 'Value Score', color: 'rgba(255,255,255,0.7)', font: { family: 'Inter' } },
@@ -391,13 +406,19 @@ function updateSummaryCards(filtered) {
   const expensive = filtered.reduce((a, b) => a.blended > b.blended ? a : b);
 
   document.getElementById('bestValueModel').textContent = bestValue.model;
-  document.getElementById('bestValueStat').textContent = bestValue.value.toFixed(1);
   document.getElementById('bestPerfModel').textContent = bestPerf.model;
-  document.getElementById('bestPerfStat').textContent = bestPerf.performance.toFixed(1);
   document.getElementById('cheapestModel').textContent = cheapest.model;
-  document.getElementById('cheapestStat').textContent = '$' + cheapest.blended.toFixed(4);
   document.getElementById('expensiveModel').textContent = expensive.model;
-  document.getElementById('expensiveStat').textContent = '$' + expensive.blended.toFixed(4);
+
+  animateValue(document.getElementById('bestValueStat'), state.cardValues.bestValue, bestValue.value, 400, false);
+  animateValue(document.getElementById('bestPerfStat'), state.cardValues.bestPerf, bestPerf.performance, 400, false);
+  animateValue(document.getElementById('cheapestStat'), state.cardValues.cheapest, cheapest.blended, 400, true);
+  animateValue(document.getElementById('expensiveStat'), state.cardValues.expensive, expensive.blended, 400, true);
+
+  state.cardValues.bestValue = bestValue.value;
+  state.cardValues.bestPerf = bestPerf.performance;
+  state.cardValues.cheapest = cheapest.blended;
+  state.cardValues.expensive = expensive.blended;
 }
 
 let leaderboardExpanded = false;
@@ -439,16 +460,22 @@ function updateLeaderboard(filtered) {
   btn.style.display = filtered.length > 10 ? 'flex' : 'none';
 
   list.innerHTML = display.map((m, i) => `
-    <div class="leaderboard-row">
+    <div class="leaderboard-row ${state.highlightedModel === m.model ? 'highlighted' : ''}" data-model="${m.model}">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
       <span class="leaderboard-dot" style="background:${providerColor(m.provider)}"></span>
       <span class="leaderboard-name">${m.model} <span class="leaderboard-provider">${m.provider}</span></span>
       <div class="leaderboard-bar-track">
-        <div class="leaderboard-bar-fill" style="width:${m.performance.toFixed(1)}%; background:${providerColor(m.provider)}"></div>
+        <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
       <span class="leaderboard-score">${m.performance.toFixed(1)}</span>
     </div>
   `).join('');
+
+  requestAnimationFrame(() => {
+    list.querySelectorAll('.leaderboard-bar-fill').forEach(fill => {
+      fill.style.width = fill.dataset.width;
+    });
+  });
 }
 
 function updateScatterChart(filtered) {
@@ -459,11 +486,9 @@ function updateScatterChart(filtered) {
     return;
   }
 
-  // Extract unique costs of filtered models and sort them
   const uniqueCosts = [...new Set(filtered.map(m => m.blended))].sort((a, b) => a - b);
   const labels = [...new Set(uniqueCosts.map(c => '$' + c.toFixed(2)))];
 
-  // Update the categories on the X-axis
   scatterChart.options.scales.x.labels = labels;
 
   scatterChart.data.datasets[0].data = filtered.map(m => ({
@@ -475,8 +500,28 @@ function updateScatterChart(filtered) {
     blended: m.blended,
   }));
 
-  scatterChart.data.datasets[0].backgroundColor = filtered.map(m => `rgba(${providerRgb(m.provider)}, 0.6)`);
-  scatterChart.data.datasets[0].borderColor = filtered.map(m => providerColor(m.provider));
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const highlightBorder = isLight ? '#0f172a' : '#ffffff';
+
+  scatterChart.data.datasets[0].backgroundColor = filtered.map(m => {
+    const isHighlighted = state.highlightedModel === m.model;
+    const baseColor = providerRgb(m.provider);
+    if (state.highlightedModel) {
+      return isHighlighted ? `rgba(${baseColor}, 0.85)` : `rgba(${baseColor}, 0.15)`;
+    }
+    return `rgba(${baseColor}, 0.6)`;
+  });
+  scatterChart.data.datasets[0].borderColor = filtered.map(m => {
+    const isHighlighted = state.highlightedModel === m.model;
+    if (state.highlightedModel) {
+      return isHighlighted ? highlightBorder : `rgba(${providerRgb(m.provider)}, 0.2)`;
+    }
+    return providerColor(m.provider);
+  });
+  scatterChart.data.datasets[0].pointRadius = filtered.map(m => state.highlightedModel === m.model ? 11 : 7);
+  scatterChart.data.datasets[0].pointHoverRadius = filtered.map(m => state.highlightedModel === m.model ? 13 : 10);
+  scatterChart.data.datasets[0].borderWidth = filtered.map(m => state.highlightedModel === m.model ? 3 : 1.5);
+  
   scatterChart.update();
 }
 
@@ -488,14 +533,32 @@ function updateBarChart(filtered) {
   const metricLabels = { value: 'Value Score', performance: 'Performance', blended: 'Blended Cost ($/1M)', livebench: 'LiveBench', aaScore: 'AA Score' };
   barChart.options.scales.x.title.text = metricLabels[metric] || metric;
 
-  // Dynamically size the bar chart based on how many models are visible
   const barHeight = Math.max(350, sorted.length * 28 + 60);
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
   barChart.data.labels = sorted.map(m => m.model);
   barChart.data.datasets[0].data = sorted.map(m => m[metric]);
-  barChart.data.datasets[0].backgroundColor = sorted.map(m => `rgba(${providerRgb(m.provider)}, 0.7)`);
-  barChart.data.datasets[0].borderColor = sorted.map(m => providerColor(m.provider));
+  
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const highlightBorder = isLight ? '#0f172a' : '#ffffff';
+
+  barChart.data.datasets[0].backgroundColor = sorted.map(m => {
+    const isHighlighted = state.highlightedModel === m.model;
+    const baseColor = providerRgb(m.provider);
+    if (state.highlightedModel) {
+      return isHighlighted ? `rgba(${baseColor}, 0.95)` : `rgba(${baseColor}, 0.15)`;
+    }
+    return `rgba(${baseColor}, 0.7)`;
+  });
+  barChart.data.datasets[0].borderColor = sorted.map(m => {
+    const isHighlighted = state.highlightedModel === m.model;
+    if (state.highlightedModel) {
+      return isHighlighted ? highlightBorder : `rgba(${providerRgb(m.provider)}, 0.2)`;
+    }
+    return providerColor(m.provider);
+  });
+  barChart.data.datasets[0].borderWidth = sorted.map(m => state.highlightedModel === m.model ? 2.5 : 1);
+  
   barChart.resize();
   barChart.update();
 }
@@ -532,7 +595,7 @@ function updateTable(filtered) {
     `;
   } else {
     tbody.innerHTML = sorted.map(m => `
-      <tr>
+      <tr data-model="${m.model}" class="${state.highlightedModel === m.model ? 'highlighted' : ''}">
         <td><span class="provider-dot" style="background:${providerColor(m.provider)}"></span>${m.provider}</td>
         <td>${m.model}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
@@ -766,24 +829,263 @@ function initEventListeners() {
     state.barMetric = e.target.value;
     updateAll();
   });
+
+  // Table row click highlighting
+  document.getElementById('tableBody').addEventListener('click', e => {
+    const tr = e.target.closest('tr');
+    if (tr && tr.dataset.model) {
+      toggleHighlight(tr.dataset.model);
+    }
+  });
+
+  // Leaderboard row click highlighting
+  document.getElementById('leaderboardList').addEventListener('click', e => {
+    const row = e.target.closest('.leaderboard-row');
+    if (row && row.dataset.model) {
+      toggleHighlight(row.dataset.model);
+    }
+  });
+}
+
+// ===== THEME MANAGEMENT =====
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const defaultTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+  
+  setTheme(defaultTheme);
+  
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  });
+}
+
+function setTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  localStorage.setItem('theme', theme);
+  updateChartColors(theme);
+}
+
+function updateChartColors(theme) {
+  const isLight = theme === 'light';
+  const gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.06)';
+  const textColor = isLight ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+  const tickColor = isLight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+  
+  const tooltipStyle = isLight ? {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(15, 23, 42, 0.12)',
+    borderWidth: 1,
+    titleColor: '#0f172a',
+    bodyColor: 'rgba(15, 23, 42, 0.8)',
+    titleFont: { family: 'Inter', weight: '600' },
+    bodyFont: { family: 'Inter' },
+    padding: 12,
+  } : {
+    backgroundColor: 'rgba(15, 15, 26, 0.95)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    titleColor: '#fff',
+    bodyColor: 'rgba(255, 255, 255, 0.8)',
+    titleFont: { family: 'Inter', weight: '600' },
+    bodyFont: { family: 'Inter' },
+    padding: 12,
+  };
+
+  [scatterChart, barChart].forEach(chart => {
+    if (!chart) return;
+    
+    if (chart.options.scales.x) {
+      if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor;
+      if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = tickColor;
+      if (chart.options.scales.x.title) chart.options.scales.x.title.color = textColor;
+    }
+    
+    if (chart.options.scales.y) {
+      if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor;
+      if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = tickColor;
+      if (chart.options.scales.y.title) chart.options.scales.y.title.color = textColor;
+    }
+    
+    if (chart.options.plugins && chart.options.plugins.tooltip) {
+      Object.assign(chart.options.plugins.tooltip, tooltipStyle);
+    }
+    
+    chart.update('none');
+  });
+}
+
+// ===== COUNTER ANIMATION =====
+function animateValue(element, start, end, duration = 400, isPrice = false) {
+  if (isNaN(start)) start = 0;
+  if (isNaN(end)) end = 0;
+  if (start === end) {
+    if (isPrice) {
+      element.textContent = '$' + end.toFixed(4);
+    } else {
+      element.textContent = end.toFixed(1);
+    }
+    return;
+  }
+  
+  const startTime = performance.now();
+  
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out quad
+    const ease = progress * (2 - progress);
+    const current = start + (end - start) * ease;
+    
+    if (isPrice) {
+      element.textContent = '$' + current.toFixed(4);
+    } else {
+      element.textContent = current.toFixed(1);
+    }
+    
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      if (isPrice) {
+        element.textContent = '$' + end.toFixed(4);
+      } else {
+        element.textContent = end.toFixed(1);
+      }
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+// ===== DUAL SLIDER OVERLAP FIX =====
+function initRangeSliderZIndexFix() {
+  const dualSliderContainer = document.querySelector('.dual-slider');
+  const priceMinInput = document.getElementById('priceMin');
+  const priceMaxInput = document.getElementById('priceMax');
+  
+  function handleDualSliderPointer(e) {
+    const rect = dualSliderContainer.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clickPercent = (clientX - rect.left) / rect.width;
+    
+    const sliderMax = parseFloat(priceMaxInput.max) || 12;
+    const clickValue = clickPercent * sliderMax;
+    
+    const distMin = Math.abs(clickValue - state.priceMin);
+    const distMax = Math.abs(clickValue - state.priceMax);
+    
+    if (distMin < distMax) {
+      priceMinInput.style.zIndex = '10';
+      priceMaxInput.style.zIndex = '9';
+    } else {
+      priceMinInput.style.zIndex = '9';
+      priceMaxInput.style.zIndex = '10';
+    }
+  }
+  
+  dualSliderContainer.addEventListener('mousedown', handleDualSliderPointer);
+  dualSliderContainer.addEventListener('touchstart', handleDualSliderPointer, { passive: true });
+}
+
+// ===== HIGHLIGHTING MANAGEMENT =====
+function toggleHighlight(modelName) {
+  if (state.highlightedModel === modelName) {
+    state.highlightedModel = null;
+  } else {
+    state.highlightedModel = modelName;
+  }
+  updateHighlights();
+}
+
+function updateHighlights() {
+  const modelName = state.highlightedModel;
+  
+  // 1. Table
+  document.querySelectorAll('#tableBody tr').forEach(tr => {
+    if (tr.dataset.model) {
+      if (tr.dataset.model === modelName) {
+        tr.classList.add('highlighted');
+      } else {
+        tr.classList.remove('highlighted');
+      }
+    }
+  });
+  
+  // 2. Leaderboard
+  document.querySelectorAll('.leaderboard-row').forEach(row => {
+    if (row.dataset.model) {
+      if (row.dataset.model === modelName) {
+        row.classList.add('highlighted');
+      } else {
+        row.classList.remove('highlighted');
+      }
+    }
+  });
+  
+  // 3. Charts
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const filtered = getFilteredModels(allModels);
+  updateScatterChart(filtered);
+  updateBarChart(filtered);
+}
+
+// ===== TIMESTAMP FORMATTING =====
+function formatLastUpdated(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const year = parts[0];
+  const month = months[parseInt(parts[1], 10) - 1];
+  const day = parseInt(parts[2], 10);
+  return `${month} ${day}, ${year}`;
+}
+
+// ===== SKELETON LOADERS REMOVAL =====
+function removeSkeletons() {
+  document.querySelectorAll('.skeleton-element').forEach(el => {
+    el.classList.remove('skeleton-element', 'pulse');
+  });
 }
 
 // ===== INIT =====
 async function init() {
-  // Apply fallback data immediately for instant render
+  // Setup theme first
+  initTheme();
+
+  // Apply fallback data for first calculations while fetching
   applyData(FALLBACK_DATA);
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  // Initialize UI
+  // Initialize UI components
   initCharts();
-  initProviderPills();
   initEventListeners();
+  initRangeSliderZIndexFix();
+  updateSliderBounds();
+  updatePriceRangeSliderHighlight();
+
+  // Load fresh data in the background with a smooth skeleton load state
+  const dataPromise = loadData();
+  const delayPromise = new Promise(resolve => setTimeout(resolve, 600));
+
+  const [data] = await Promise.all([dataPromise, delayPromise]);
+
+  // Apply real data and recalculate bounds
+  applyData(data);
+  state.activeProviders = new Set(ALL_PROVIDERS);
+  
+  reinitProviderPills();
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
   updateAll();
-
-  // Fetch fresh data in the background (non-blocking)
-  await loadData();
+  
+  // Remove loading skeletons smoothly
+  removeSkeletons();
 }
 
 document.addEventListener('DOMContentLoaded', init);
