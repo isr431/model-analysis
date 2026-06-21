@@ -4,15 +4,15 @@ const FALLBACK_DATA = {
   lastUpdated: '2026-06-21',
   providers: {
     'DeepSeek':    { color: '#22d3ee' },
-    'Z.ai':        { color: '#2dd4bf' },
+    'Z.ai':        { color: '#6366f1' },
     'MiniMax':     { color: '#f472b6' },
     'OpenAI':      { color: '#10b981' },
-    'Google':      { color: '#38bdf8' },
+    'Google':      { color: '#3b82f6' },
     'Alibaba':     { color: '#fb923c' },
-    'Anthropic':   { color: '#f59e0b' },
+    'Anthropic':   { color: '#fbbf24' },
     'Moonshot AI': { color: '#c084fc' },
-    'Mistral AI':  { color: '#a78bfa' },
-    'NVIDIA':      { color: '#4ade80' },
+    'Mistral AI':  { color: '#2dd4bf' },
+    'NVIDIA':      { color: '#84cc16' },
     'xAI':         { color: '#f43f5e' },
   },
   models: [
@@ -50,9 +50,7 @@ let ALL_PROVIDERS = [];
 
 // ===== UTILITIES =====
 function hexToRgb(hex) {
-  // Strip # prefix and normalize to lowercase
   hex = hex.replace(/^#/, '').toLowerCase();
-  // Expand 3-char shorthand (e.g. 'f0b' → 'ff00bb')
   if (hex.length === 3) {
     hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
   }
@@ -97,35 +95,56 @@ function validateData(data) {
   return true;
 }
 
+// ===== TIMESTAMP FORMATTING =====
+function formatLastUpdated(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  const year = parts[0];
+  const month = months[parseInt(parts[1], 10) - 1];
+  const day = parseInt(parts[2], 10);
+  return `${month} ${day}, ${year}`;
+}
+
 // ===== DATA LOADING =====
 function applyData(data) {
   RAW_DATA = data.models;
   PROVIDER_COLORS = buildProviderColors(data.providers);
   ALL_PROVIDERS = deriveProviderList(data.models);
 
-  // Ensure all providers from the providers config are included
   for (const name of Object.keys(data.providers)) {
     if (!ALL_PROVIDERS.includes(name)) {
       ALL_PROVIDERS.push(name);
     }
   }
+
+  // Update dynamic subtitle
+  const modelCountEl = document.getElementById('modelCountVal');
+  const providerCountEl = document.getElementById('providerCountVal');
+  const lastUpdatedEl = document.getElementById('lastUpdatedVal');
+  if (modelCountEl) modelCountEl.textContent = RAW_DATA.length;
+  if (providerCountEl) providerCountEl.textContent = ALL_PROVIDERS.length;
+  if (lastUpdatedEl && data.lastUpdated) {
+    lastUpdatedEl.textContent = `Data as of ${formatLastUpdated(data.lastUpdated)}`;
+  }
 }
 
 function updateSliderBounds() {
-  // Compute max blended cost across all models and set slider bounds dynamically
   const allModels = computeAllMetrics(RAW_DATA, 0);
   const maxBlended = Math.max(...allModels.map(m => m.blended));
-  // Round up to next whole number for a clean slider max
   const sliderMax = Math.ceil(maxBlended);
 
   const priceMinInput = document.getElementById('priceMin');
   const priceMaxInput = document.getElementById('priceMax');
 
+  const oldMax = parseFloat(priceMaxInput.max) || 12;
+
   priceMinInput.max = sliderMax;
   priceMaxInput.max = sliderMax;
 
-  // If state.priceMax was at the old max (meaning "show all"), update it to the new max
-  if (state.priceMax >= parseFloat(priceMaxInput.max) || state.priceMax >= sliderMax) {
+  if (state.priceMax >= oldMax || state.priceMax >= sliderMax) {
     state.priceMax = sliderMax;
     priceMaxInput.value = sliderMax;
     document.getElementById('priceMaxVal').textContent = sliderMax.toFixed(2);
@@ -138,14 +157,12 @@ function reinitProviderPills() {
   const container = document.getElementById('providerPills');
   container.innerHTML = '';
 
-  // Add any new providers to the active set
   ALL_PROVIDERS.forEach(p => {
     if (!state.activeProviders.has(p)) {
       state.activeProviders.add(p);
     }
   });
 
-  // Remove providers from activeProviders that no longer exist
   for (const p of state.activeProviders) {
     if (!ALL_PROVIDERS.includes(p)) {
       state.activeProviders.delete(p);
@@ -155,11 +172,8 @@ function reinitProviderPills() {
   initProviderPills();
 }
 
+// Returns the fetched data object, or FALLBACK_DATA on failure.
 async function loadData() {
-  // Phase 1: Immediately apply fallback data
-  applyData(FALLBACK_DATA);
-
-  // Phase 2: Attempt to fetch fresh data in the background
   try {
     const response = await fetch('./data.json');
     if (!response.ok) {
@@ -170,24 +184,10 @@ async function loadData() {
 
     if (!validateData(data)) {
       console.warn('[LLM Analysis] Fetched data.json failed schema validation — using fallback data.');
-      return false;
+      return FALLBACK_DATA;
     }
 
-    // Check if the data is actually different from the fallback
-    const fallbackStr = JSON.stringify(FALLBACK_DATA.models);
-    const fetchedStr = JSON.stringify(data.models);
-
-    if (fallbackStr !== fetchedStr || JSON.stringify(FALLBACK_DATA.providers) !== JSON.stringify(data.providers)) {
-      applyData(data);
-      updateSliderBounds();
-      reinitProviderPills();
-      updateAll();
-      console.info('[LLM Analysis] Data loaded from data.json successfully.');
-    } else {
-      console.info('[LLM Analysis] data.json matches fallback — no update needed.');
-    }
-
-    return true;
+    return data;
   } catch (err) {
     if (window.location.protocol === 'file:') {
       console.warn(
@@ -198,7 +198,7 @@ async function loadData() {
     } else {
       console.warn('[LLM Analysis] Failed to load data.json — using fallback data.', err.message);
     }
-    return false;
+    return FALLBACK_DATA;
   }
 }
 
@@ -213,6 +213,14 @@ const state = {
   sortColumn: 'value',
   sortDirection: 'desc',
   barMetric: 'value',
+  highlightedModel: null,
+  _barKeys: [],
+  cardValues: {
+    bestValue: 0,
+    bestPerf: 0,
+    cheapest: 0,
+    expensive: 0,
+  },
 };
 
 // ===== COMPUTATION =====
@@ -221,23 +229,19 @@ function computeBlended(inputPrice, outputPrice) {
 }
 
 function computeAllMetrics(data, p) {
-  // Step 1: compute blended
   const models = data.map(d => ({ ...d, blended: computeBlended(d.inputPrice, d.outputPrice) }));
 
-  // Step 2: min/max across ALL models (not filtered)
   const lbMin = Math.min(...models.map(m => m.livebench));
   const lbMax = Math.max(...models.map(m => m.livebench));
   const aaMin = Math.min(...models.map(m => m.aaScore));
   const aaMax = Math.max(...models.map(m => m.aaScore));
 
-  // Step 3: performance = 50/50 normalized blend
   models.forEach(m => {
     const lbNorm = (lbMax - lbMin) === 0 ? 0 : (m.livebench - lbMin) / (lbMax - lbMin);
     const aaNorm = (aaMax - aaMin) === 0 ? 0 : (m.aaScore - aaMin) / (aaMax - aaMin);
     m.performance = (0.5 * lbNorm + 0.5 * aaNorm) * 100;
   });
 
-  // Step 4: value = performance / blended^p
   models.forEach(m => {
     m.value = m.blended > 0 && p > 0 ? m.performance / Math.pow(m.blended, p) : m.performance;
   });
@@ -288,6 +292,10 @@ function providerRgb(provider) {
   return PROVIDER_COLORS[provider]?.rgb || '136,136,136';
 }
 
+function modelKey(m) {
+  return m.provider + '|' + m.model;
+}
+
 // ===== CHARTS =====
 let scatterChart, barChart;
 
@@ -309,6 +317,16 @@ function initCharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const datasetIndex = elements[0].datasetIndex;
+          const modelData = scatterChart.data.datasets[datasetIndex].data[index];
+          toggleHighlight(modelData.provider + '|' + modelData.model);
+        } else {
+          toggleHighlight(null);
+        }
+      },
       scales: {
         x: {
           type: 'category',
@@ -349,6 +367,14 @@ function initCharts() {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          toggleHighlight(state._barKeys[index]);
+        } else {
+          toggleHighlight(null);
+        }
+      },
       scales: {
         x: {
           title: { display: true, text: 'Value Score', color: 'rgba(255,255,255,0.7)', font: { family: 'Inter' } },
@@ -394,13 +420,19 @@ function updateSummaryCards(filtered) {
   const expensive = filtered.reduce((a, b) => a.blended > b.blended ? a : b);
 
   document.getElementById('bestValueModel').textContent = bestValue.model;
-  document.getElementById('bestValueStat').textContent = bestValue.value.toFixed(1);
   document.getElementById('bestPerfModel').textContent = bestPerf.model;
-  document.getElementById('bestPerfStat').textContent = bestPerf.performance.toFixed(1);
   document.getElementById('cheapestModel').textContent = cheapest.model;
-  document.getElementById('cheapestStat').textContent = '$' + cheapest.blended.toFixed(4);
   document.getElementById('expensiveModel').textContent = expensive.model;
-  document.getElementById('expensiveStat').textContent = '$' + expensive.blended.toFixed(4);
+
+  animateValue(document.getElementById('bestValueStat'), state.cardValues.bestValue, bestValue.value, 400, false);
+  animateValue(document.getElementById('bestPerfStat'), state.cardValues.bestPerf, bestPerf.performance, 400, false);
+  animateValue(document.getElementById('cheapestStat'), state.cardValues.cheapest, cheapest.blended, 400, true);
+  animateValue(document.getElementById('expensiveStat'), state.cardValues.expensive, expensive.blended, 400, true);
+
+  state.cardValues.bestValue = bestValue.value;
+  state.cardValues.bestPerf = bestPerf.performance;
+  state.cardValues.cheapest = cheapest.blended;
+  state.cardValues.expensive = expensive.blended;
 }
 
 let leaderboardExpanded = false;
@@ -415,7 +447,6 @@ function toggleLeaderboard() {
     btn.innerHTML = 'Show All <span class="arrow">▼</span>';
     btn.classList.remove('expanded');
   }
-  // Re-run with current data
   const allModels = computeAllMetrics(RAW_DATA, state.p);
   const filtered = getFilteredModels(allModels);
   updateLeaderboard(filtered);
@@ -438,20 +469,25 @@ function updateLeaderboard(filtered) {
   const sorted = [...filtered].sort((a, b) => b.performance - a.performance);
   const display = leaderboardExpanded ? sorted : sorted.slice(0, 10);
 
-  // Show/hide expand button based on whether there are more than 10
   btn.style.display = filtered.length > 10 ? 'flex' : 'none';
 
   list.innerHTML = display.map((m, i) => `
-    <div class="leaderboard-row">
+    <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${modelKey(m)}" data-model="${m.model}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
       <span class="leaderboard-dot" style="background:${providerColor(m.provider)}"></span>
       <span class="leaderboard-name">${m.model} <span class="leaderboard-provider">${m.provider}</span></span>
       <div class="leaderboard-bar-track">
-        <div class="leaderboard-bar-fill" style="width:${m.performance.toFixed(1)}%; background:${providerColor(m.provider)}"></div>
+        <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
       <span class="leaderboard-score">${m.performance.toFixed(1)}</span>
     </div>
   `).join('');
+
+  requestAnimationFrame(() => {
+    list.querySelectorAll('.leaderboard-bar-fill').forEach(fill => {
+      fill.style.width = fill.dataset.width;
+    });
+  });
 }
 
 function updateScatterChart(filtered) {
@@ -462,11 +498,9 @@ function updateScatterChart(filtered) {
     return;
   }
 
-  // Extract unique costs of filtered models and sort them
   const uniqueCosts = [...new Set(filtered.map(m => m.blended))].sort((a, b) => a - b);
   const labels = [...new Set(uniqueCosts.map(c => '$' + c.toFixed(2)))];
 
-  // Update the categories on the X-axis
   scatterChart.options.scales.x.labels = labels;
 
   scatterChart.data.datasets[0].data = filtered.map(m => ({
@@ -478,8 +512,28 @@ function updateScatterChart(filtered) {
     blended: m.blended,
   }));
 
-  scatterChart.data.datasets[0].backgroundColor = filtered.map(m => `rgba(${providerRgb(m.provider)}, 0.6)`);
-  scatterChart.data.datasets[0].borderColor = filtered.map(m => providerColor(m.provider));
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const highlightBorder = isLight ? '#0f172a' : '#ffffff';
+
+  scatterChart.data.datasets[0].backgroundColor = filtered.map(m => {
+    const isHighlighted = state.highlightedModel === modelKey(m);
+    const baseColor = providerRgb(m.provider);
+    if (state.highlightedModel) {
+      return isHighlighted ? `rgba(${baseColor}, 0.85)` : `rgba(${baseColor}, 0.15)`;
+    }
+    return `rgba(${baseColor}, 0.6)`;
+  });
+  scatterChart.data.datasets[0].borderColor = filtered.map(m => {
+    const isHighlighted = state.highlightedModel === modelKey(m);
+    if (state.highlightedModel) {
+      return isHighlighted ? highlightBorder : `rgba(${providerRgb(m.provider)}, 0.2)`;
+    }
+    return providerColor(m.provider);
+  });
+  scatterChart.data.datasets[0].pointRadius = filtered.map(m => state.highlightedModel === modelKey(m) ? 11 : 7);
+  scatterChart.data.datasets[0].pointHoverRadius = filtered.map(m => state.highlightedModel === modelKey(m) ? 13 : 10);
+  scatterChart.data.datasets[0].borderWidth = filtered.map(m => state.highlightedModel === modelKey(m) ? 3 : 1.5);
+
   scatterChart.update();
 }
 
@@ -491,14 +545,33 @@ function updateBarChart(filtered) {
   const metricLabels = { value: 'Value Score', performance: 'Performance', blended: 'Blended Cost ($/1M)', livebench: 'LiveBench', aaScore: 'AA Score' };
   barChart.options.scales.x.title.text = metricLabels[metric] || metric;
 
-  // Dynamically size the bar chart based on how many models are visible
   const barHeight = Math.max(350, sorted.length * 28 + 60);
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
+  state._barKeys = sorted.map(m => modelKey(m));
   barChart.data.labels = sorted.map(m => m.model);
   barChart.data.datasets[0].data = sorted.map(m => m[metric]);
-  barChart.data.datasets[0].backgroundColor = sorted.map(m => `rgba(${providerRgb(m.provider)}, 0.7)`);
-  barChart.data.datasets[0].borderColor = sorted.map(m => providerColor(m.provider));
+
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const highlightBorder = isLight ? '#0f172a' : '#ffffff';
+
+  barChart.data.datasets[0].backgroundColor = sorted.map(m => {
+    const isHighlighted = state.highlightedModel === modelKey(m);
+    const baseColor = providerRgb(m.provider);
+    if (state.highlightedModel) {
+      return isHighlighted ? `rgba(${baseColor}, 0.95)` : `rgba(${baseColor}, 0.15)`;
+    }
+    return `rgba(${baseColor}, 0.7)`;
+  });
+  barChart.data.datasets[0].borderColor = sorted.map(m => {
+    const isHighlighted = state.highlightedModel === modelKey(m);
+    if (state.highlightedModel) {
+      return isHighlighted ? highlightBorder : `rgba(${providerRgb(m.provider)}, 0.2)`;
+    }
+    return providerColor(m.provider);
+  });
+  barChart.data.datasets[0].borderWidth = sorted.map(m => state.highlightedModel === modelKey(m) ? 2.5 : 1);
+
   barChart.resize();
   barChart.update();
 }
@@ -516,7 +589,6 @@ function updateTable(filtered) {
     return dir === 'asc' ? va - vb : vb - va;
   });
 
-  // Get min/max for color scales, default to 0 and 100 if empty
   const perfVals = filtered.map(m => m.performance);
   const valVals = filtered.map(m => m.value);
   const perfMin = perfVals.length > 0 ? Math.min(...perfVals) : 0;
@@ -535,7 +607,7 @@ function updateTable(filtered) {
     `;
   } else {
     tbody.innerHTML = sorted.map(m => `
-      <tr>
+      <tr data-key="${modelKey(m)}" data-model="${m.model}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-dot" style="background:${providerColor(m.provider)}"></span>${m.provider}</td>
         <td>${m.model}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
@@ -549,7 +621,6 @@ function updateTable(filtered) {
     `).join('');
   }
 
-  // Update sort indicators on headers
   document.querySelectorAll('#modelTable th').forEach(th => {
     th.classList.remove('sort-asc', 'sort-desc');
     if (th.dataset.sort === col) {
@@ -603,7 +674,6 @@ function updatePriceRangeSliderHighlight() {
 }
 
 function resetFilters() {
-  // Compute the current slider max from the data
   const allModels = computeAllMetrics(RAW_DATA, 0);
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
@@ -615,7 +685,6 @@ function resetFilters() {
   state.perfThreshold = 0;
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  // Reset controls in the DOM
   document.getElementById('pSlider').value = 0.2;
   document.getElementById('pValue').textContent = '0.20';
   document.getElementById('searchInput').value = '';
@@ -626,15 +695,11 @@ function resetFilters() {
   document.getElementById('perfThreshold').value = 0;
   document.getElementById('perfThresholdVal').textContent = '0';
 
-  // Update provider pills visually
   document.querySelectorAll('.provider-pill').forEach(pill => {
     setPillState(pill, pill.dataset.provider, true);
   });
 
-  // Update dual range slider highlight
   updatePriceRangeSliderHighlight();
-
-  // Trigger redraw
   updateAll();
 }
 
@@ -666,14 +731,12 @@ function initProviderPills() {
 
 // ===== EVENT LISTENERS =====
 function initEventListeners() {
-  // P slider
   document.getElementById('pSlider').addEventListener('input', e => {
     state.p = parseFloat(e.target.value);
     document.getElementById('pValue').textContent = state.p.toFixed(2);
     updateAll();
   });
 
-  // Search (debounced)
   document.getElementById('searchInput').addEventListener('input', debounce(e => {
     state.search = e.target.value;
     updateAll();
@@ -682,7 +745,6 @@ function initEventListeners() {
   const priceMinInput = document.getElementById('priceMin');
   const priceMaxInput = document.getElementById('priceMax');
 
-  // Price range — min
   priceMinInput.addEventListener('input', e => {
     let val = parseFloat(e.target.value);
     if (val > state.priceMax) val = state.priceMax;
@@ -695,7 +757,6 @@ function initEventListeners() {
     updateAll();
   });
 
-  // Price range — max
   priceMaxInput.addEventListener('input', e => {
     let val = parseFloat(e.target.value);
     if (val < state.priceMin) val = state.priceMin;
@@ -708,7 +769,6 @@ function initEventListeners() {
     updateAll();
   });
 
-  // Provider Select All
   document.getElementById('providerSelectAll').addEventListener('click', () => {
     ALL_PROVIDERS.forEach(p => state.activeProviders.add(p));
     document.querySelectorAll('.provider-pill').forEach(pill => {
@@ -717,7 +777,6 @@ function initEventListeners() {
     updateAll();
   });
 
-  // Provider Clear All
   document.getElementById('providerClearAll').addEventListener('click', () => {
     state.activeProviders.clear();
     document.querySelectorAll('.provider-pill').forEach(pill => {
@@ -726,21 +785,18 @@ function initEventListeners() {
     updateAll();
   });
 
-  // Performance threshold
   document.getElementById('perfThreshold').addEventListener('input', e => {
     state.perfThreshold = parseFloat(e.target.value);
     document.getElementById('perfThresholdVal').textContent = Math.round(state.perfThreshold);
     updateAll();
   });
 
-  // Tab navigation
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      // Charts need a resize after being shown
       if (btn.dataset.tab === 'charts') {
         setTimeout(() => {
           scatterChart.resize();
@@ -750,7 +806,6 @@ function initEventListeners() {
     });
   });
 
-  // Table header sorting
   document.querySelectorAll('#modelTable th[data-sort]').forEach(th => {
     th.addEventListener('click', () => {
       const key = th.dataset.sort;
@@ -764,29 +819,251 @@ function initEventListeners() {
     });
   });
 
-  // Bar chart metric selector
   document.getElementById('barMetricSelect').addEventListener('change', e => {
     state.barMetric = e.target.value;
     updateAll();
+  });
+
+  // Table row click/keyboard highlighting
+  document.getElementById('tableBody').addEventListener('click', e => {
+    const tr = e.target.closest('tr');
+    if (tr && tr.dataset.key) toggleHighlight(tr.dataset.key);
+  });
+  document.getElementById('tableBody').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const tr = e.target.closest('tr');
+      if (tr && tr.dataset.key) { e.preventDefault(); toggleHighlight(tr.dataset.key); }
+    }
+  });
+
+  // Leaderboard row click/keyboard highlighting
+  document.getElementById('leaderboardList').addEventListener('click', e => {
+    const row = e.target.closest('.leaderboard-row');
+    if (row && row.dataset.key) toggleHighlight(row.dataset.key);
+  });
+  document.getElementById('leaderboardList').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const row = e.target.closest('.leaderboard-row');
+      if (row && row.dataset.key) { e.preventDefault(); toggleHighlight(row.dataset.key); }
+    }
+  });
+}
+
+// ===== THEME MANAGEMENT =====
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const defaultTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+  setTheme(defaultTheme);
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  });
+}
+
+function setTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  localStorage.setItem('theme', theme);
+  updateChartColors(theme);
+}
+
+function updateChartColors(theme) {
+  const isLight = theme === 'light';
+  const gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.06)';
+  const textColor = isLight ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+  const tickColor = isLight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+
+  const tooltipStyle = isLight ? {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(15, 23, 42, 0.12)',
+    borderWidth: 1,
+    titleColor: '#0f172a',
+    bodyColor: 'rgba(15, 23, 42, 0.8)',
+    titleFont: { family: 'Inter', weight: '600' },
+    bodyFont: { family: 'Inter' },
+    padding: 12,
+  } : {
+    backgroundColor: 'rgba(15, 15, 26, 0.95)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    titleColor: '#fff',
+    bodyColor: 'rgba(255, 255, 255, 0.8)',
+    titleFont: { family: 'Inter', weight: '600' },
+    bodyFont: { family: 'Inter' },
+    padding: 12,
+  };
+
+  [scatterChart, barChart].forEach(chart => {
+    if (!chart) return;
+
+    if (chart.options.scales.x) {
+      if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor;
+      if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = tickColor;
+      if (chart.options.scales.x.title) chart.options.scales.x.title.color = textColor;
+    }
+
+    if (chart.options.scales.y) {
+      if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor;
+      if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = tickColor;
+      if (chart.options.scales.y.title) chart.options.scales.y.title.color = textColor;
+    }
+
+    if (chart.options.plugins && chart.options.plugins.tooltip) {
+      Object.assign(chart.options.plugins.tooltip, tooltipStyle);
+    }
+
+    chart.update('none');
+  });
+}
+
+// ===== COUNTER ANIMATION =====
+// Per-element rAF handle map; cancel any in-progress loop before starting a new one.
+const _animHandles = new WeakMap();
+
+function animateValue(element, start, end, duration = 400, isPrice = false) {
+  if (isNaN(start)) start = 0;
+  if (isNaN(end)) end = 0;
+
+  // Cancel any in-progress animation on this element
+  const existing = _animHandles.get(element);
+  if (existing != null) cancelAnimationFrame(existing);
+
+  const format = v => isPrice ? '$' + v.toFixed(4) : v.toFixed(1);
+
+  // Instant set for same value or when user prefers reduced motion
+  if (start === end || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    element.textContent = format(end);
+    _animHandles.delete(element);
+    return;
+  }
+
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = progress * (2 - progress); // ease-out quad
+    element.textContent = format(start + (end - start) * ease);
+
+    if (progress < 1) {
+      _animHandles.set(element, requestAnimationFrame(update));
+    } else {
+      element.textContent = format(end);
+      _animHandles.delete(element);
+    }
+  }
+
+  _animHandles.set(element, requestAnimationFrame(update));
+}
+
+// ===== DUAL SLIDER OVERLAP FIX =====
+function initRangeSliderZIndexFix() {
+  const dualSliderContainer = document.querySelector('.dual-slider');
+  const priceMinInput = document.getElementById('priceMin');
+  const priceMaxInput = document.getElementById('priceMax');
+
+  function handleDualSliderPointer(e) {
+    const rect = dualSliderContainer.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clickPercent = (clientX - rect.left) / rect.width;
+
+    const sliderMax = parseFloat(priceMaxInput.max) || 12;
+    const clickValue = clickPercent * sliderMax;
+
+    const distMin = Math.abs(clickValue - state.priceMin);
+    const distMax = Math.abs(clickValue - state.priceMax);
+
+    if (distMin < distMax) {
+      priceMinInput.style.zIndex = '10';
+      priceMaxInput.style.zIndex = '9';
+    } else {
+      priceMinInput.style.zIndex = '9';
+      priceMaxInput.style.zIndex = '10';
+    }
+  }
+
+  dualSliderContainer.addEventListener('mousedown', handleDualSliderPointer);
+  dualSliderContainer.addEventListener('touchstart', handleDualSliderPointer, { passive: true });
+}
+
+// ===== HIGHLIGHTING MANAGEMENT =====
+function toggleHighlight(modelName) {
+  state.highlightedModel = state.highlightedModel === modelName ? null : modelName;
+  updateHighlights();
+}
+
+function updateHighlights() {
+  const modelName = state.highlightedModel;
+
+  document.querySelectorAll('#tableBody tr').forEach(tr => {
+    if (tr.dataset.key) {
+      tr.classList.toggle('highlighted', tr.dataset.key === modelName);
+    }
+  });
+
+  document.querySelectorAll('.leaderboard-row').forEach(row => {
+    if (row.dataset.key) {
+      row.classList.toggle('highlighted', row.dataset.key === modelName);
+    }
+  });
+
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const filtered = getFilteredModels(allModels);
+  updateScatterChart(filtered);
+  updateBarChart(filtered);
+}
+
+// ===== SKELETON REMOVAL =====
+function removeSkeletons() {
+  document.querySelectorAll('.skeleton-element').forEach(el => {
+    el.classList.remove('skeleton-element', 'pulse');
   });
 }
 
 // ===== INIT =====
 async function init() {
-  // Apply fallback data immediately for instant render
+  // Setup theme before charts so first paint uses correct colors
+  initTheme();
+
+  // Apply fallback data and render immediately (instant render — no delay)
   applyData(FALLBACK_DATA);
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  // Initialize UI
   initCharts();
   initProviderPills();
   initEventListeners();
+  initRangeSliderZIndexFix();
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
-  updateAll();
 
-  // Fetch fresh data in the background (non-blocking)
-  await loadData();
+  // First paint with fallback data; remove skeleton state
+  updateAll();
+  removeSkeletons();
+
+  // Fetch fresh data in the background — swap and refresh only if different
+  loadData().then(data => {
+    const sameModels = JSON.stringify(data.models) === JSON.stringify(FALLBACK_DATA.models);
+    const sameProviders = JSON.stringify(data.providers) === JSON.stringify(FALLBACK_DATA.providers);
+
+    if (!sameModels || !sameProviders) {
+      applyData(data);
+      state.activeProviders = new Set(ALL_PROVIDERS);
+      reinitProviderPills();
+      updateSliderBounds();
+      updatePriceRangeSliderHighlight();
+      updateAll();
+      console.info('[LLM Analysis] Data refreshed from data.json.');
+    } else {
+      console.info('[LLM Analysis] data.json matches fallback — no update needed.');
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
