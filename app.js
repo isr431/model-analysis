@@ -1029,6 +1029,948 @@ function removeSkeletons() {
   });
 }
 
+// ===== CHATBOT CONTROLLER =====
+const CHAT_STATE = {
+  isOpen: false,
+  apiKey: localStorage.getItem('openrouter_api_key') || '',
+  selectedModel: localStorage.getItem('openrouter_chat_model') || 'google/gemini-3.5-flash',
+  reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'high',
+  messages: []
+};
+
+function initChatResizer() {
+  const drawer = document.getElementById('chatDrawer');
+  const resizerT = document.getElementById('chatResizerT');
+  const resizerL = document.getElementById('chatResizerL');
+  const resizerTL = document.getElementById('chatResizerTL');
+
+  if (!drawer || !resizerT || !resizerL || !resizerTL) return;
+
+  // Restore saved dimensions
+  const savedWidth = localStorage.getItem('chat_drawer_width');
+  const savedHeight = localStorage.getItem('chat_drawer_height');
+  if (savedWidth && window.innerWidth > 480) {
+    drawer.style.width = savedWidth + 'px';
+  }
+  if (savedHeight && window.innerWidth > 480) {
+    drawer.style.height = savedHeight + 'px';
+  }
+
+  function setupResizer(resizer, type) {
+    resizer.addEventListener('mousedown', onMouseDown);
+    resizer.addEventListener('touchstart', onTouchStart, { passive: false });
+
+    function onMouseDown(e) {
+      e.preventDefault();
+      startResize(e.clientX, e.clientY);
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
+    function onTouchStart(e) {
+      if (e.touches.length > 1) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      startResize(touch.clientX, touch.clientY);
+      document.addEventListener('touchmove', onTouchMove, { passive: false });
+      document.addEventListener('touchend', onTouchEnd);
+    }
+
+    let startX, startY, startWidth, startHeight;
+
+    function startResize(clientX, clientY) {
+      if (window.innerWidth <= 480) return;
+
+      startX = clientX;
+      startY = clientY;
+      const rect = drawer.getBoundingClientRect();
+      startWidth = rect.width;
+      startHeight = rect.height;
+
+      drawer.classList.add('resizing');
+      document.body.style.userSelect = 'none';
+      document.body.style.webkitUserSelect = 'none';
+
+      if (type === 't') document.body.style.cursor = 'ns-resize';
+      else if (type === 'l') document.body.style.cursor = 'ew-resize';
+      else if (type === 'tl') document.body.style.cursor = 'nwse-resize';
+    }
+
+    function moveResize(clientX, clientY) {
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+
+      let newWidth = startWidth;
+      let newHeight = startHeight;
+
+      if (type === 't' || type === 'tl') {
+        newHeight = startHeight - dy;
+      }
+      if (type === 'l' || type === 'tl') {
+        newWidth = startWidth - dx;
+      }
+
+      // Clamp dimensions
+      const minWidth = 360;
+      const minHeight = 400;
+      const maxWidth = window.innerWidth * 0.95;
+      const maxHeight = window.innerHeight * 0.85;
+
+      newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+      newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+
+      drawer.style.width = newWidth + 'px';
+      drawer.style.height = newHeight + 'px';
+    }
+
+    function onMouseMove(e) {
+      moveResize(e.clientX, e.clientY);
+    }
+
+    function onTouchMove(e) {
+      if (e.touches.length > 0) {
+        moveResize(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }
+
+    function stopResize() {
+      drawer.classList.remove('resizing');
+      document.body.style.userSelect = '';
+      document.body.style.webkitUserSelect = '';
+      document.body.style.cursor = '';
+
+      const rect = drawer.getBoundingClientRect();
+      localStorage.setItem('chat_drawer_width', Math.round(rect.width));
+      localStorage.setItem('chat_drawer_height', Math.round(rect.height));
+    }
+
+    function onMouseUp() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      stopResize();
+    }
+
+    function onTouchEnd() {
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+      stopResize();
+    }
+  }
+
+  setupResizer(resizerT, 't');
+  setupResizer(resizerL, 'l');
+  setupResizer(resizerTL, 'tl');
+}
+
+function initChatbot() {
+  const fab = document.getElementById('chatFab');
+  const drawer = document.getElementById('chatDrawer');
+  const closeBtn = document.getElementById('chatCloseBtn');
+  const settingsBtn = document.getElementById('chatSettingsBtn');
+  const apiKeyView = document.getElementById('chatApiKeyView');
+  const apiKeyInput = document.getElementById('chatApiKeyInput');
+  const saveKeyBtn = document.getElementById('saveApiKeyBtn');
+  const clearKeyBtn = document.getElementById('clearApiKeyBtn');
+  const modelSelect = document.getElementById('chatModelSelect');
+  const reasoningSelect = document.getElementById('chatReasoningSelect');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSendBtn');
+
+  if (!fab || !drawer) return;
+
+  // Initialize custom resizer handles
+  initChatResizer();
+
+  // Load state
+  if (CHAT_STATE.apiKey) {
+    apiKeyInput.value = CHAT_STATE.apiKey;
+    clearKeyBtn.classList.remove('hide');
+  } else {
+    apiKeyView.classList.remove('hide');
+  }
+
+  if (modelSelect) {
+    modelSelect.value = CHAT_STATE.selectedModel;
+  }
+  if (reasoningSelect) {
+    reasoningSelect.value = CHAT_STATE.reasoningEffort;
+  }
+
+  // Listeners
+  fab.addEventListener('click', () => {
+    CHAT_STATE.isOpen = !CHAT_STATE.isOpen;
+    drawer.classList.toggle('hide', !CHAT_STATE.isOpen);
+    if (CHAT_STATE.isOpen) {
+      chatInput.focus();
+      scrollToBottom();
+      // Remove badge animation once chat is opened
+      document.querySelector('.chat-fab-badge')?.classList.remove('pulse-badge');
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    CHAT_STATE.isOpen = false;
+    drawer.classList.add('hide');
+  });
+
+  settingsBtn.addEventListener('click', () => {
+    apiKeyView.classList.toggle('hide');
+  });
+
+  saveKeyBtn.addEventListener('click', () => {
+    const key = apiKeyInput.value.trim();
+    if (key) {
+      CHAT_STATE.apiKey = key;
+      localStorage.setItem('openrouter_api_key', key);
+      apiKeyView.classList.add('hide');
+      clearKeyBtn.classList.remove('hide');
+      addSystemMessage('API key saved successfully.');
+    } else {
+      alert('Please enter a valid OpenRouter API key.');
+    }
+  });
+
+  clearKeyBtn.addEventListener('click', () => {
+    CHAT_STATE.apiKey = '';
+    localStorage.removeItem('openrouter_api_key');
+    apiKeyInput.value = '';
+    clearKeyBtn.classList.add('hide');
+    apiKeyView.classList.remove('hide');
+    addSystemMessage('API key cleared.');
+  });
+
+  if (modelSelect) {
+    modelSelect.addEventListener('change', (e) => {
+      CHAT_STATE.selectedModel = e.target.value;
+      localStorage.setItem('openrouter_chat_model', e.target.value);
+    });
+  }
+
+  if (reasoningSelect) {
+    reasoningSelect.addEventListener('change', (e) => {
+      CHAT_STATE.reasoningEffort = e.target.value;
+      localStorage.setItem('openrouter_reasoning_effort', e.target.value);
+    });
+  }
+
+  chatInput.addEventListener('input', () => {
+    // Auto-grow textarea height
+    chatInput.style.height = 'auto';
+    chatInput.style.height = Math.min(80, chatInput.scrollHeight) + 'px';
+  });
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSubmit();
+    }
+  });
+
+  sendBtn.addEventListener('click', handleChatSubmit);
+}
+
+function scrollToBottom() {
+  const logs = document.getElementById('chatLogs');
+  if (logs) {
+    logs.scrollTop = logs.scrollHeight;
+  }
+}
+
+function addSystemMessage(text) {
+  const logs = document.getElementById('chatLogs');
+  if (!logs) return;
+  const div = document.createElement('div');
+  div.className = 'chat-message system';
+  div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+  logs.appendChild(div);
+  scrollToBottom();
+}
+
+function handleChatSubmit() {
+  const chatInput = document.getElementById('chatInput');
+  if (!chatInput) return;
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  if (!CHAT_STATE.apiKey) {
+    document.getElementById('chatApiKeyView').classList.remove('hide');
+    return;
+  }
+
+  // Clear input
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+
+  // Append user message
+  appendMessage('user', text);
+
+  // Disable inputs during streaming
+  setChatLoading(true);
+
+  // Send request
+  streamResponse(text).catch(err => {
+    console.error(err);
+    appendMessage('system', `Error: ${err.message || 'Failed to stream response.'}`);
+    setChatLoading(false);
+  });
+}
+
+function appendMessage(role, text) {
+  const logs = document.getElementById('chatLogs');
+  if (!logs) return;
+  const div = document.createElement('div');
+  div.className = `chat-message ${role}`;
+  
+  if (role === 'system') {
+    div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+  } else {
+    const senderName = role === 'user' ? 'You' : 'Assistant';
+    div.innerHTML = `
+      <div class="chat-sender-label">${senderName}</div>
+      <div class="message-bubble">${parseMarkdown(text)}</div>
+    `;
+  }
+  
+  logs.appendChild(div);
+  scrollToBottom();
+  
+  // Save to message history
+  if (role !== 'system') {
+    CHAT_STATE.messages.push({ role, content: text });
+  }
+}
+
+function setChatLoading(isLoading) {
+  const sendBtn = document.getElementById('chatSendBtn');
+  const chatInput = document.getElementById('chatInput');
+  const statusIndicator = document.querySelector('.chat-status-indicator');
+
+  if (sendBtn) sendBtn.disabled = isLoading;
+  if (chatInput) chatInput.disabled = isLoading;
+  if (statusIndicator) {
+    statusIndicator.classList.toggle('loading', isLoading);
+  }
+}
+
+function getDashboardContextText() {
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const filtered = getFilteredModels(allModels);
+  
+  const activeProvidersStr = Array.from(state.activeProviders).join(', ');
+  
+  // Format top 10 models for context
+  const sorted = [...filtered].sort((a, b) => b.value - a.value);
+  const top10 = sorted.slice(0, 10).map((m, i) => 
+    `${i+1}. ${m.model} (${m.provider}) - Blended Cost: $${m.blended.toFixed(2)}/1M, Perf: ${m.performance.toFixed(1)}, Value: ${m.value.toFixed(1)}`
+  ).join('\n');
+
+  // Card stats
+  const bestValue = filtered.length > 0 ? filtered.reduce((a, b) => a.value > b.value ? a : b) : null;
+  const bestPerf = filtered.length > 0 ? filtered.reduce((a, b) => a.performance > b.performance ? a : b) : null;
+  const cheapest = filtered.length > 0 ? filtered.reduce((a, b) => a.blended < b.blended ? a : b) : null;
+
+  return `
+--- DASHBOARD CONTEXT ---
+Cost Sensitivity (P): ${state.p.toFixed(2)}
+Search Query: "${state.search}"
+Active Providers: ${activeProvidersStr}
+Price Range: $${state.priceMin.toFixed(2)} - $${state.priceMax.toFixed(2)}
+Min Performance: ${state.perfThreshold}
+Total Filtered Models: ${filtered.length}
+
+Best Value Model currently: ${bestValue ? `${bestValue.model} (${bestValue.provider}) - Value: ${bestValue.value.toFixed(1)}` : 'None'}
+Best Performance Model currently: ${bestPerf ? `${bestPerf.model} (${bestPerf.provider}) - Score: ${bestPerf.performance.toFixed(1)}` : 'None'}
+Cheapest Model currently: ${cheapest ? `${cheapest.model} (${cheapest.provider}) - Blended Cost: $${cheapest.blended.toFixed(2)}/1M` : 'None'}
+
+Top 10 Filtered Models (sorted by Value):
+${top10 || 'No models match current filters.'}
+------------------------
+`;
+}
+
+const CHAT_TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_dashboard_settings',
+      description: 'Retrieve the current active settings from the dashboard. Use this when the user asks what cost sensitivity (P), min performance, active providers, or price bounds are currently set on their screen. Returns Cost Sensitivity P, searchQuery, activeProviders list, priceMin, priceMax, and performanceThreshold.',
+      parameters: {
+        type: 'object',
+        properties: {}
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_summary_stats',
+      description: 'Retrieve the highlight stats from the summary cards. Use this to find the names and values/costs of the best value model, best performance model, cheapest model, and most expensive model currently matching filters.',
+      parameters: {
+        type: 'object',
+        properties: {}
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_leaderboard_rankings',
+      description: 'Retrieve the leaderboard list of models matching the current filters. Use this tool when the user asks for rankings, lists of top-performing models, or comparisons of the highest-rated models on the leaderboard. Returns ranks, model names, providers, performance scores, value scores, and blended costs.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: {
+            type: 'number',
+            description: 'The maximum number of ranking rows to return (default is 10).',
+            default: 10
+          }
+        }
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_model_details',
+      description: 'Retrieve detailed attributes and scores for a specific language model by searching for its name. Use this tool when the user queries a specific model\'s input price, output price, blended cost, LiveBench score, AA score, normalized performance, or value score.',
+      parameters: {
+        type: 'object',
+        properties: {
+          model_name: {
+            type: 'string',
+            description: 'The name of the model to look up (e.g. "DeepSeek V4 Pro", "Gemini 3.5 Flash", "GLM 5.2").'
+          }
+        },
+        required: ['model_name']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_all_models',
+      description: 'Retrieve a list of all models and their providers in the database. Use this tool to see the names of all models, list models for a specific provider, or check if a model exists in the database before querying details.',
+      parameters: {
+        type: 'object',
+        properties: {
+          provider: {
+            type: 'string',
+            description: 'Filter models list to only include this provider (e.g. "OpenAI", "DeepSeek", "Google").'
+          }
+        }
+      }
+    }
+  }
+];
+
+function executeGetDashboardSettings() {
+  const activeProvidersStr = Array.from(state.activeProviders).join(', ');
+  return JSON.stringify({
+    costSensitivityP: state.p,
+    searchQuery: state.search,
+    activeProviders: activeProvidersStr,
+    priceMin: state.priceMin,
+    priceMax: state.priceMax,
+    perfThreshold: state.perfThreshold
+  });
+}
+
+function executeGetSummaryStats() {
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const filtered = getFilteredModels(allModels);
+  if (filtered.length === 0) return JSON.stringify({ error: "No models match current filters." });
+
+  const bestValue = filtered.reduce((a, b) => a.value > b.value ? a : b);
+  const bestPerf = filtered.reduce((a, b) => a.performance > b.performance ? a : b);
+  const cheapest = filtered.reduce((a, b) => a.blended < b.blended ? a : b);
+  const expensive = filtered.reduce((a, b) => a.blended > b.blended ? a : b);
+
+  return JSON.stringify({
+    bestValue: { model: bestValue.model, provider: bestValue.provider, valueScore: bestValue.value },
+    bestPerformance: { model: bestPerf.model, provider: bestPerf.provider, performanceScore: bestPerf.performance },
+    cheapest: { model: cheapest.model, provider: cheapest.provider, blendedCost: cheapest.blended },
+    mostExpensive: { model: expensive.model, provider: expensive.provider, blendedCost: expensive.blended }
+  });
+}
+
+function executeGetLeaderboardRankings(args) {
+  const limit = args.limit || 10;
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const filtered = getFilteredModels(allModels);
+  const sorted = [...filtered].sort((a, b) => b.performance - a.performance);
+  
+  return JSON.stringify(sorted.slice(0, limit).map((m, i) => ({
+    rank: i + 1,
+    model: m.model,
+    provider: m.provider,
+    performance: m.performance,
+    value: m.value,
+    blendedCost: m.blended
+  })));
+}
+
+function executeGetModelDetails(args) {
+  if (!args.model_name) return JSON.stringify({ error: "Missing model_name parameter." });
+  const query = args.model_name.toLowerCase().trim();
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  
+  const match = allModels.find(m => m.model.toLowerCase().includes(query));
+  if (!match) return JSON.stringify({ error: `Model "${args.model_name}" not found.` });
+
+  return JSON.stringify({
+    model: match.model,
+    provider: match.provider,
+    inputPricePerMillion: match.inputPrice,
+    outputPricePerMillion: match.outputPrice,
+    blendedCostPerMillion: match.blended,
+    livebenchScore: match.livebench,
+    aaScore: match.aaScore,
+    normalizedPerformance: match.performance,
+    valueScore: match.value
+  });
+}
+
+function executeListAllModels(args) {
+  const providerFilter = args.provider ? args.provider.toLowerCase().trim() : null;
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  
+  let list = allModels;
+  if (providerFilter) {
+    list = allModels.filter(m => m.provider.toLowerCase() === providerFilter);
+  }
+  
+  return JSON.stringify(list.map(m => ({
+    model: m.model,
+    provider: m.provider,
+    blendedCost: m.blended
+  })));
+}
+
+async function executeTool(name, argsString) {
+  let args = {};
+  try {
+    if (argsString) {
+      args = JSON.parse(argsString);
+    }
+  } catch (e) {
+    console.error("Failed to parse tool arguments:", argsString, e);
+  }
+
+  console.info(`[Chatbot Tool] Invoking "${name}" with args:`, args);
+
+  switch (name) {
+    case 'get_dashboard_settings':
+      return executeGetDashboardSettings();
+    case 'get_summary_stats':
+      return executeGetSummaryStats();
+    case 'get_leaderboard_rankings':
+      return executeGetLeaderboardRankings(args);
+    case 'get_model_details':
+      return executeGetModelDetails(args);
+    case 'list_all_models':
+      return executeListAllModels(args);
+    default:
+      return JSON.stringify({ error: `Tool "${name}" is not implemented.` });
+  }
+}
+
+async function streamResponse(userPrompt) {
+  let loopCount = 0;
+  const maxLoops = 5;
+  
+  const logs = document.getElementById('chatLogs');
+  if (!logs) return;
+  
+  let currentMessageDiv = null;
+  let currentBubbleDiv = null;
+  let currentThinkingDetails = null;
+  let currentThinkingContentDiv = null;
+
+  while (loopCount < maxLoops) {
+    const systemPrompt = `You are a helpful AI Assistant embedded in an interactive LLM Model Analysis dashboard.
+You help users analyze models, compute values, and compare prices.
+
+You have access to tools that query the dashboard state and model details.
+Use tools when asked about:
+- What filters or settings are currently set (get_dashboard_settings)
+- Summary statistics/cards (get_summary_stats)
+- Model rankings/leaderboard data (get_leaderboard_rankings)
+- Model details, prices, or benchmark scores (get_model_details)
+- Listing all models (list_all_models)
+
+Do NOT assume what the active settings or values are. Call tools to get the correct live data.
+
+Formula Guidelines:
+- Blended Cost = 0.9573 * Input Price + 0.0427 * Output Price
+- Performance = 50% * (Normalized LiveBench) + 50% * (Normalized AA Score)
+- Value = Performance / Blended Cost^P
+
+Answer rules:
+1. Cite values and rankings from the tool execution results.
+2. Be brief, professional, and clear. Use bullet points and lists.
+3. Keep answers short and relevant to model analysis.`;
+
+    const messagesToSend = [
+      { role: 'system', content: systemPrompt },
+      ...CHAT_STATE.messages
+    ];
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${CHAT_STATE.apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://github.com/isr431/model-analysis',
+        'X-Title': 'LLM Model Analysis Dashboard'
+      },
+      body: JSON.stringify({
+        model: CHAT_STATE.selectedModel,
+        messages: messagesToSend,
+        stream: true,
+        tools: CHAT_TOOLS,
+        max_tokens: 4096,
+        reasoning: CHAT_STATE.reasoningEffort === 'none' ? { exclude: true } : { effort: CHAT_STATE.reasoningEffort }
+      })
+    });
+
+    if (!response.ok) {
+      const errorJson = await response.json().catch(() => ({}));
+      const errorMsg = errorJson.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+      throw new Error(errorMsg);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    
+    let reasoningText = '';
+    let contentText = '';
+    let buffer = '';
+    let toolCalls = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep last partial line
+
+      for (const line of lines) {
+        const cleaned = line.trim();
+        if (!cleaned) continue;
+        if (cleaned.startsWith('data: ')) {
+          const dataStr = cleaned.slice(6);
+          if (dataStr === '[DONE]') continue;
+          
+          try {
+            const data = JSON.parse(dataStr);
+            const delta = data.choices?.[0]?.delta;
+            if (delta) {
+              const reasoningChunk = delta.reasoning || delta.reasoning_content || '';
+              const contentChunk = delta.content || '';
+              const toolCallsDelta = delta.tool_calls;
+
+              if (reasoningChunk) {
+                if (!currentMessageDiv) {
+                  createAssistantMessageNodes();
+                }
+                if (currentThinkingDetails.classList.contains('hide')) {
+                  currentThinkingDetails.classList.remove('hide');
+                }
+                reasoningText += reasoningChunk;
+                currentThinkingContentDiv.textContent = reasoningText;
+                scrollToBottom();
+              }
+
+              if (contentChunk) {
+                if (!currentMessageDiv) {
+                  createAssistantMessageNodes();
+                }
+                if (currentThinkingDetails.open && reasoningText.length > 0) {
+                  currentThinkingDetails.open = false;
+                }
+                contentText += contentChunk;
+                currentBubbleDiv.innerHTML = parseMarkdown(contentText);
+                scrollToBottom();
+              }
+
+              if (toolCallsDelta) {
+                toolCallsDelta.forEach(tc => {
+                  const idx = tc.index;
+                  if (!toolCalls[idx]) {
+                    toolCalls[idx] = {
+                      id: tc.id || '',
+                      name: tc.function?.name || '',
+                      arguments: tc.function?.arguments || ''
+                    };
+                  } else {
+                    if (tc.id) toolCalls[idx].id = tc.id;
+                    if (tc.function?.name) toolCalls[idx].name = tc.function.name;
+                    if (tc.function?.arguments) toolCalls[idx].arguments += tc.function.arguments;
+                  }
+                });
+              }
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+      }
+    }
+
+    if (buffer) {
+      const cleaned = buffer.trim();
+      if (cleaned.startsWith('data: ')) {
+        const dataStr = cleaned.slice(6);
+        if (dataStr !== '[DONE]') {
+          try {
+            const data = JSON.parse(dataStr);
+            const delta = data.choices?.[0]?.delta;
+            if (delta) {
+              const contentChunk = delta.content || '';
+              if (contentChunk) {
+                if (!currentMessageDiv) createAssistantMessageNodes();
+                contentText += contentChunk;
+                currentBubbleDiv.innerHTML = parseMarkdown(contentText);
+                scrollToBottom();
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    function createAssistantMessageNodes() {
+      currentMessageDiv = document.createElement('div');
+      currentMessageDiv.className = 'chat-message assistant';
+
+      // Prepend label
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'chat-sender-label';
+      labelDiv.textContent = 'Assistant';
+      currentMessageDiv.appendChild(labelDiv);
+
+      currentThinkingDetails = document.createElement('details');
+      currentThinkingDetails.className = 'thinking-block hide';
+      currentThinkingDetails.open = true;
+      currentThinkingDetails.innerHTML = `
+        <summary class="thinking-title">Thinking Process</summary>
+        <div class="thinking-content"></div>
+      `;
+
+      currentBubbleDiv = document.createElement('div');
+      currentBubbleDiv.className = 'message-bubble';
+
+      currentMessageDiv.appendChild(currentThinkingDetails);
+      currentMessageDiv.appendChild(currentBubbleDiv);
+      logs.appendChild(currentMessageDiv);
+      currentThinkingContentDiv = currentThinkingDetails.querySelector('.thinking-content');
+    }
+
+    if (currentThinkingDetails && reasoningText.trim().length === 0) {
+      currentThinkingDetails.remove();
+    }
+
+    const activeToolCalls = toolCalls.filter(Boolean);
+
+    if (activeToolCalls.length > 0) {
+      activeToolCalls.forEach(tc => {
+        addToolStatusMessage(`Running tool: ${tc.name}...`);
+      });
+
+      CHAT_STATE.messages.push({
+        role: 'assistant',
+        content: contentText || null,
+        tool_calls: activeToolCalls.map(tc => ({
+          id: tc.id,
+          type: 'function',
+          function: {
+            name: tc.name,
+            arguments: tc.arguments
+          }
+        }))
+      });
+
+      for (const tc of activeToolCalls) {
+        const result = await executeTool(tc.name, tc.arguments);
+        CHAT_STATE.messages.push({
+          role: 'tool',
+          tool_call_id: tc.id,
+          name: tc.name,
+          content: result
+        });
+      }
+
+      loopCount++;
+      currentMessageDiv = null;
+      currentBubbleDiv = null;
+      currentThinkingDetails = null;
+      currentThinkingContentDiv = null;
+    } else {
+      if (contentText.trim().length === 0 && reasoningText.trim().length === 0) {
+        if (!currentMessageDiv) createAssistantMessageNodes();
+        currentBubbleDiv.textContent = 'No response generated.';
+      } else if (contentText.trim().length > 0) {
+        CHAT_STATE.messages.push({ role: 'assistant', content: contentText });
+      }
+      break;
+    }
+  }
+
+  setChatLoading(false);
+}
+
+function addToolStatusMessage(text) {
+  const logs = document.getElementById('chatLogs');
+  if (!logs) return;
+  const div = document.createElement('div');
+  div.className = 'chat-message tool-status';
+  div.innerHTML = `<div class="message-bubble">⚙️ ${escapeHtml(text)}</div>`;
+  logs.appendChild(div);
+  scrollToBottom();
+}
+
+// Helper to escape HTML characters
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Simple markdown parsing helper
+function parseMarkdown(markdown) {
+  let html = escapeHtml(markdown);
+
+  // Parse tables first
+  const linesForTable = html.split('\n');
+  let inTable = false;
+  let tableRows = [];
+  let parsedLines = [];
+
+  for (let i = 0; i < linesForTable.length; i++) {
+    const line = linesForTable[i].trim();
+    const isRow = line.startsWith('|') && line.endsWith('|');
+    
+    if (isRow) {
+      if (!inTable) {
+        inTable = true;
+        tableRows = [];
+      }
+      tableRows.push(line);
+    } else {
+      if (inTable) {
+        parsedLines.push(renderMarkdownTable(tableRows));
+        inTable = false;
+      }
+      parsedLines.push(linesForTable[i]);
+    }
+  }
+  if (inTable) {
+    parsedLines.push(renderMarkdownTable(tableRows));
+  }
+
+  html = parsedLines.join('\n');
+
+  // Parse headers: ### Header, ## Header, # Header
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+  // Parse horizontal rules: ---
+  html = html.replace(/^---+$/gim, '<hr>');
+
+  // Parse code blocks: ```lang\ncode\n```
+  html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+    const cleanCode = code.replace(/^\n/, '');
+    return `<pre><code>${cleanCode}</code></pre>`;
+  });
+
+  // Parse inline code: `code`
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Parse bold text: **text**
+  html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
+  // Parse bullet lists: lines starting with "- " or "* "
+  const lines = html.split('\n');
+  let inList = false;
+  let result = [];
+
+  for (let line of lines) {
+    const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
+    if (listMatch) {
+      if (!inList) {
+        result.push('<ul>');
+        inList = true;
+      }
+      result.push(`<li>${listMatch[3]}</li>`);
+    } else {
+      if (inList) {
+        result.push('</ul>');
+        inList = false;
+      }
+      result.push(line);
+    }
+  }
+  if (inList) {
+    result.push('</ul>');
+  }
+
+  let finalHtml = result.join('\n');
+  finalHtml = finalHtml.replace(/<\/ul>\n<ul>/g, '');
+  
+  // Wrap paragraphs
+  const paragraphs = finalHtml.split(/\n{2,}/);
+  return paragraphs.map(p => {
+    const trimmed = p.trim();
+    if (trimmed.startsWith('<pre>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<li>') || trimmed.startsWith('<table>') || trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<hr>') || trimmed === '') {
+      return p;
+    }
+    return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+  }).join('');
+}
+
+function renderMarkdownTable(rows) {
+  if (rows.length < 2) {
+    return rows.join('\n');
+  }
+
+  const headers = rows[0]
+    .split('|')
+    .slice(1, -1)
+    .map(cell => cell.trim());
+
+  const isDivider = /^[\s|:-]+$/.test(rows[1]);
+  if (!isDivider) {
+    return rows.join('\n');
+  }
+
+  let tableHtml = '<table><thead><tr>';
+  headers.forEach(h => {
+    tableHtml += `<th>${h}</th>`;
+  });
+  tableHtml += '</tr></thead><tbody>';
+
+  for (let r = 2; r < rows.length; r++) {
+    const cells = rows[r]
+      .split('|')
+      .slice(1, -1)
+      .map(cell => cell.trim());
+
+    tableHtml += '<tr>';
+    for (let c = 0; c < headers.length; c++) {
+      const val = cells[c] !== undefined ? cells[c] : '';
+      tableHtml += `<td>${val}</td>`;
+    }
+    tableHtml += '</tr>';
+  }
+  tableHtml += '</tbody></table>';
+  return tableHtml;
+}
+
 // ===== INIT =====
 async function init() {
   // Setup theme before charts so first paint uses correct colors
@@ -1048,6 +1990,7 @@ async function init() {
   initRangeSliderZIndexFix();
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
+  initChatbot();
 
   // First paint with fallback data; remove skeleton state
   updateAll();
