@@ -350,7 +350,7 @@ function initCharts() {
             title: items => items[0].raw.model,
             label: item => [
               `Provider: ${item.raw.provider}`,
-              `Blended: $${item.raw.blended.toFixed(4)}`,
+              `Blended: $${item.raw.blended.toFixed(2)}`,
               `Performance: ${item.raw.y.toFixed(1)}`,
               `Value: ${item.raw.value.toFixed(1)}`,
             ],
@@ -612,7 +612,7 @@ function updateTable(filtered) {
         <td>${m.model}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
-        <td class="num">$${m.blended.toFixed(4)}</td>
+        <td class="num">$${m.blended.toFixed(2)}</td>
         <td class="num">${m.livebench.toFixed(2)}</td>
         <td class="num">${m.aaScore}</td>
         <td class="num" style="color:${colorScale(m.performance, perfMin, perfMax)};font-weight:600">${m.performance.toFixed(1)}</td>
@@ -935,7 +935,7 @@ function animateValue(element, start, end, duration = 400, isPrice = false) {
   const existing = _animHandles.get(element);
   if (existing != null) cancelAnimationFrame(existing);
 
-  const format = v => isPrice ? '$' + v.toFixed(4) : v.toFixed(1);
+  const format = v => isPrice ? '$' + v.toFixed(2) : v.toFixed(1);
 
   // Instant set for same value or when user prefers reduced motion
   if (start === end || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
