@@ -49,9 +49,9 @@
     <!-- CONTROLS BAR -->
     <div class="controls-bar glass" id="controlsBar">
       <div class="control-group" id="pSliderGroup">
-        <label>Cost Sensitivity (P): <span id="pValue">0.20</span></label>
+        <label>Cost Sensitivity (P): <span id="pValue">0.10</span></label>
         <div class="control-input-wrap">
-          <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.2">
+          <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.1">
         </div>
         <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
       </div>
@@ -168,13 +168,13 @@
         </div>
         <div class="formula-item">
           <div class="formula-label">Performance</div>
-          <code>50% × Normalized(LiveBench) + 50% × Normalized(Artificial Analysis)</code>
-          <div class="formula-desc">Min-max normalized across all models, scaled 0–100</div>
+          <code>50% × (LiveBench / Max) + 50% × (AA Score / Max)</code>
+          <div class="formula-desc">Each benchmark is normalized against its dataset maximum for equal weighting</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
           <code>Performance / Blended Cost<sup>P</sup></code>
-          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.20</span>)</div>
+          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.10</span>)</div>
         </div>
       </div>
     </section>
