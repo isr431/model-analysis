@@ -16,6 +16,10 @@ const FALLBACK_DATA = {
     'xAI':         { color: '#f43f5e' },
   },
   models: [
+    { provider: 'DeepSeek',    model: 'DeepSeek V3.2',          inputPrice: 0.2288, outputPrice: 0.3432, livebench: 62.20, aaScore: 33 },
+    { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 70.85, aaScore: 40 },
+    { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',          inputPrice: 0.95,  outputPrice: 4.0,   livebench: 71.89, aaScore: 42 },
+    { provider: 'OpenAI',      model: 'gpt-oss-120b',           inputPrice: 0.039, outputPrice: 0.18,  livebench: 46.09, aaScore: 24 },
     { provider: 'xAI',         model: 'Grok 4.3',              inputPrice: 1.25,  outputPrice: 2.5,   livebench: 66.74, aaScore: 38 },
     { provider: 'OpenAI',      model: 'GPT-5.3 Codex',         inputPrice: 1.75,  outputPrice: 14.0,  livebench: 72.76, aaScore: 44 },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',       inputPrice: 0.435, outputPrice: 0.87,  livebench: 73.58, aaScore: 44 },
@@ -204,7 +208,7 @@ async function loadData() {
 
 // ===== STATE =====
 const state = {
-  p: 0.2,
+  p: 0.1,
   search: '',
   priceMin: 0,
   priceMax: 12,
@@ -231,14 +235,12 @@ function computeBlended(inputPrice, outputPrice) {
 function computeAllMetrics(data, p) {
   const models = data.map(d => ({ ...d, blended: computeBlended(d.inputPrice, d.outputPrice) }));
 
-  const lbMin = Math.min(...models.map(m => m.livebench));
   const lbMax = Math.max(...models.map(m => m.livebench));
-  const aaMin = Math.min(...models.map(m => m.aaScore));
   const aaMax = Math.max(...models.map(m => m.aaScore));
 
   models.forEach(m => {
-    const lbNorm = (lbMax - lbMin) === 0 ? 0 : (m.livebench - lbMin) / (lbMax - lbMin);
-    const aaNorm = (aaMax - aaMin) === 0 ? 0 : (m.aaScore - aaMin) / (aaMax - aaMin);
+    const lbNorm = lbMax === 0 ? 0 : m.livebench / lbMax;
+    const aaNorm = aaMax === 0 ? 0 : m.aaScore / aaMax;
     m.performance = (0.5 * lbNorm + 0.5 * aaNorm) * 100;
   });
 
@@ -678,15 +680,15 @@ function resetFilters() {
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
 
-  state.p = 0.2;
+  state.p = 0.1;
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
   state.perfThreshold = 0;
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  document.getElementById('pSlider').value = 0.2;
-  document.getElementById('pValue').textContent = '0.20';
+  document.getElementById('pSlider').value = 0.1;
+  document.getElementById('pValue').textContent = '0.10';
   document.getElementById('searchInput').value = '';
   document.getElementById('priceMin').value = 0;
   document.getElementById('priceMax').value = sliderMax;
@@ -1037,6 +1039,10 @@ async function init() {
   state.activeProviders = new Set(ALL_PROVIDERS);
 
   initCharts();
+  // Apply theme colors to charts now that they exist — initTheme() ran
+  // before initCharts(), so its updateChartColors() call was a no-op.
+  const activeTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  updateChartColors(activeTheme);
   initProviderPills();
   initEventListeners();
   initRangeSliderZIndexFix();
