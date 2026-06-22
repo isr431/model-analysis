@@ -1170,6 +1170,7 @@ function initChatResizer() {
 function initChatbot() {
   const fab = document.getElementById('chatFab');
   const drawer = document.getElementById('chatDrawer');
+  const clearBtn = document.getElementById('chatClearBtn');
   const closeBtn = document.getElementById('chatCloseBtn');
   const settingsBtn = document.getElementById('chatSettingsBtn');
   const apiKeyView = document.getElementById('chatApiKeyView');
@@ -1221,6 +1222,25 @@ function initChatbot() {
     CHAT_STATE.isOpen = false;
     drawer.classList.add('hide');
   });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear the chat context?')) {
+        CHAT_STATE.messages = [];
+        const logs = document.getElementById('chatLogs');
+        if (logs) {
+          logs.innerHTML = `
+            <div class="chat-message assistant">
+              <div class="chat-sender-label">Assistant</div>
+              <div class="message-bubble">
+                Hello! I am your Model Assistant. Ask me anything about the model scores, value calculations, or current filter rankings!
+              </div>
+            </div>
+          `;
+        }
+      }
+    });
+  }
 
   settingsBtn.addEventListener('click', () => {
     apiKeyView.classList.toggle('hide');
@@ -1902,7 +1922,7 @@ function parseMarkdown(markdown) {
   html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
   // 6. Horizontal Rules
-  html = html.replace(/^---+$/gim, '<hr>');
+  html = html.replace(/^\s*---+\s*$/gim, '<hr>');
 
   // 7. Bold & Italic text
   html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
@@ -1914,7 +1934,8 @@ function parseMarkdown(markdown) {
   let inListType = null; // 'ul', 'ol', or null
   let result = [];
 
-  for (let line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
     if (listMatch) {
       const isOrdered = /^\d+\./.test(listMatch[2]);
@@ -1930,6 +1951,28 @@ function parseMarkdown(markdown) {
         inListType = currentType;
       }
       result.push(`<li>${listMatch[3]}</li>`);
+    } else if (line.trim() === '' && inListType) {
+      // Lookahead: check if the next non-empty line continues list of same type
+      let nextListItemType = null;
+      for (let j = i + 1; j < lines.length; j++) {
+        const nextLine = lines[j].trim();
+        if (nextLine !== '') {
+          const nextMatch = lines[j].match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
+          if (nextMatch) {
+            const nextIsOrdered = /^\d+\./.test(nextMatch[2]);
+            nextListItemType = nextIsOrdered ? 'ol' : 'ul';
+          }
+          break;
+        }
+      }
+      
+      if (nextListItemType === inListType) {
+        continue; // Keep list open and discard formatting whitespace
+      } else {
+        result.push(`</${inListType}>`);
+        inListType = null;
+        result.push(line);
+      }
     } else {
       if (inListType) {
         result.push(`</${inListType}>`);
