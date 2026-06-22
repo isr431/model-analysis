@@ -20,9 +20,10 @@ An interactive, high-performance, single-page web application to compare Large L
     *   Search by model name or provider.
     *   Filter by specific providers using dynamic pills.
     *   Adjust price range limits (dynamically bounded on load).
-    *   Set a minimum performance threshold.
+    *   Set a minimum performance threshold (defaults to 70 on load).
 *   **Mobile-Responsive Design**: Layout reflows elegantly for smaller viewports, featuring a responsive comparison table with **sticky columns** (Provider and Model name remain visible while scrolling horizontally).
 *   **Instant-Paint Architecture**: Renders immediately on load using pre-compiled fallback data, then triggers a background fetch to `data.json` for silent client-side updates (eliminating loading spinners).
+*   **SEO & Custom Domain Integration**: Pre-configured with canonical tags, schema markup (JSON-LD) for Google rich results, a `sitemap.xml`, and a `robots.txt` configuration mapped to `modelanalysis.xyz`.
 
 ---
 
