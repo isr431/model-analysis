@@ -13,6 +13,8 @@ An interactive, high-performance, single-page web application to compare Large L
 *   **Dual-Theme System**: A modern glassmorphism design system supporting both **Dark Mode** (default) and **Light Mode**, with automatic system preference detection and localStorage persistence.
 *   **Interactive Visualizations (Chart.js)**:
     *   **Cost vs. Performance Scatter Plot**: Visually maps models to identify outliers (high-performance at low cost). Clicking points highlights the model across the dashboard.
+    *   **Pareto Frontier Overlay**: Displays a dynamic dashed boundary line connecting non-dominated, cost-effective models.
+    *   **Model Comparison Radar Chart**: Provides a 5-dimensional radar profile (Value, Performance, Cost Efficiency, Normalized LiveBench, and Normalized AA Score) comparing the highlighted model side-by-side with the active filtered average.
     *   **Horizontally Sorted Bar Chart**: Allows sorting and viewing all models by Value, Performance, Blended Cost, LiveBench, or Artificial Analysis Score.
 *   **Multi-Dimensional Filtering & Search**:
     *   Search by model name or provider.
@@ -41,6 +43,16 @@ Balances capability against cost based on the user's Cost Sensitivity parameter 
 $$\text{Value} = \frac{\text{Performance}}{\text{Blended Cost}^P}$$
 *   When $P = 0$, the Value Score is equivalent to the Performance Score (cost is ignored).
 *   Higher $P$ values heavily penalize more expensive models.
+
+### 4. Pareto Frontier (Efficiency Boundary)
+A model lies on the **Pareto Frontier** if there is no other model that dominates it in both cost and performance (i.e. no cheaper model offers higher performance, and no model with the same price has better quality). The frontier line connects these mathematically optimal options, illustrating the boundary of current LLM efficiency.
+
+### 5. Radar Chart Normalization (0–100)
+To plot diverse metrics on a single Radar Chart, values are normalized as follows:
+*   **Value Score**: $\text{Normalized Value} = \frac{\text{Value}}{\text{Max Value}} \times 100$
+*   **Performance**: Uses the calculated $0\text{--}100$ performance score directly.
+*   **Cost Efficiency**: Measures relative cost savings: $\left(1 - \frac{\text{Blended Cost}}{\text{Max Blended Cost}}\right) \times 100$ (safe fallback to $100\%$ if all models are free).
+*   **Normalized Benchmarks**: LiveBench and AA Score are normalized relative to their dataset maximum: $\frac{\text{Score}}{\text{Max Score}} \times 100$.
 
 ---
 

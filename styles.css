@@ -628,7 +628,7 @@ input[type="range"]::-moz-range-thumb {
 }
 .chart-canvas-wrap {
   position: relative;
-  height: 420px;
+  height: 480px;
 }
 .radar-legend-hint {
   font-size: var(--font-xs);
