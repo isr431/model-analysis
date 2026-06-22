@@ -76,8 +76,6 @@ Add a model:
 
 If you're adding a new provider, also add its color to the `providers` object.
 
-After committing and pushing, GitHub Pages will deploy the update automatically.
-
 ## AI Assistant
 
 The dashboard includes a built-in AI assistant powered by OpenRouter.
@@ -114,26 +112,20 @@ $$
 
 ### Performance
 
-Performance combines normalized LiveBench and Artificial Analysis scores.
+Performance is the average of the normalized LiveBench and Artificial Analysis scores.
 
-$$
-\text{Performance}
-=
-0.5 \times \text{Normalized}(\text{LiveBench}) \times 100
-+
-0.5 \times \text{Normalized}(\text{AA Score}) \times 100
-$$
+```text
+Performance =
+(Normalized(LiveBench) + Normalized(AA Score)) / 2 × 100
+```
 
 ### Value
 
 Value balances performance against cost.
 
-$$
-\text{Value}
-=
-\frac{\text{Performance}}
-{\text{Blended Cost}^P}
-$$
+```text
+Value = Performance / (Blended Cost ^ P)
+```
 
 - **P = 0** → rankings are based only on performance.
 - Higher values of **P** place more weight on cost.
