@@ -421,6 +421,11 @@ function initCharts() {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 12
+        }
+      },
       onClick: (e, elements) => {
         if (elements.length > 0) {
           const index = elements[0].index;
@@ -436,7 +441,11 @@ function initCharts() {
           grid: { color: 'rgba(255,255,255,0.06)' },
         },
         y: {
-          ticks: { color: 'rgba(255,255,255,0.7)', font: { family: 'Inter', size: 11 } },
+          ticks: {
+            color: 'rgba(255,255,255,0.7)',
+            font: { family: 'Inter', size: 11 },
+            autoSkip: false
+          },
           grid: { display: false },
         },
       },
@@ -667,7 +676,7 @@ function updateBarChart(filtered) {
   const metricLabels = { value: 'Value Score', performance: 'Performance', blended: 'Blended Cost ($/1M)', livebench: 'LiveBench', aaScore: 'AA Score' };
   barChart.options.scales.x.title.text = metricLabels[metric] || metric;
 
-  const barHeight = Math.max(200, sorted.length * 15 + 30);
+  const barHeight = Math.max(280, sorted.length * 22 + 50);
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
   state._barKeys = sorted.map(m => modelKey(m));
