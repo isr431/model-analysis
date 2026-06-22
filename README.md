@@ -120,7 +120,7 @@ The dashboard features an integrated **AI Model Assistant** that helps you query
 ### How to Use
 1.  Click the floating **AI** chat bubble in the bottom-right corner.
 2.  Click the **Settings (Gear)** icon in the chat header to enter your OpenRouter API key.
-3.  Choose your desired model (e.g., Gemini 3.5 Flash, DeepSeek V4 Pro, or GLM 5.2) and reasoning effort.
+3.  Choose your desired model (e.g., Gemini 3.5 Flash, DeepSeek V4 Pro, DeepSeek V4 Flash, or GLM 5.2) and reasoning effort.
 4.  Type your question (e.g., *"What is the cheapest model currently matching my filters?"* or *"Compare Gemini 3.5 Flash and DeepSeek V4 Pro"*).
 
 ---
