@@ -30,8 +30,8 @@ $$
 
 ### Themes
 
-- Dark and light modes
-- Automatic system preference detection
+- Dark and light modes (Monospaced Terminal / IDE styling)
+- Dark mode by default on first visit
 - Preference saved locally in your browser
 
 ## Tech Stack
@@ -90,7 +90,7 @@ The dashboard includes a built-in AI assistant powered by OpenRouter.
 
 ### Setup
 
-1. Open the chat panel using the floating **AI** button.
+1. Open the chat panel using the floating chat assistant button.
 2. Click the **Settings** icon.
 3. Enter your OpenRouter API key.
 4. Choose a model and start asking questions.

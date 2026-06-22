@@ -10,36 +10,20 @@
   <meta property="og:url" content="https://modelanalysis.xyz">
   <meta property="og:title" content="LLM Model Analysis Dashboard">
   <meta property="og:description" content="Compare pricing, performance benchmarks, and value scores of leading language models across Google, OpenAI, Anthropic, DeepSeek, and more.">
+  <meta property="og:image" content="https://modelanalysis.xyz/og-image.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://modelanalysis.xyz">
   <meta property="twitter:title" content="LLM Model Analysis Dashboard">
   <meta property="twitter:description" content="Compare pricing, performance benchmarks, and value scores of leading language models across Google, OpenAI, Anthropic, DeepSeek, and more.">
+  <meta property="twitter:image" content="https://modelanalysis.xyz/og-image.png">
 
-  <link rel="canonical" href="https://modelanalysis.xyz">
 
-  <!-- JSON-LD Structured Data for SEO -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "LLM Model Analysis Dashboard",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "All",
-    "url": "https://modelanalysis.xyz",
-    "description": "An interactive, high-performance web application to compare Large Language Models (LLMs) across pricing, performance benchmarks, and value-for-money trade-offs in real-time.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "USD"
-    }
-  }
-  </script>
 
   <title>LLM Model Analysis</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="app.js" defer></script>
@@ -98,8 +82,9 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
           <label style="margin-bottom: 0;">Providers</label>
           <div class="provider-actions" style="display: flex; gap: 12px;">
-            <button id="providerSelectAll" class="action-link" style="background: none; border: none; cursor: pointer; color: var(--slider-thumb); font-size: 11px; font-weight: 500; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; padding: 0;">Select All</button>
-            <button id="providerClearAll" class="action-link" style="background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 500; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; padding: 0;">Clear All</button>
+            <button id="providerSelectAll" class="action-link">Select All</button>
+            <button id="providerClearAll" class="action-link">Clear All</button>
+            <button id="resetSettings" class="action-link" onclick="resetFilters()">Reset</button>
           </div>
         </div>
         <div class="pill-container" id="providerPills"></div>
@@ -116,29 +101,37 @@
     <!-- TAB: OVERVIEW -->
     <section class="tab-content active" id="tab-overview">
       <div class="summary-cards" id="summaryCards">
-        <div class="summary-card glass" id="cardBestValue">
-          <div class="card-icon skeleton-element pulse">🏆</div>
-          <div class="card-label skeleton-element pulse">Best Value</div>
-          <div class="card-model skeleton-element pulse" id="bestValueModel">—</div>
-          <div class="card-stat green skeleton-element pulse" id="bestValueStat">—</div>
+        <div class="summary-card terminal-pane" id="cardBestValue">
+          <div class="pane-header">best_value</div>
+          <div class="pane-content">
+            <div class="card-label skeleton-element pulse">Best Value</div>
+            <div class="card-model skeleton-element pulse" id="bestValueModel">—</div>
+            <div class="card-stat green skeleton-element pulse" id="bestValueStat">—</div>
+          </div>
         </div>
-        <div class="summary-card glass" id="cardBestPerf">
-          <div class="card-icon skeleton-element pulse">⚡</div>
-          <div class="card-label skeleton-element pulse">Best Performance</div>
-          <div class="card-model skeleton-element pulse" id="bestPerfModel">—</div>
-          <div class="card-stat amber skeleton-element pulse" id="bestPerfStat">—</div>
+        <div class="summary-card terminal-pane" id="cardBestPerf">
+          <div class="pane-header">best_performance</div>
+          <div class="pane-content">
+            <div class="card-label skeleton-element pulse">Best Performance</div>
+            <div class="card-model skeleton-element pulse" id="bestPerfModel">—</div>
+            <div class="card-stat amber skeleton-element pulse" id="bestPerfStat">—</div>
+          </div>
         </div>
-        <div class="summary-card glass" id="cardCheapest">
-          <div class="card-icon skeleton-element pulse">💰</div>
-          <div class="card-label skeleton-element pulse">Cheapest</div>
-          <div class="card-model skeleton-element pulse" id="cheapestModel">—</div>
-          <div class="card-stat blue skeleton-element pulse" id="cheapestStat">—</div>
+        <div class="summary-card terminal-pane" id="cardCheapest">
+          <div class="pane-header">cheapest</div>
+          <div class="pane-content">
+            <div class="card-label skeleton-element pulse">Cheapest</div>
+            <div class="card-model skeleton-element pulse" id="cheapestModel">—</div>
+            <div class="card-stat blue skeleton-element pulse" id="cheapestStat">—</div>
+          </div>
         </div>
-        <div class="summary-card glass" id="cardExpensive">
-          <div class="card-icon skeleton-element pulse">📊</div>
-          <div class="card-label skeleton-element pulse">Most Expensive</div>
-          <div class="card-model skeleton-element pulse" id="expensiveModel">—</div>
-          <div class="card-stat red skeleton-element pulse" id="expensiveStat">—</div>
+        <div class="summary-card terminal-pane" id="cardExpensive">
+          <div class="pane-header">most_expensive</div>
+          <div class="pane-content">
+            <div class="card-label skeleton-element pulse">Most Expensive</div>
+            <div class="card-model skeleton-element pulse" id="expensiveModel">—</div>
+            <div class="card-stat red skeleton-element pulse" id="expensiveStat">—</div>
+          </div>
         </div>
       </div>
 
@@ -272,7 +265,6 @@
     <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
-    <span class="chat-fab-badge pulse-badge">AI</span>
   </button>
 
   <!-- Chat Drawer -->

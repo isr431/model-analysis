@@ -328,8 +328,8 @@ function initCharts() {
     titleColor: '#fff',
     bodyColor: 'rgba(255,255,255,0.8)',
     padding: 12,
-    titleFont: { family: 'Inter', weight: '600' },
-    bodyFont: { family: 'Inter' },
+    titleFont: { family: 'JetBrains Mono', weight: '600' },
+    bodyFont: { family: 'JetBrains Mono' },
   };
 
   scatterChart = new Chart(document.getElementById('scatterChart'), {
@@ -339,6 +339,7 @@ function initCharts() {
         {
           label: 'Models',
           data: [],
+          pointStyle: 'rect',
           pointRadius: 7,
           pointHoverRadius: 10,
           borderWidth: 1.5
@@ -377,13 +378,13 @@ function initCharts() {
         x: {
           type: 'category',
           offset: true,
-          title: { display: true, text: 'Blended Cost ($/1M tokens)', color: 'rgba(255,255,255,0.7)', font: { family: 'Inter' } },
-          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } },
+          title: { display: true, text: 'Blended Cost ($/1M tokens)', color: 'rgba(255,255,255,0.7)', font: { family: 'JetBrains Mono' } },
+          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'JetBrains Mono', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.06)' },
         },
         y: {
-          title: { display: true, text: 'Performance Score', color: 'rgba(255,255,255,0.7)', font: { family: 'Inter' } },
-          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } },
+          title: { display: true, text: 'Performance Score', color: 'rgba(255,255,255,0.7)', font: { family: 'JetBrains Mono' } },
+          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'JetBrains Mono', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.06)' },
           grace: '5%',
         },
@@ -416,7 +417,7 @@ function initCharts() {
 
   barChart = new Chart(document.getElementById('barChart'), {
     type: 'bar',
-    data: { labels: [], datasets: [{ data: [], borderWidth: 1, borderRadius: 4 }] },
+    data: { labels: [], datasets: [{ data: [], borderWidth: 1, borderRadius: 0 }] },
     options: {
       indexAxis: 'y',
       responsive: true,
@@ -436,14 +437,14 @@ function initCharts() {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Value Score', color: 'rgba(255,255,255,0.7)', font: { family: 'Inter' } },
-          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } },
+          title: { display: true, text: 'Value Score', color: 'rgba(255,255,255,0.7)', font: { family: 'JetBrains Mono' } },
+          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'JetBrains Mono', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.06)' },
         },
         y: {
           ticks: {
             color: 'rgba(255,255,255,0.7)',
-            font: { family: 'Inter', size: 11 },
+            font: { family: 'JetBrains Mono', size: 10 },
             autoSkip: false
           },
           grid: { display: false },
@@ -475,7 +476,8 @@ function initCharts() {
           backgroundColor: 'rgba(99, 102, 241, 0.1)',
           borderColor: 'rgba(99, 102, 241, 0.4)',
           borderWidth: 1.5,
-          pointRadius: 3,
+          pointStyle: 'rect',
+          pointRadius: 4,
         },
         {
           label: 'Highlighted Model',
@@ -483,7 +485,8 @@ function initCharts() {
           backgroundColor: 'rgba(16, 185, 129, 0.2)',
           borderColor: 'rgb(16, 185, 129)',
           borderWidth: 2,
-          pointRadius: 4,
+          pointStyle: 'rectRot',
+          pointRadius: 5,
         }
       ]
     },
@@ -494,11 +497,11 @@ function initCharts() {
         r: {
           angleLines: { color: 'rgba(255, 255, 255, 0.06)' },
           grid: { color: 'rgba(255, 255, 255, 0.06)' },
-          pointLabels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'Inter', size: 10, weight: '500' } },
+          pointLabels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'JetBrains Mono', size: 9, weight: '500' } },
           ticks: {
             color: 'rgba(255, 255, 255, 0.4)',
             backdropColor: 'transparent',
-            font: { family: 'Inter', size: 9 },
+            font: { family: 'JetBrains Mono', size: 8 },
             stepSize: 20
           },
           min: 0,
@@ -509,7 +512,7 @@ function initCharts() {
         legend: {
           display: true,
           position: 'top',
-          labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'Inter', size: 11 } }
+          labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'JetBrains Mono', size: 10 } }
         },
         tooltip: {
           ...tooltipStyle,
@@ -1053,8 +1056,7 @@ function initEventListeners() {
 // ===== THEME MANAGEMENT =====
 function initTheme() {
   const savedTheme = localStorage.getItem('theme');
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const defaultTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+  const defaultTheme = savedTheme || 'dark';
 
   setTheme(defaultTheme);
 
@@ -1092,8 +1094,8 @@ function updateChartColors(theme) {
     borderWidth: 1,
     titleColor: '#0f172a',
     bodyColor: 'rgba(15, 23, 42, 0.8)',
-    titleFont: { family: 'Inter', weight: '600' },
-    bodyFont: { family: 'Inter' },
+    titleFont: { family: 'JetBrains Mono', weight: '600' },
+    bodyFont: { family: 'JetBrains Mono' },
     padding: 12,
   } : {
     backgroundColor: 'rgba(15, 15, 26, 0.95)',
@@ -1101,8 +1103,8 @@ function updateChartColors(theme) {
     borderWidth: 1,
     titleColor: '#fff',
     bodyColor: 'rgba(255, 255, 255, 0.8)',
-    titleFont: { family: 'Inter', weight: '600' },
-    bodyFont: { family: 'Inter' },
+    titleFont: { family: 'JetBrains Mono', weight: '600' },
+    bodyFont: { family: 'JetBrains Mono' },
     padding: 12,
   };
 
