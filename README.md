@@ -104,11 +104,8 @@ Your API key is stored locally in your browser and is only sent to OpenRouter.
 A weighted cost estimate based on a 37:1 input-to-output token ratio.
 
 ```text
-
 Blended Cost =
-
 (0.9573 × Input Price) +
-
 (0.0427 × Output Price)
 ```
 
