@@ -208,7 +208,7 @@ async function loadData() {
 
 // ===== STATE =====
 const state = {
-  p: 0.1,
+  p: 0.07,
   search: '',
   priceMin: 0,
   priceMax: 12,
@@ -680,15 +680,15 @@ function resetFilters() {
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
 
-  state.p = 0.1;
+  state.p = 0.07;
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
   state.perfThreshold = 0;
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  document.getElementById('pSlider').value = 0.1;
-  document.getElementById('pValue').textContent = '0.10';
+  document.getElementById('pSlider').value = 0.07;
+  document.getElementById('pValue').textContent = '0.07';
   document.getElementById('searchInput').value = '';
   document.getElementById('priceMin').value = 0;
   document.getElementById('priceMax').value = sliderMax;
