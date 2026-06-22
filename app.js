@@ -1840,7 +1840,8 @@ function escapeHtml(text) {
 
 // Simple markdown parsing helper
 function parseMarkdown(markdown) {
-  let html = escapeHtml(markdown);
+  let normalized = markdown.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  let html = escapeHtml(normalized);
 
   // 1. Block Preservation: Extract code blocks
   const codeBlocks = [];
@@ -1990,11 +1991,14 @@ function parseMarkdown(markdown) {
   const paragraphs = html.split(/\n{2,}/);
   let finalHtml = paragraphs.map(p => {
     const trimmed = p.trim();
-    if (trimmed.startsWith('<pre>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<ol>') || trimmed.startsWith('<li>') || trimmed.startsWith('<table>') || trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<hr>') || trimmed.startsWith('%%CODEBLOCK_') || trimmed === '') {
-      return p;
+    if (trimmed.startsWith('<pre>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<ol>') || trimmed.startsWith('<li>') || trimmed.startsWith('<table>') || trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<hr>') || trimmed.startsWith('%%CODEBLOCK_')) {
+      return trimmed;
     }
-    return `<p>${p.replace(/\n/g, '<br>')}</p>`;
-  }).join('');
+    if (trimmed === '') {
+      return '';
+    }
+    return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+  }).filter(Boolean).join('');
 
   // 10. Restore Preserved Blocks
   codeBlocks.forEach((block, idx) => {
