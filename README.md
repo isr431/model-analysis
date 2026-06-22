@@ -126,6 +126,17 @@ $$
 - **$P = 0$** → rankings are based only on performance.
 - Higher values of **$P$** place more weight on cost.
 
+### Cost Efficiency (Radar Chart)
+
+To compare costs across a wide price range (e.g. from cheap open-weights models to expensive reasoning models) without linear price compression, the radar chart uses a globally anchored logarithmic scale:
+
+$$
+\text{Cost Efficiency} = \left( \frac{\log_{10}(\text{Global Max Cost}) - \log_{10}(\text{Model Cost})}{\log_{10}(\text{Global Max Cost}) - \log_{10}(\text{Global Min Cost})} \right) \times 100
+$$
+
+- A floor of **$0.01$** is enforced on model costs to handle free models safely.
+- Global min/max values are computed across all models in the database to keep the comparison shape stable when filters are applied.
+
 ### Pareto Frontier
 
 Models on the Pareto frontier are not beaten by another model on both price and performance at the same time.

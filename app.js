@@ -51,6 +51,8 @@ const FALLBACK_DATA = {
 let RAW_DATA = FALLBACK_DATA.models;
 let PROVIDER_COLORS = {};
 let ALL_PROVIDERS = [];
+let GLOBAL_LOG_MIN = 0;
+let GLOBAL_LOG_MAX = 0;
 
 // ===== UTILITIES =====
 function hexToRgb(hex) {
@@ -123,6 +125,12 @@ function applyData(data) {
       ALL_PROVIDERS.push(name);
     }
   }
+
+  // Calculate global min/max log blended costs
+  const blendedCosts = data.models.map(m => computeBlended(m.inputPrice, m.outputPrice));
+  const floorCosts = blendedCosts.map(c => Math.max(c, 0.01));
+  GLOBAL_LOG_MIN = Math.log10(Math.min(...floorCosts));
+  GLOBAL_LOG_MAX = Math.log10(Math.max(...floorCosts));
 
   // Update dynamic subtitle
   const modelCountEl = document.getElementById('modelCountVal');
@@ -723,7 +731,6 @@ function updateRadarChart(filtered) {
   // 1. Calculate the Max/Min bounds in the filtered set for normalization
   const lbMax = Math.max(...RAW_DATA.map(m => m.livebench));
   const aaMax = Math.max(...RAW_DATA.map(m => m.aaScore));
-  const maxBlended = Math.max(...filtered.map(m => m.blended));
   const maxValue = Math.max(...filtered.map(m => m.value));
 
   // 2. Calculate the averages of the filtered models
@@ -732,7 +739,11 @@ function updateRadarChart(filtered) {
     const lbNorm = lbMax === 0 ? 0 : (m.livebench / lbMax) * 100;
     const aaNorm = aaMax === 0 ? 0 : (m.aaScore / aaMax) * 100;
     const valNorm = maxValue === 0 ? 0 : (m.value / maxValue) * 100;
-    const costEff = maxBlended === 0 ? 100 : (1 - m.blended / maxBlended) * 100;
+    
+    const logVal = Math.log10(Math.max(m.blended, 0.01));
+    const costEff = (GLOBAL_LOG_MAX === GLOBAL_LOG_MIN)
+      ? 100
+      : ((GLOBAL_LOG_MAX - logVal) / (GLOBAL_LOG_MAX - GLOBAL_LOG_MIN)) * 100;
 
     sumValue += valNorm;
     sumPerf += m.performance;
@@ -757,7 +768,11 @@ function updateRadarChart(filtered) {
       const lbNorm = lbMax === 0 ? 0 : (match.livebench / lbMax) * 100;
       const aaNorm = aaMax === 0 ? 0 : (match.aaScore / aaMax) * 100;
       const valNorm = maxValue === 0 ? 0 : (match.value / maxValue) * 100;
-      const costEff = maxBlended === 0 ? 100 : (1 - match.blended / maxBlended) * 100;
+      
+      const logVal = Math.log10(Math.max(match.blended, 0.01));
+      const costEff = (GLOBAL_LOG_MAX === GLOBAL_LOG_MIN)
+        ? 100
+        : ((GLOBAL_LOG_MAX - logVal) / (GLOBAL_LOG_MAX - GLOBAL_LOG_MIN)) * 100;
 
       radarChart.data.datasets[1].data = [valNorm, match.performance, costEff, lbNorm, aaNorm];
       radarChart.data.datasets[1].label = match.model;
