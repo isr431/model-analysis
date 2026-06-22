@@ -157,12 +157,12 @@ function updateSliderBounds() {
   updatePriceRangeSliderHighlight();
 }
 
-function reinitProviderPills() {
+function reinitProviderPills(oldProvidersSet) {
   const container = document.getElementById('providerPills');
   container.innerHTML = '';
 
   ALL_PROVIDERS.forEach(p => {
-    if (!state.activeProviders.has(p)) {
+    if (oldProvidersSet && !oldProvidersSet.has(p)) {
       state.activeProviders.add(p);
     }
   });
@@ -251,6 +251,25 @@ function computeAllMetrics(data, p) {
   return models;
 }
 
+function getParetoFrontier(filtered) {
+  if (filtered.length === 0) return [];
+  const sorted = [...filtered].sort((a, b) => {
+    if (a.blended === b.blended) return b.performance - a.performance;
+    return a.blended - b.blended;
+  });
+
+  const frontier = [];
+  let maxPerf = -1;
+
+  for (const m of sorted) {
+    if (m.performance > maxPerf) {
+      frontier.push(m);
+      maxPerf = m.performance;
+    }
+  }
+  return frontier;
+}
+
 function getFilteredModels(allModels) {
   return allModels.filter(m =>
     state.activeProviders.has(m.provider) &&
@@ -299,7 +318,7 @@ function modelKey(m) {
 }
 
 // ===== CHARTS =====
-let scatterChart, barChart;
+let scatterChart, barChart, radarChart;
 
 function initCharts() {
   const tooltipStyle = {
@@ -315,16 +334,41 @@ function initCharts() {
 
   scatterChart = new Chart(document.getElementById('scatterChart'), {
     type: 'scatter',
-    data: { datasets: [{ data: [], pointRadius: 7, pointHoverRadius: 10, borderWidth: 1.5 }] },
+    data: {
+      datasets: [
+        {
+          label: 'Models',
+          data: [],
+          pointRadius: 7,
+          pointHoverRadius: 10,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Pareto Frontier',
+          type: 'line',
+          data: [],
+          fill: false,
+          borderColor: 'rgba(255, 255, 255, 0.4)',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          tension: 0.15,
+          showLine: true
+        }
+      ]
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       onClick: (e, elements) => {
         if (elements.length > 0) {
-          const index = elements[0].index;
           const datasetIndex = elements[0].datasetIndex;
-          const modelData = scatterChart.data.datasets[datasetIndex].data[index];
-          toggleHighlight(modelData.provider + '|' + modelData.model);
+          if (datasetIndex === 0) {
+            const index = elements[0].index;
+            const modelData = scatterChart.data.datasets[0].data[index];
+            toggleHighlight(modelData.provider + '|' + modelData.model);
+          }
         } else {
           toggleHighlight(null);
         }
@@ -349,13 +393,21 @@ function initCharts() {
         tooltip: {
           ...tooltipStyle,
           callbacks: {
-            title: items => items[0].raw.model,
-            label: item => [
-              `Provider: ${item.raw.provider}`,
-              `Blended: $${item.raw.blended.toFixed(2)}`,
-              `Performance: ${item.raw.y.toFixed(1)}`,
-              `Value: ${item.raw.value.toFixed(1)}`,
-            ],
+            title: items => {
+              if (items[0].datasetIndex === 1) return 'Pareto Frontier';
+              return items[0].raw.model;
+            },
+            label: item => {
+              if (item.datasetIndex === 1) {
+                return 'Optimized cost/performance boundary';
+              }
+              return [
+                `Provider: ${item.raw.provider}`,
+                `Blended: $${item.raw.blended.toFixed(2)}`,
+                `Performance: ${item.raw.y.toFixed(1)}`,
+                `Value: ${item.raw.value.toFixed(1)}`,
+              ];
+            },
           },
         },
       },
@@ -401,6 +453,63 @@ function initCharts() {
         },
       },
     },
+  });
+
+  radarChart = new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Value Score', 'Performance', 'Cost Efficiency', 'LiveBench (Norm)', 'AA Score (Norm)'],
+      datasets: [
+        {
+          label: 'Filtered Average',
+          data: [],
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: 'rgba(99, 102, 241, 0.4)',
+          borderWidth: 1.5,
+          pointRadius: 3,
+        },
+        {
+          label: 'Highlighted Model',
+          data: [],
+          backgroundColor: 'rgba(16, 185, 129, 0.2)',
+          borderColor: 'rgb(16, 185, 129)',
+          borderWidth: 2,
+          pointRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(255, 255, 255, 0.06)' },
+          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          pointLabels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'Inter', size: 10, weight: '500' } },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.4)',
+            backdropColor: 'transparent',
+            font: { family: 'Inter', size: 9 },
+            stepSize: 20
+          },
+          min: 0,
+          max: 100
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'Inter', size: 11 } }
+        },
+        tooltip: {
+          ...tooltipStyle,
+          callbacks: {
+            label: item => `${item.dataset.label}: ${item.raw.toFixed(1)}`
+          }
+        }
+      }
+    }
   });
 }
 
@@ -495,6 +604,9 @@ function updateLeaderboard(filtered) {
 function updateScatterChart(filtered) {
   if (filtered.length === 0) {
     scatterChart.data.datasets[0].data = [];
+    if (scatterChart.data.datasets[1]) {
+      scatterChart.data.datasets[1].data = [];
+    }
     scatterChart.options.scales.x.labels = [];
     scatterChart.update();
     return;
@@ -513,6 +625,14 @@ function updateScatterChart(filtered) {
     value: m.value,
     blended: m.blended,
   }));
+
+  if (scatterChart.data.datasets[1]) {
+    const paretoFrontier = getParetoFrontier(filtered);
+    scatterChart.data.datasets[1].data = paretoFrontier.map(m => ({
+      x: '$' + m.blended.toFixed(2),
+      y: m.performance
+    }));
+  }
 
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   const highlightBorder = isLight ? '#0f172a' : '#ffffff';
@@ -547,7 +667,7 @@ function updateBarChart(filtered) {
   const metricLabels = { value: 'Value Score', performance: 'Performance', blended: 'Blended Cost ($/1M)', livebench: 'LiveBench', aaScore: 'AA Score' };
   barChart.options.scales.x.title.text = metricLabels[metric] || metric;
 
-  const barHeight = Math.max(350, sorted.length * 28 + 60);
+  const barHeight = Math.max(200, sorted.length * 15 + 30);
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
   state._barKeys = sorted.map(m => modelKey(m));
@@ -576,6 +696,74 @@ function updateBarChart(filtered) {
 
   barChart.resize();
   barChart.update();
+}
+
+function updateRadarChart(filtered) {
+  if (!radarChart) return;
+
+  if (filtered.length === 0) {
+    radarChart.data.datasets[0].data = [];
+    radarChart.data.datasets[1].data = [];
+    radarChart.update();
+    return;
+  }
+
+  // 1. Calculate the Max/Min bounds in the filtered set for normalization
+  const lbMax = Math.max(...RAW_DATA.map(m => m.livebench));
+  const aaMax = Math.max(...RAW_DATA.map(m => m.aaScore));
+  const maxBlended = Math.max(...filtered.map(m => m.blended));
+  const maxValue = Math.max(...filtered.map(m => m.value));
+
+  // 2. Calculate the averages of the filtered models
+  let sumValue = 0, sumPerf = 0, sumCostEff = 0, sumLb = 0, sumAa = 0;
+  filtered.forEach(m => {
+    const lbNorm = lbMax === 0 ? 0 : (m.livebench / lbMax) * 100;
+    const aaNorm = aaMax === 0 ? 0 : (m.aaScore / aaMax) * 100;
+    const valNorm = maxValue === 0 ? 0 : (m.value / maxValue) * 100;
+    const costEff = maxBlended === 0 ? 100 : (1 - m.blended / maxBlended) * 100;
+
+    sumValue += valNorm;
+    sumPerf += m.performance;
+    sumCostEff += costEff;
+    sumLb += lbNorm;
+    sumAa += aaNorm;
+  });
+
+  const count = filtered.length;
+  const avgValue = sumValue / count;
+  const avgPerf = sumPerf / count;
+  const avgCostEff = sumCostEff / count;
+  const avgLb = sumLb / count;
+  const avgAa = sumAa / count;
+
+  radarChart.data.datasets[0].data = [avgValue, avgPerf, avgCostEff, avgLb, avgAa];
+
+  // 3. Highlighted Model dataset
+  if (state.highlightedModel) {
+    const match = filtered.find(m => modelKey(m) === state.highlightedModel);
+    if (match) {
+      const lbNorm = lbMax === 0 ? 0 : (match.livebench / lbMax) * 100;
+      const aaNorm = aaMax === 0 ? 0 : (match.aaScore / aaMax) * 100;
+      const valNorm = maxValue === 0 ? 0 : (match.value / maxValue) * 100;
+      const costEff = maxBlended === 0 ? 100 : (1 - match.blended / maxBlended) * 100;
+
+      radarChart.data.datasets[1].data = [valNorm, match.performance, costEff, lbNorm, aaNorm];
+      radarChart.data.datasets[1].label = match.model;
+
+      const baseColor = providerRgb(match.provider);
+      radarChart.data.datasets[1].backgroundColor = `rgba(${baseColor}, 0.2)`;
+      radarChart.data.datasets[1].borderColor = `rgb(${baseColor})`;
+      radarChart.data.datasets[1].hidden = false;
+    } else {
+      radarChart.data.datasets[1].data = [];
+      radarChart.data.datasets[1].hidden = true;
+    }
+  } else {
+    radarChart.data.datasets[1].data = [];
+    radarChart.data.datasets[1].hidden = true;
+  }
+
+  radarChart.update();
 }
 
 function updateTable(filtered) {
@@ -643,6 +831,7 @@ function updateAll() {
   updateLeaderboard(filtered);
   updateScatterChart(filtered);
   updateBarChart(filtered);
+  updateRadarChart(filtered);
   updateTable(filtered);
   updateFormulaP();
 }
@@ -803,6 +992,7 @@ function initEventListeners() {
         setTimeout(() => {
           scatterChart.resize();
           barChart.resize();
+          if (radarChart) radarChart.resize();
         }, 50);
       }
     });
@@ -881,6 +1071,11 @@ function updateChartColors(theme) {
   const gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.06)';
   const textColor = isLight ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)';
   const tickColor = isLight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+  const paretoColor = isLight ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.4)';
+
+  if (scatterChart && scatterChart.data.datasets[1]) {
+    scatterChart.data.datasets[1].borderColor = paretoColor;
+  }
 
   const tooltipStyle = isLight ? {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -902,19 +1097,43 @@ function updateChartColors(theme) {
     padding: 12,
   };
 
-  [scatterChart, barChart].forEach(chart => {
+  [scatterChart, barChart, radarChart].forEach(chart => {
     if (!chart) return;
 
-    if (chart.options.scales.x) {
-      if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor;
-      if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = tickColor;
-      if (chart.options.scales.x.title) chart.options.scales.x.title.color = textColor;
-    }
+    if (chart === radarChart) {
+      const rScale = chart.options.scales.r;
+      if (rScale) {
+        if (rScale.angleLines) rScale.angleLines.color = gridColor;
+        if (rScale.grid) rScale.grid.color = gridColor;
+        if (rScale.pointLabels) rScale.pointLabels.color = textColor;
+        if (rScale.ticks) rScale.ticks.color = tickColor;
+      }
+      if (chart.options.plugins && chart.options.plugins.legend) {
+        chart.options.plugins.legend.labels.color = textColor;
+      }
+      // Update average dataset colors
+      const avgDataset = chart.data.datasets[0];
+      if (avgDataset) {
+        if (isLight) {
+          avgDataset.backgroundColor = 'rgba(79, 70, 229, 0.08)';
+          avgDataset.borderColor = 'rgba(79, 70, 229, 0.4)';
+        } else {
+          avgDataset.backgroundColor = 'rgba(129, 140, 248, 0.1)';
+          avgDataset.borderColor = 'rgba(129, 140, 248, 0.4)';
+        }
+      }
+    } else {
+      if (chart.options.scales.x) {
+        if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor;
+        if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = tickColor;
+        if (chart.options.scales.x.title) chart.options.scales.x.title.color = textColor;
+      }
 
-    if (chart.options.scales.y) {
-      if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor;
-      if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = tickColor;
-      if (chart.options.scales.y.title) chart.options.scales.y.title.color = textColor;
+      if (chart.options.scales.y) {
+        if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor;
+        if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = tickColor;
+        if (chart.options.scales.y.title) chart.options.scales.y.title.color = textColor;
+      }
     }
 
     if (chart.options.plugins && chart.options.plugins.tooltip) {
@@ -982,7 +1201,15 @@ function initRangeSliderZIndexFix() {
     const distMin = Math.abs(clickValue - state.priceMin);
     const distMax = Math.abs(clickValue - state.priceMax);
 
-    if (distMin < distMax) {
+    if (distMin === distMax) {
+      if (clickValue < state.priceMin) {
+        priceMinInput.style.zIndex = '10';
+        priceMaxInput.style.zIndex = '9';
+      } else {
+        priceMinInput.style.zIndex = '9';
+        priceMaxInput.style.zIndex = '10';
+      }
+    } else if (distMin < distMax) {
       priceMinInput.style.zIndex = '10';
       priceMaxInput.style.zIndex = '9';
     } else {
@@ -1020,6 +1247,7 @@ function updateHighlights() {
   const filtered = getFilteredModels(allModels);
   updateScatterChart(filtered);
   updateBarChart(filtered);
+  updateRadarChart(filtered);
 }
 
 // ===== SKELETON REMOVAL =====
@@ -2080,9 +2308,9 @@ async function init() {
     const sameProviders = JSON.stringify(data.providers) === JSON.stringify(FALLBACK_DATA.providers);
 
     if (!sameModels || !sameProviders) {
+      const oldProvidersSet = new Set(ALL_PROVIDERS);
       applyData(data);
-      state.activeProviders = new Set(ALL_PROVIDERS);
-      reinitProviderPills();
+      reinitProviderPills(oldProvidersSet);
       updateSliderBounds();
       updatePriceRangeSliderHighlight();
       updateAll();
