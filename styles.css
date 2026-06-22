@@ -619,13 +619,23 @@ input[type="range"]::-moz-range-thumb {
   margin-bottom: var(--spacing-md);
 }
 .chart-header h2 { margin-bottom: 0; }
+#scatterContainer {
+  grid-column: span 2;
+}
 .chart-canvas-wrap-scatter {
   position: relative;
-  height: 500px;
+  height: 340px;
 }
 .chart-canvas-wrap {
   position: relative;
-  height: 450px;
+  height: 420px;
+}
+.radar-legend-hint {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  font-style: italic;
 }
 .metric-select {
   background: rgba(255, 255, 255, 0.06);
@@ -792,6 +802,7 @@ input[type="range"]::-moz-range-thumb {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .charts-grid { grid-template-columns: 1fr; }
+  #scatterContainer { grid-column: span 1; }
 }
 @media (max-width: 640px) {
   .app { padding: var(--spacing-md); padding-top: var(--spacing-lg); }
