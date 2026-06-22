@@ -212,7 +212,7 @@ const state = {
   search: '',
   priceMin: 0,
   priceMax: 12,
-  perfThreshold: 0,
+  perfThreshold: 70,
   activeProviders: new Set(),
   sortColumn: 'value',
   sortDirection: 'desc',
@@ -882,7 +882,7 @@ function resetFilters() {
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
-  state.perfThreshold = 0;
+  state.perfThreshold = 70;
   state.activeProviders = new Set(ALL_PROVIDERS);
 
   document.getElementById('pSlider').value = 0.07;
@@ -892,8 +892,8 @@ function resetFilters() {
   document.getElementById('priceMax').value = sliderMax;
   document.getElementById('priceMinVal').textContent = '0.00';
   document.getElementById('priceMaxVal').textContent = sliderMax.toFixed(2);
-  document.getElementById('perfThreshold').value = 0;
-  document.getElementById('perfThresholdVal').textContent = '0';
+  document.getElementById('perfThreshold').value = 70;
+  document.getElementById('perfThresholdVal').textContent = '70';
 
   document.querySelectorAll('.provider-pill').forEach(pill => {
     setPillState(pill, pill.dataset.provider, true);
