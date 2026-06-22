@@ -274,25 +274,25 @@
         <div class="settings-group">
           <label class="settings-label">OpenRouter API Key</label>
           <input type="password" id="chatApiKeyInput" class="chat-key-input" placeholder="sk-or-v1-...">
-          <div class="api-key-actions" style="margin-top: 8px;">
+          <div class="api-key-actions">
             <button id="saveApiKeyBtn" class="chat-btn primary-btn">Save Key</button>
             <button id="clearApiKeyBtn" class="chat-btn secondary-btn hide">Clear Key</button>
           </div>
           <div class="api-key-hint">Get a key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">openrouter.ai</a></div>
         </div>
 
-        <div class="settings-group" style="margin-top: 12px;">
+        <div class="settings-group">
           <label class="settings-label">AI Model</label>
-          <select id="chatModelSelect" class="chat-model-select" aria-label="Select AI Model" style="width: 100%; height: 34px; padding: 6px 12px; font-size: 13px; margin-top: 4px;">
+          <select id="chatModelSelect" class="chat-model-select" aria-label="Select AI Model">
             <option value="google/gemini-3.5-flash" selected>Gemini 3.5 Flash</option>
             <option value="deepseek/deepseek-v4-pro">DeepSeek V4 Pro</option>
             <option value="z-ai/glm-5.2">GLM 5.2</option>
           </select>
         </div>
 
-        <div class="settings-group" style="margin-top: 12px;">
+        <div class="settings-group">
           <label class="settings-label">Reasoning Effort</label>
-          <select id="chatReasoningSelect" class="chat-model-select" aria-label="Select Reasoning Effort" style="width: 100%; height: 34px; padding: 6px 12px; font-size: 13px; margin-top: 4px;">
+          <select id="chatReasoningSelect" class="chat-model-select" aria-label="Select Reasoning Effort">
             <option value="high" selected>High (Deep reasoning)</option>
             <option value="medium">Medium (Moderate reasoning)</option>
             <option value="low">Low (Light reasoning)</option>

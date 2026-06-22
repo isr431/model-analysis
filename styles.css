@@ -1005,12 +1005,15 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 11px;
-  padding: 4px 8px;
+  font-size: 13px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
   outline: none;
   cursor: pointer;
   transition: var(--transition);
+  width: 100%;
+  height: 34px;
+  margin-top: 4px;
 }
 :root[data-theme="light"] .chat-model-select {
   background: rgba(0, 0, 0, 0.04);
@@ -1100,6 +1103,7 @@ input[type="range"]::-moz-range-thumb {
 .api-key-actions {
   display: flex;
   gap: 8px;
+  margin-top: 8px;
 }
 .chat-btn {
   font-family: inherit;
@@ -1215,6 +1219,9 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 4px;
   width: 100%;
 }
+.thinking-title::-webkit-details-marker {
+  display: none;
+}
 .thinking-title {
   font-weight: 600;
   color: var(--slider-thumb);
@@ -1224,6 +1231,7 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   gap: 4px;
   padding: 4px 0;
+  list-style: none;
 }
 .thinking-title::before {
   content: '▶';
@@ -1419,6 +1427,9 @@ details[open] .thinking-title::before {
   flex-direction: column;
   gap: 4px;
   width: 100%;
+}
+.settings-group + .settings-group {
+  margin-top: 12px;
 }
 .settings-label {
   font-size: 10px;

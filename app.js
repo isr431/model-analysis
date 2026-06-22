@@ -1049,11 +1049,16 @@ function initChatResizer() {
   // Restore saved dimensions
   const savedWidth = localStorage.getItem('chat_drawer_width');
   const savedHeight = localStorage.getItem('chat_drawer_height');
+  const maxWidth = window.innerWidth * 0.95;
+  const maxHeight = window.innerHeight * 0.85;
+
   if (savedWidth && window.innerWidth > 480) {
-    drawer.style.width = savedWidth + 'px';
+    const clampedWidth = Math.min(parseInt(savedWidth, 10), maxWidth);
+    drawer.style.width = clampedWidth + 'px';
   }
   if (savedHeight && window.innerWidth > 480) {
-    drawer.style.height = savedHeight + 'px';
+    const clampedHeight = Math.min(parseInt(savedHeight, 10), maxHeight);
+    drawer.style.height = clampedHeight + 'px';
   }
 
   function setupResizer(resizer, type) {
@@ -1201,7 +1206,11 @@ function initChatbot() {
     CHAT_STATE.isOpen = !CHAT_STATE.isOpen;
     drawer.classList.toggle('hide', !CHAT_STATE.isOpen);
     if (CHAT_STATE.isOpen) {
-      chatInput.focus();
+      if (!CHAT_STATE.apiKey) {
+        apiKeyInput.focus();
+      } else {
+        chatInput.focus();
+      }
       scrollToBottom();
       // Remove badge animation once chat is opened
       document.querySelector('.chat-fab-badge')?.classList.remove('pulse-badge');
@@ -1293,7 +1302,10 @@ function handleChatSubmit() {
   if (!text) return;
 
   if (!CHAT_STATE.apiKey) {
-    document.getElementById('chatApiKeyView').classList.remove('hide');
+    const keyView = document.getElementById('chatApiKeyView');
+    if (keyView) keyView.classList.remove('hide');
+    const keyInput = document.getElementById('chatApiKeyInput');
+    if (keyInput) keyInput.focus();
     return;
   }
 
@@ -1352,41 +1364,7 @@ function setChatLoading(isLoading) {
   }
 }
 
-function getDashboardContextText() {
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
-  const filtered = getFilteredModels(allModels);
-  
-  const activeProvidersStr = Array.from(state.activeProviders).join(', ');
-  
-  // Format top 10 models for context
-  const sorted = [...filtered].sort((a, b) => b.value - a.value);
-  const top10 = sorted.slice(0, 10).map((m, i) => 
-    `${i+1}. ${m.model} (${m.provider}) - Blended Cost: $${m.blended.toFixed(2)}/1M, Perf: ${m.performance.toFixed(1)}, Value: ${m.value.toFixed(1)}`
-  ).join('\n');
 
-  // Card stats
-  const bestValue = filtered.length > 0 ? filtered.reduce((a, b) => a.value > b.value ? a : b) : null;
-  const bestPerf = filtered.length > 0 ? filtered.reduce((a, b) => a.performance > b.performance ? a : b) : null;
-  const cheapest = filtered.length > 0 ? filtered.reduce((a, b) => a.blended < b.blended ? a : b) : null;
-
-  return `
---- DASHBOARD CONTEXT ---
-Cost Sensitivity (P): ${state.p.toFixed(2)}
-Search Query: "${state.search}"
-Active Providers: ${activeProvidersStr}
-Price Range: $${state.priceMin.toFixed(2)} - $${state.priceMax.toFixed(2)}
-Min Performance: ${state.perfThreshold}
-Total Filtered Models: ${filtered.length}
-
-Best Value Model currently: ${bestValue ? `${bestValue.model} (${bestValue.provider}) - Value: ${bestValue.value.toFixed(1)}` : 'None'}
-Best Performance Model currently: ${bestPerf ? `${bestPerf.model} (${bestPerf.provider}) - Score: ${bestPerf.performance.toFixed(1)}` : 'None'}
-Cheapest Model currently: ${cheapest ? `${cheapest.model} (${cheapest.provider}) - Blended Cost: $${cheapest.blended.toFixed(2)}/1M` : 'None'}
-
-Top 10 Filtered Models (sorted by Value):
-${top10 || 'No models match current filters.'}
-------------------------
-`;
-}
 
 const CHAT_TOOLS = [
   {
@@ -1844,7 +1822,52 @@ function escapeHtml(text) {
 function parseMarkdown(markdown) {
   let html = escapeHtml(markdown);
 
-  // Parse tables first
+  // 1. Block Preservation: Extract code blocks
+  const codeBlocks = [];
+  html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+    const placeholder = `%%CODEBLOCK_${codeBlocks.length}%%`;
+    let cleanCode = code.replace(/^\n/, '');
+    
+    // Detect and strip language identifier (e.g. ```javascript\n)
+    const firstLineEnd = cleanCode.indexOf('\n');
+    let lang = '';
+    if (firstLineEnd !== -1) {
+      const firstLine = cleanCode.substring(0, firstLineEnd).trim();
+      if (/^[a-zA-Z0-9_-]+$/.test(firstLine)) {
+        lang = firstLine;
+        cleanCode = cleanCode.substring(firstLineEnd + 1);
+      }
+    } else {
+      const trimmed = cleanCode.trim();
+      if (/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+        lang = trimmed;
+        cleanCode = '';
+      }
+    }
+    
+    const classAttr = lang ? ` class="language-${lang}"` : '';
+    codeBlocks.push(`<pre><code${classAttr}>${cleanCode}</code></pre>`);
+    return `\n${placeholder}\n`;
+  });
+
+  // 2. Block Preservation: Extract inline code blocks
+  const inlineCodes = [];
+  html = html.replace(/`([^`]+)`/g, (match, code) => {
+    const placeholder = `%%INLINECODE_${inlineCodes.length}%%`;
+    inlineCodes.push(`<code>${code}</code>`);
+    return placeholder;
+  });
+
+  // 3. Link Parsing & Security Check
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+    const cleanUrl = url.trim();
+    if (cleanUrl.toLowerCase().startsWith('javascript:')) {
+      return text;
+    }
+    return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  });
+
+  // 4. Tables Parsing
   const linesForTable = html.split('\n');
   let inTable = false;
   let tableRows = [];
@@ -1871,66 +1894,74 @@ function parseMarkdown(markdown) {
   if (inTable) {
     parsedLines.push(renderMarkdownTable(tableRows));
   }
-
   html = parsedLines.join('\n');
 
-  // Parse headers: ### Header, ## Header, # Header
+  // 5. Headers
   html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
   html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
   html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
-  // Parse horizontal rules: ---
+  // 6. Horizontal Rules
   html = html.replace(/^---+$/gim, '<hr>');
 
-  // Parse code blocks: ```lang\ncode\n```
-  html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-    const cleanCode = code.replace(/^\n/, '');
-    return `<pre><code>${cleanCode}</code></pre>`;
-  });
-
-  // Parse inline code: `code`
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-  // Parse bold text: **text**
+  // 7. Bold & Italic text
   html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([\s\S]*?)\*/g, '<em>$1</em>');
+  html = html.replace(/_([\s\S]*?)_/g, '<em>$1</em>');
 
-  // Parse bullet lists: lines starting with "- " or "* "
+  // 8. Lists (ordered & unordered)
   const lines = html.split('\n');
-  let inList = false;
+  let inListType = null; // 'ul', 'ol', or null
   let result = [];
 
   for (let line of lines) {
     const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
     if (listMatch) {
-      if (!inList) {
-        result.push('<ul>');
-        inList = true;
+      const isOrdered = /^\d+\./.test(listMatch[2]);
+      const currentType = isOrdered ? 'ol' : 'ul';
+      
+      if (inListType && inListType !== currentType) {
+        result.push(`</${inListType}>`);
+        inListType = null;
+      }
+      
+      if (!inListType) {
+        result.push(`<${currentType}>`);
+        inListType = currentType;
       }
       result.push(`<li>${listMatch[3]}</li>`);
     } else {
-      if (inList) {
-        result.push('</ul>');
-        inList = false;
+      if (inListType) {
+        result.push(`</${inListType}>`);
+        inListType = null;
       }
       result.push(line);
     }
   }
-  if (inList) {
-    result.push('</ul>');
+  if (inListType) {
+    result.push(`</${inListType}>`);
   }
+  html = result.join('\n');
 
-  let finalHtml = result.join('\n');
-  finalHtml = finalHtml.replace(/<\/ul>\n<ul>/g, '');
-  
-  // Wrap paragraphs
-  const paragraphs = finalHtml.split(/\n{2,}/);
-  return paragraphs.map(p => {
+  // 9. Wrap Paragraphs
+  const paragraphs = html.split(/\n{2,}/);
+  let finalHtml = paragraphs.map(p => {
     const trimmed = p.trim();
-    if (trimmed.startsWith('<pre>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<li>') || trimmed.startsWith('<table>') || trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<hr>') || trimmed === '') {
+    if (trimmed.startsWith('<pre>') || trimmed.startsWith('<ul>') || trimmed.startsWith('<ol>') || trimmed.startsWith('<li>') || trimmed.startsWith('<table>') || trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<hr>') || trimmed.startsWith('%%CODEBLOCK_') || trimmed === '') {
       return p;
     }
     return `<p>${p.replace(/\n/g, '<br>')}</p>`;
   }).join('');
+
+  // 10. Restore Preserved Blocks
+  codeBlocks.forEach((block, idx) => {
+    finalHtml = finalHtml.replace(`%%CODEBLOCK_${idx}%%`, block);
+  });
+  inlineCodes.forEach((code, idx) => {
+    finalHtml = finalHtml.replace(`%%INLINECODE_${idx}%%`, code);
+  });
+
+  return finalHtml;
 }
 
 function renderMarkdownTable(rows) {
