@@ -2,7 +2,7 @@
 
 An interactive, high-performance, single-page web application to compare Large Language Models (LLMs) across pricing, performance benchmarks, and value-for-money trade-offs in real-time.
 
-### [View Page](https://isr431.github.io/model-analysis)
+### [View Page](https://modelanalysis.xyz)
 
 ---
 

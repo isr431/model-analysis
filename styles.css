@@ -1497,3 +1497,25 @@ details[open] .thinking-title::before {
   }
 }
 
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-lg) 0;
+  border-top: 1px solid var(--divider);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
+
+.footer a {
+  color: var(--slider-thumb);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  filter: brightness(1.2);
+}
+
