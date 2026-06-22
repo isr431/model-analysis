@@ -95,6 +95,24 @@ The application utilizes a single source of truth (`data.json`) for its database
 
 ---
 
+## AI Model Assistant Chatbot
+
+The dashboard features an integrated **AI Model Assistant** that helps you query and analyze models using natural language. 
+
+### Features & Capabilities
+*   **Settings Awareness**: The assistant can check your current Cost Sensitivity ($P$), Price Range, and other active filters.
+*   **Live Leaderboard Queries**: Retrieve current ranks, model specifications, and cost details directly from the active dashboard.
+*   **Deep Reasoning Support**: Toggles reasoning effort levels (High, Medium, Low, Minimal, None) for compatible LLMs to view their step-by-step thinking process.
+*   **Secure API Key Storage**: Integrates with [OpenRouter.ai](https://openrouter.ai/). Your API key is stored securely in your browser's local storage (`localStorage`) and never leaves your client.
+
+### How to Use
+1.  Click the floating **AI** chat bubble in the bottom-right corner.
+2.  Click the **Settings (Gear)** icon in the chat header to enter your OpenRouter API key.
+3.  Choose your desired model (e.g., Gemini 3.5 Flash, DeepSeek V4 Pro, or GLM 5.2) and reasoning effort.
+4.  Type your question (e.g., *"What is the cheapest model currently matching my filters?"* or *"Compare Gemini 3.5 Flash and DeepSeek V4 Pro"*).
+
+---
+
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
