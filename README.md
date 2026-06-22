@@ -2,13 +2,13 @@
 
 Compare LLMs by price, benchmark performance, and overall value.
 
-Dashboard: https://modelanalysis.xyz
+Dashboard: [https://modelanalysis.xyz](https://modelanalysis.xyz)
 
 ## Features
 
 ### Value-Based Rankings
 
-Adjust the cost sensitivity slider (**P**) to see how rankings change as price becomes more or less important.
+Adjust the cost sensitivity slider (**$P$**) to see how rankings change as price becomes more or less important.
 
 $$
 \text{Value} = \frac{\text{Performance}}{\text{Blended Cost}^P}
@@ -103,31 +103,28 @@ Your API key is stored locally in your browser and is only sent to OpenRouter.
 
 A weighted cost estimate based on a 37:1 input-to-output token ratio.
 
-```text
-Blended Cost =
-(0.9573 × Input Price) +
-(0.0427 × Output Price)
-```
+$$
+\text{Blended Cost} = (0.9573 \times \text{Input Price}) + (0.0427 \times \text{Output Price})
+$$
 
 ### Performance
 
 Performance is the average of the normalized LiveBench and Artificial Analysis scores.
 
-```text
-Performance =
-(Normalized(LiveBench) + Normalized(AA Score)) / 2 × 100
-```
+$$
+\text{Performance} = \frac{\text{Normalized(LiveBench)} + \text{Normalized(AA Score)}}{2} \times 100
+$$
 
 ### Value
 
 Value balances performance against cost.
 
-```text
-Value = Performance / (Blended Cost ^ P)
-```
+$$
+\text{Value} = \frac{\text{Performance}}{\text{Blended Cost}^P}
+$$
 
-- **P = 0** → rankings are based only on performance.
-- Higher values of **P** place more weight on cost.
+- **$P = 0$** → rankings are based only on performance.
+- Higher values of **$P$** place more weight on cost.
 
 ### Pareto Frontier
 
