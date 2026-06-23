@@ -607,7 +607,6 @@ function updateLeaderboard(filtered) {
   list.innerHTML = display.map((m, i) => `
     <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${modelKey(m)}" data-model="${m.model}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-dot" style="background:${providerColor(m.provider)}"></span>
       <span class="leaderboard-name">${m.model} <span class="leaderboard-provider">${m.provider}</span></span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
@@ -827,7 +826,7 @@ function updateTable(filtered) {
   } else {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${modelKey(m)}" data-model="${m.model}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
-        <td><span class="provider-dot" style="background:${providerColor(m.provider)}"></span>${m.provider}</td>
+        <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${m.provider}</span></td>
         <td>${m.model}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
@@ -930,7 +929,7 @@ function initProviderPills() {
     const pill = document.createElement('button');
     pill.className = 'provider-pill';
     pill.dataset.provider = p;
-    pill.innerHTML = `<span class="dot" style="background:${providerColor(p)}"></span>${p}`;
+    pill.innerHTML = p;
 
     setPillState(pill, p, state.activeProviders.has(p));
 
@@ -1296,8 +1295,8 @@ function removeSkeletons() {
 const CHAT_STATE = {
   isOpen: false,
   apiKey: localStorage.getItem('openrouter_api_key') || '',
-  selectedModel: localStorage.getItem('openrouter_chat_model') || 'google/gemini-3.5-flash',
-  reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'high',
+  selectedModel: localStorage.getItem('openrouter_chat_model') || 'deepseek/deepseek-v4-flash',
+  reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'medium',
   messages: []
 };
 
