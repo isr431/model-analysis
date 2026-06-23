@@ -52,57 +52,99 @@
 
     <!-- CONTROLS BAR -->
     <div class="controls-bar glass" id="controlsBar">
-      <div class="control-group" id="pSliderGroup">
-        <label>Cost Sensitivity (P): <span id="pValue">0.07</span></label>
-        <div class="control-input-wrap">
-          <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07">
-        </div>
-        <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
+      <div class="pane-header">
+        <span class="window-controls">
+          <span class="window-dot red"></span>
+          <span class="window-dot yellow"></span>
+          <span class="window-dot green"></span>
+        </span>
+        control_panel
       </div>
-      <div class="control-group" id="searchGroup">
-        <label>Search</label>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search models or providers...">
-      </div>
-      <div class="control-group" id="priceRangeGroup">
-        <label>Price Range: $<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">12.00</span></label>
-        <div class="dual-slider">
-          <div class="dual-slider-track"></div>
-          <div class="dual-slider-range" id="priceRangeHighlight"></div>
-          <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;">
-          <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;">
-        </div>
-      </div>
-      <div class="control-group" id="perfThresholdGroup">
-        <label>Min Performance: <span id="perfThresholdVal">70</span></label>
-        <div class="control-input-wrap">
-          <input type="range" id="perfThreshold" min="0" max="100" step="1" value="70">
-        </div>
-      </div>
-      <div class="control-group full-width" id="providerFilters">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
-          <label style="margin-bottom: 0;">Providers</label>
-          <div class="provider-actions" style="display: flex; gap: 12px;">
-            <button id="providerSelectAll" class="action-link">Select All</button>
-            <button id="providerClearAll" class="action-link">Clear All</button>
-            <button id="resetSettings" class="action-link" onclick="resetFilters()">Reset</button>
+      <div class="controls-grid">
+        <div class="control-group" id="searchGroup">
+          <label>Search</label>
+          <div class="search-input-wrap">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search models or providers...">
           </div>
         </div>
-        <div class="pill-container" id="providerPills"></div>
+        <div class="control-group" id="pSliderGroup">
+          <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.07</span></label>
+          <div class="control-input-wrap">
+            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07">
+          </div>
+          <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
+        </div>
+        <div class="control-group" id="priceRangeGroup">
+          <label>Price Range: <span class="control-badge">$<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">12.00</span></span></label>
+          <div class="dual-slider">
+            <div class="dual-slider-track"></div>
+            <div class="dual-slider-range" id="priceRangeHighlight"></div>
+            <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;">
+            <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;">
+          </div>
+        </div>
+        <div class="control-group" id="perfThresholdGroup">
+          <label>Min Performance: <span id="perfThresholdVal" class="control-badge">70</span></label>
+          <div class="control-input-wrap">
+            <input type="range" id="perfThreshold" min="0" max="100" step="1" value="70">
+          </div>
+        </div>
+        <div class="control-group full-width" id="providerFilters">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
+            <label style="margin-bottom: 0;">Providers</label>
+            <div class="provider-actions" style="display: flex; gap: 12px;">
+              <button id="providerSelectAll" class="action-link">Select All</button>
+              <button id="providerClearAll" class="action-link">Clear All</button>
+              <button id="resetSettings" class="action-link" onclick="resetFilters()">Reset</button>
+            </div>
+          </div>
+          <div class="pill-container" id="providerPills"></div>
+        </div>
       </div>
     </div>
 
     <!-- TAB NAVIGATION -->
     <nav class="tab-nav" id="tabNav">
-      <button class="tab-btn active" data-tab="overview">Overview</button>
-      <button class="tab-btn" data-tab="charts">Charts</button>
-      <button class="tab-btn" data-tab="table">Table</button>
+      <button class="tab-btn active" data-tab="overview">
+        <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+          <line x1="9" y1="9" x2="21" y2="9"></line>
+        </svg>
+        Overview
+      </button>
+      <button class="tab-btn" data-tab="charts">
+        <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 20V10"></path>
+          <path d="M12 20V4"></path>
+          <path d="M6 20v-6"></path>
+        </svg>
+        Charts
+      </button>
+      <button class="tab-btn" data-tab="table">
+        <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
+        </svg>
+        Table
+      </button>
     </nav>
 
     <!-- TAB: OVERVIEW -->
     <section class="tab-content active" id="tab-overview">
       <div class="summary-cards" id="summaryCards">
         <div class="summary-card terminal-pane" id="cardBestValue">
-          <div class="pane-header">best_value</div>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            best_value
+          </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Best Value</div>
             <div class="card-model skeleton-element pulse" id="bestValueModel">—</div>
@@ -110,7 +152,14 @@
           </div>
         </div>
         <div class="summary-card terminal-pane" id="cardBestPerf">
-          <div class="pane-header">best_performance</div>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            best_performance
+          </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Best Performance</div>
             <div class="card-model skeleton-element pulse" id="bestPerfModel">—</div>
@@ -118,7 +167,14 @@
           </div>
         </div>
         <div class="summary-card terminal-pane" id="cardCheapest">
-          <div class="pane-header">cheapest</div>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            cheapest
+          </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Cheapest</div>
             <div class="card-model skeleton-element pulse" id="cheapestModel">—</div>
@@ -126,7 +182,14 @@
           </div>
         </div>
         <div class="summary-card terminal-pane" id="cardExpensive">
-          <div class="pane-header">most_expensive</div>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            most_expensive
+          </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Most Expensive</div>
             <div class="card-model skeleton-element pulse" id="expensiveModel">—</div>
@@ -136,58 +199,73 @@
       </div>
 
       <div class="overview-leaderboard glass" id="overviewLeaderboard">
-        <h2>Performance Leaderboard</h2>
-        <div class="leaderboard-list" id="leaderboardList">
-          <!-- Skeletons (rendered on load, replaced by JS) -->
-          <div class="leaderboard-row skeleton-row">
-            <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
-            <span class="leaderboard-dot skeleton-element pulse"></span>
-            <span class="leaderboard-name skeleton-element pulse" style="width: 140px; height: 16px; display: inline-block;"></span>
-            <div class="leaderboard-bar-track">
-              <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
-            </div>
-            <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
-          </div>
-          <div class="leaderboard-row skeleton-row">
-            <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
-            <span class="leaderboard-dot skeleton-element pulse"></span>
-            <span class="leaderboard-name skeleton-element pulse" style="width: 120px; height: 16px; display: inline-block;"></span>
-            <div class="leaderboard-bar-track">
-              <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
-            </div>
-            <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
-          </div>
-          <div class="leaderboard-row skeleton-row">
-            <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
-            <span class="leaderboard-dot skeleton-element pulse"></span>
-            <span class="leaderboard-name skeleton-element pulse" style="width: 150px; height: 16px; display: inline-block;"></span>
-            <div class="leaderboard-bar-track">
-              <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
-            </div>
-            <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
-          </div>
+        <div class="pane-header">
+          <span class="window-controls">
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+          </span>
+          performance_leaderboard
         </div>
-        <button class="leaderboard-expand" id="leaderboardExpand" onclick="toggleLeaderboard()">
-          Show All <span class="arrow">▼</span>
-        </button>
+        <div class="pane-content">
+          <div class="leaderboard-list" id="leaderboardList">
+            <!-- Skeletons (rendered on load, replaced by JS) -->
+            <div class="leaderboard-row skeleton-row">
+              <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
+              <span class="leaderboard-name skeleton-element pulse" style="width: 140px; height: 16px; display: inline-block;"></span>
+              <div class="leaderboard-bar-track">
+                <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
+              </div>
+              <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
+            </div>
+            <div class="leaderboard-row skeleton-row">
+              <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
+              <span class="leaderboard-name skeleton-element pulse" style="width: 120px; height: 16px; display: inline-block;"></span>
+              <div class="leaderboard-bar-track">
+                <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
+              </div>
+              <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
+            </div>
+            <div class="leaderboard-row skeleton-row">
+              <span class="leaderboard-rank skeleton-element pulse" style="width: 20px; height: 16px; display: inline-block;"></span>
+              <span class="leaderboard-name skeleton-element pulse" style="width: 150px; height: 16px; display: inline-block;"></span>
+              <div class="leaderboard-bar-track">
+                <div class="leaderboard-bar-fill skeleton-element pulse" style="width: 100%;"></div>
+              </div>
+              <span class="leaderboard-score skeleton-element pulse" style="width: 40px; height: 16px; display: inline-block;"></span>
+            </div>
+          </div>
+          <button class="leaderboard-expand" id="leaderboardExpand" onclick="toggleLeaderboard()">
+            Show All <span class="arrow">▼</span>
+          </button>
+        </div>
       </div>
 
       <div class="formula-card glass" id="formulaCard">
-        <h2>How Scores Are Calculated</h2>
-        <div class="formula-item">
-          <div class="formula-label">Blended Cost</div>
-          <code>0.9573 × Input Price + 0.0427 × Output Price</code>
-          <div class="formula-desc">Weighted for a 37:1 input-to-output token ratio</div>
+        <div class="pane-header">
+          <span class="window-controls">
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+          </span>
+          score_calculation_formulas
         </div>
-        <div class="formula-item">
-          <div class="formula-label">Performance</div>
-          <code>50% × (LiveBench / Max) + 50% × (AA Score / Max)</code>
-          <div class="formula-desc">Each benchmark is normalized against its dataset maximum for equal weighting</div>
-        </div>
-        <div class="formula-item">
-          <div class="formula-label">Value</div>
-          <code>Performance / Blended Cost<sup>P</sup></code>
-          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
+        <div class="pane-content">
+          <div class="formula-item">
+            <div class="formula-label">Blended Cost</div>
+            <code><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.9573</span> * inputPrice + <span class="syntax-number">0.0427</span> * outputPrice; <span class="syntax-comment">// 37:1 token ratio</span></code>
+            <div class="formula-desc">Weighted for a 37:1 input-to-output token ratio</div>
+          </div>
+          <div class="formula-item">
+            <div class="formula-label">Performance</div>
+            <code><span class="syntax-keyword">const</span> performance = (<span class="syntax-number">0.5</span> * (liveBench / maxLiveBench) + <span class="syntax-number">0.5</span> * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
+            <div class="formula-desc">Each benchmark is normalized against its dataset maximum for equal weighting</div>
+          </div>
+          <div class="formula-item">
+            <div class="formula-label">Value</div>
+            <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P); <span class="syntax-comment">// P controls sensitivity</span></code>
+            <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
+          </div>
         </div>
       </div>
     </section>
@@ -196,14 +274,28 @@
     <section class="tab-content" id="tab-charts">
       <div class="charts-grid">
         <div class="chart-container glass" id="scatterContainer">
-          <h2>Performance vs. Cost</h2>
-          <div class="chart-canvas-wrap-scatter">
-            <canvas id="scatterChart"></canvas>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            performance_vs_cost_scatter
+          </div>
+          <div class="pane-content">
+            <div class="chart-canvas-wrap-scatter">
+              <canvas id="scatterChart"></canvas>
+            </div>
           </div>
         </div>
         <div class="chart-container glass" id="barContainer">
-          <div class="chart-header">
-            <h2>Model Rankings</h2>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            model_rankings_bar
             <select id="barMetricSelect" class="metric-select">
               <option value="value" selected>Value Score</option>
               <option value="performance">Performance</option>
@@ -212,19 +304,28 @@
               <option value="aaScore">AA Score</option>
             </select>
           </div>
-          <div class="chart-canvas-wrap">
-            <canvas id="barChart"></canvas>
+          <div class="pane-content">
+            <div class="chart-canvas-wrap">
+              <canvas id="barChart"></canvas>
+            </div>
           </div>
         </div>
         <div class="chart-container glass" id="radarContainer">
-          <div class="chart-header">
-            <h2>Model Comparison Profile</h2>
+          <div class="pane-header">
+            <span class="window-controls">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+            </span>
+            model_comparison_radar
           </div>
-          <div class="chart-canvas-wrap">
-            <canvas id="radarChart"></canvas>
-          </div>
-          <div class="radar-legend-hint">
-            Click a model in the table, charts, or leaderboard to compare its profile against the filtered average.
+          <div class="pane-content">
+            <div class="chart-canvas-wrap">
+              <canvas id="radarChart"></canvas>
+            </div>
+            <div class="radar-legend-hint">
+              Click a model in the table, charts, or leaderboard to compare its profile against the filtered average.
+            </div>
           </div>
         </div>
       </div>
@@ -232,7 +333,16 @@
 
     <!-- TAB: TABLE -->
     <section class="tab-content" id="tab-table">
-      <div class="table-wrapper glass">
+      <div class="table-container glass" id="tableContainer">
+        <div class="pane-header">
+          <span class="window-controls">
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+          </span>
+          model_comparison_dataset
+        </div>
+        <div class="table-wrapper">
         <table id="modelTable">
           <thead>
             <tr>
@@ -250,7 +360,8 @@
           <tbody id="tableBody"></tbody>
         </table>
       </div>
-    </section>
+    </div>
+  </section>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -265,6 +376,7 @@
     <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
+    <span class="chat-fab-badge pulse-badge"></span>
   </button>
 
   <!-- Chat Drawer -->
@@ -275,6 +387,11 @@
     <div class="chat-resizer chat-resizer-tl" id="chatResizerTL"></div>
     <div class="chat-header">
       <div class="chat-header-title">
+        <span class="window-controls" style="margin-right: 8px;">
+          <span class="window-dot red"></span>
+          <span class="window-dot yellow"></span>
+          <span class="window-dot green"></span>
+        </span>
         <h3>AI Assistant</h3>
         <span class="chat-status-indicator"></span>
       </div>
@@ -330,8 +447,8 @@
         <div class="settings-group">
           <label class="settings-label">Reasoning Effort</label>
           <select id="chatReasoningSelect" class="chat-model-select" aria-label="Select Reasoning Effort">
-            <option value="high" selected>High (Deep reasoning)</option>
-            <option value="medium">Medium (Moderate reasoning)</option>
+            <option value="high">High (Deep reasoning)</option>
+            <option value="medium" selected>Medium (Moderate reasoning)</option>
             <option value="low">Low (Light reasoning)</option>
             <option value="minimal">Minimal (Basic reasoning)</option>
             <option value="none">None (Standard output)</option>
@@ -354,9 +471,9 @@
     <div class="chat-footer">
       <textarea id="chatInput" class="chat-input" placeholder="Type a message..." rows="1"></textarea>
       <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="19" x2="12" y2="5"></line>
+          <polyline points="5 12 12 5 19 12"></polyline>
         </svg>
       </button>
     </div>
