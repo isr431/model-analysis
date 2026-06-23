@@ -1073,24 +1073,31 @@ function initEventListeners() {
 // ===== THEME MANAGEMENT =====
 function initTheme() {
   const savedTheme = localStorage.getItem('theme');
-  const defaultTheme = savedTheme || 'dark';
+  let defaultTheme = 'dark';
+  if (savedTheme) {
+    defaultTheme = savedTheme;
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    defaultTheme = 'light';
+  }
 
-  setTheme(defaultTheme);
+  setTheme(defaultTheme, false);
 
   document.getElementById('themeToggle').addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+    setTheme(newTheme, true);
   });
 }
 
-function setTheme(theme) {
+function setTheme(theme, save = true) {
   if (theme === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
   } else {
     document.documentElement.removeAttribute('data-theme');
   }
-  localStorage.setItem('theme', theme);
+  if (save) {
+    localStorage.setItem('theme', theme);
+  }
   updateChartColors(theme);
 }
 

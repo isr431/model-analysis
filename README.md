@@ -31,8 +31,8 @@ $$
 ### Themes
 
 - Dark and light modes (Monospaced Terminal / IDE styling)
-- Dark mode by default on first visit
-- Preference saved locally in your browser
+- Automatic system theme preference detection (defaults to dark mode if no preference is found)
+- Preference saved locally in your browser when explicitly toggled
 
 ## Tech Stack
 
