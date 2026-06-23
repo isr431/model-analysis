@@ -23,13 +23,15 @@
 
   <title>LLM Model Analysis</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="app">
+  <main class="app">
 
     <!-- THEME TOGGLE BUTTON -->
     <div class="app-header-controls">
@@ -74,7 +76,7 @@
         <div class="control-group" id="pSliderGroup">
           <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.07</span></label>
           <div class="control-input-wrap">
-            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07">
+            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07" aria-label="Cost sensitivity">
           </div>
           <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
         </div>
@@ -83,14 +85,14 @@
           <div class="dual-slider">
             <div class="dual-slider-track"></div>
             <div class="dual-slider-range" id="priceRangeHighlight"></div>
-            <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;">
-            <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;">
+            <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;" aria-label="Minimum price per million tokens">
+            <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;" aria-label="Maximum price per million tokens">
           </div>
         </div>
         <div class="control-group" id="perfThresholdGroup">
           <label>Min Performance: <span id="perfThresholdVal" class="control-badge">70</span></label>
           <div class="control-input-wrap">
-            <input type="range" id="perfThreshold" min="0" max="100" step="1" value="70">
+            <input type="range" id="perfThreshold" min="0" max="100" step="1" value="70" aria-label="Minimum performance threshold">
           </div>
         </div>
         <div class="control-group full-width" id="providerFilters">
@@ -368,7 +370,7 @@
       <p>© 2026 LLM Model Analysis · Contact: <a href="mailto:hello@modelanalysis.xyz">hello@modelanalysis.xyz</a></p>
     </footer>
 
-  </div>
+  </main>
 
   <!-- CHATBOT INTEGRATION -->
   <!-- FAB Button -->
@@ -392,7 +394,7 @@
           <span class="window-dot yellow"></span>
           <span class="window-dot green"></span>
         </span>
-        <h3>AI Assistant</h3>
+        <h2>AI Assistant</h2>
         <span class="chat-status-indicator"></span>
       </div>
       <div class="chat-header-controls">
