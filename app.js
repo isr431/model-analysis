@@ -1496,7 +1496,7 @@ function initChatbot() {
             <div class="chat-message assistant">
               <div class="chat-sender-label">Assistant</div>
               <div class="message-bubble">
-                Hello! I am your Model Assistant. Ask me anything about the model scores, value calculations, or current filter rankings!
+                Hello! I am your AI Assistant. Ask me anything about the model scores, value calculations, or current filter rankings!
               </div>
             </div>
           `;
