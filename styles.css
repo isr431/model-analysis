@@ -380,6 +380,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .dual-slider input[type="range"] {
   position: absolute;
   width: 100%;
+  height: 24px;
   pointer-events: none;
   background: transparent;
   outline: none;
@@ -396,9 +397,8 @@ input[type="range"]::-moz-range-thumb:hover {
   z-index: 11;
 }
 
-/* Provider pills */
-.provider-filters { min-width: 100%; }
-.pill-container {
+  /* Provider pills */
+  .pill-container {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -643,11 +643,10 @@ input[type="range"]::-moz-range-thumb:hover {
 .summary-card:hover .window-dot,
 .glass:hover .window-dot,
 .overview-leaderboard:hover .window-dot,
-.formula-card:hover .window-dot,
-.chart-container:hover .window-dot,
-.table-header-panel:hover .window-dot {
-  opacity: 1;
-}
+  .formula-card:hover .window-dot,
+  .chart-container:hover .window-dot {
+    opacity: 1;
+  }
 .window-dot.red { background-color: #ef4444; }
 .window-dot.yellow { background-color: #eab308; }
 .window-dot.green { background-color: #22c55e; }
@@ -826,8 +825,7 @@ input[type="range"]::-moz-range-thumb:hover {
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-lg);
 }
-.charts-grid.stacked { grid-template-columns: 1fr; }
-.chart-container { 
+.chart-container {
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -1288,11 +1286,13 @@ input[type="range"]::-moz-range-thumb:hover {
 /* API Key View */
 .chat-api-key-view {
   position: absolute;
-  top: 38px; /* right below header */
+  top: 38px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--bg-primary);
+  background: rgba(11, 11, 15, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 135;
   display: flex;
   align-items: center;
@@ -1300,20 +1300,30 @@ input[type="range"]::-moz-range-thumb:hover {
   padding: 20px;
 }
 :root[data-theme="light"] .chat-api-key-view {
-  background: var(--bg-primary);
+  background: rgba(243, 244, 246, 0.75);
 }
 .api-key-container {
   width: 100%;
-  max-width: 320px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
-.api-key-container h4 {
-  font-size: var(--font-sm);
+.api-key-container h3 {
+  font-size: var(--font-lg);
   font-weight: 600;
   color: var(--text-primary);
   text-transform: lowercase;
+  border-bottom: 1px solid var(--divider);
+  padding-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
 }
 .api-key-container p {
   font-size: var(--font-xs);
@@ -1366,19 +1376,6 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 .secondary-btn:hover {
   background: rgba(248, 113, 113, 0.1);
-}
-.api-key-hint {
-  font-size: var(--font-xs);
-  color: var(--text-muted);
-  text-align: center;
-  margin-top: 4px;
-}
-.api-key-hint a {
-  color: var(--slider-thumb);
-  text-decoration: none;
-}
-.api-key-hint a:hover {
-  text-decoration: underline;
 }
 
 /* Chat Logs */
@@ -1645,7 +1642,7 @@ details[open] .thinking-title::before {
   color: var(--bg-primary);
   width: 34px;
   height: 34px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1680,7 +1677,7 @@ details[open] .thinking-title::before {
   margin-top: 14px;
 }
 .settings-label {
-  font-size: 10px;
+  font-size: var(--font-xs);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-secondary);
