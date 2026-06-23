@@ -16,6 +16,8 @@ const FALLBACK_DATA = {
     'xAI':         { color: '#f43f5e' },
   },
   models: [
+    { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.84, aaScore: 42 },
+    { provider: 'Anthropic',   model: 'Claude Opus 4.5',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 75.96, aaScore: 41 },
     { provider: 'DeepSeek',    model: 'DeepSeek V3.2',          inputPrice: 0.2288, outputPrice: 0.3432, livebench: 62.20, aaScore: 33 },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 70.85, aaScore: 40 },
     { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',          inputPrice: 0.95,  outputPrice: 4.0,   livebench: 71.89, aaScore: 42 },
