@@ -253,7 +253,7 @@
         <div class="pane-content">
           <div class="formula-item">
             <div class="formula-label">Blended Cost</div>
-            <code><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.9573</span> * inputPrice + <span class="syntax-number">0.0427</span> * outputPrice; <span class="syntax-comment">// 37:1 token ratio</span></code>
+            <code><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.9573</span> * inputPrice + <span class="syntax-number">0.0427</span> * outputPrice;</code>
             <div class="formula-desc">Weighted for a 37:1 input-to-output token ratio</div>
           </div>
           <div class="formula-item">
@@ -263,7 +263,7 @@
           </div>
           <div class="formula-item">
             <div class="formula-label">Value</div>
-            <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P); <span class="syntax-comment">// P controls sensitivity</span></code>
+            <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P);</code>
             <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
           </div>
         </div>

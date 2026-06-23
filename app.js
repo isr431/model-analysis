@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-06-21',
+  lastUpdated: '2026-06-23',
   providers: {
     'DeepSeek':    { color: '#22d3ee' },
     'Z.ai':        { color: '#6366f1' },
@@ -18,14 +18,14 @@ const FALLBACK_DATA = {
   models: [
     { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.84, aaScore: 42 },
     { provider: 'Anthropic',   model: 'Claude Opus 4.5',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 75.96, aaScore: 41 },
-    { provider: 'DeepSeek',    model: 'DeepSeek V3.2',          inputPrice: 0.2288, outputPrice: 0.3432, livebench: 62.20, aaScore: 33 },
+    { provider: 'DeepSeek',    model: 'DeepSeek V3.2',          inputPrice: 0.2288,outputPrice: 0.3432,livebench: 62.20, aaScore: 33 },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 70.85, aaScore: 40 },
-    { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',          inputPrice: 0.95,  outputPrice: 4.0,   livebench: 71.89, aaScore: 42 },
+    { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',         inputPrice: 0.95,  outputPrice: 4.0,   livebench: 71.89, aaScore: 42 },
     { provider: 'OpenAI',      model: 'gpt-oss-120b',           inputPrice: 0.039, outputPrice: 0.18,  livebench: 46.09, aaScore: 24 },
-    { provider: 'xAI',         model: 'Grok 4.3',              inputPrice: 1.25,  outputPrice: 2.5,   livebench: 66.74, aaScore: 38 },
-    { provider: 'OpenAI',      model: 'GPT-5.3 Codex',         inputPrice: 1.75,  outputPrice: 14.0,  livebench: 72.76, aaScore: 44 },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',       inputPrice: 0.435, outputPrice: 0.87,  livebench: 73.58, aaScore: 44 },
-    { provider: 'Z.ai',        model: 'GLM 5.2',               inputPrice: 1.4,   outputPrice: 4.4,   livebench: 76.24, aaScore: 51 },
+    { provider: 'xAI',         model: 'Grok 4.3',               inputPrice: 1.25,  outputPrice: 2.5,   livebench: 66.74, aaScore: 38 },
+    { provider: 'OpenAI',      model: 'GPT-5.3 Codex',          inputPrice: 1.75,  outputPrice: 14.0,  livebench: 72.76, aaScore: 44 },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435, outputPrice: 0.87,  livebench: 73.58, aaScore: 44 },
+    { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,   outputPrice: 4.4,   livebench: 76.24, aaScore: 51 },
     { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,   outputPrice: 1.2,   livebench: 70.02, aaScore: 44 },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.14,  outputPrice: 0.28,  livebench: 67.25, aaScore: 40 },
     { provider: 'OpenAI',      model: 'GPT-5.4',                inputPrice: 2.5,   outputPrice: 15.0,  livebench: 80.28, aaScore: 51 },
