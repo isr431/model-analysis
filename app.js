@@ -1295,7 +1295,7 @@ function removeSkeletons() {
 const CHAT_STATE = {
   isOpen: false,
   apiKey: localStorage.getItem('openrouter_api_key') || '',
-  selectedModel: localStorage.getItem('openrouter_chat_model') || 'deepseek/deepseek-v4-flash',
+  selectedModel: localStorage.getItem('openrouter_chat_model') || 'deepseek/deepseek-v4-pro',
   reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'medium',
   messages: []
 };
