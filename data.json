@@ -37,6 +37,14 @@
   },
   "models": [
     {
+      "provider": "Anthropic",
+      "model": "Claude Sonnet 5",
+      "inputPrice": 3.0,
+      "outputPrice": 15.0,
+      "livebench": 75.82,
+      "aaScore": 53
+    },
+    {
       "provider": "OpenAI",
       "model": "GPT-5.2",
       "inputPrice": 1.75,
