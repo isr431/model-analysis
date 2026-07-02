@@ -13,5 +13,5 @@ Thumbs.db
 __pycache__/
 
 # Project planning and guidelines
-CLAUDE.md
+AGENTS.md
 DESIGN.md
