@@ -331,7 +331,23 @@ function modelKey(m) {
 // ===== CHARTS =====
 let scatterChart, barChart, radarChart;
 
+function renderChartsUnavailable() {
+  document.querySelectorAll('.chart-canvas-wrap, .chart-canvas-wrap-scatter').forEach(wrap => {
+    wrap.textContent = '';
+    const message = document.createElement('div');
+    message.className = 'empty-state';
+    message.textContent = 'Charts are unavailable because Chart.js could not be loaded.';
+    wrap.appendChild(message);
+  });
+}
+
 function initCharts() {
+  if (typeof Chart === 'undefined') {
+    renderChartsUnavailable();
+    console.warn('[LLM Analysis] Chart.js is unavailable. Charts are disabled, but the dashboard data and filters remain usable.');
+    return false;
+  }
+
   const tooltipStyle = {
     backgroundColor: 'rgba(15,15,26,0.95)',
     borderColor: 'rgba(255,255,255,0.1)',
@@ -534,6 +550,8 @@ function initCharts() {
       }
     }
   });
+
+  return true;
 }
 
 // ===== VIEW UPDATE FUNCTIONS =====
@@ -606,9 +624,9 @@ function updateLeaderboard(filtered) {
   btn.style.display = filtered.length > 10 ? 'flex' : 'none';
 
   list.innerHTML = display.map((m, i) => `
-    <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${modelKey(m)}" data-model="${m.model}" tabindex="0" role="button">
+    <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-name">${m.model} <span class="leaderboard-provider">${m.provider}</span></span>
+      <span class="leaderboard-name">${escapeHtml(m.model)} <span class="leaderboard-provider">${escapeHtml(m.provider)}</span></span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
@@ -624,6 +642,8 @@ function updateLeaderboard(filtered) {
 }
 
 function updateScatterChart(filtered) {
+  if (!scatterChart) return;
+
   if (filtered.length === 0) {
     scatterChart.data.datasets[0].data = [];
     if (scatterChart.data.datasets[1]) {
@@ -682,6 +702,8 @@ function updateScatterChart(filtered) {
 }
 
 function updateBarChart(filtered) {
+  if (!barChart) return;
+
   const metric = state.barMetric;
   const isAsc = metric === 'blended';
   const sorted = [...filtered].sort((a, b) => isAsc ? a[metric] - b[metric] : b[metric] - a[metric]);
@@ -826,9 +848,9 @@ function updateTable(filtered) {
     `;
   } else {
     tbody.innerHTML = sorted.map(m => `
-      <tr data-key="${modelKey(m)}" data-model="${m.model}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
-        <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${m.provider}</span></td>
-        <td>${m.model}</td>
+      <tr data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
+        <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
+        <td>${escapeHtml(m.model)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num">$${m.blended.toFixed(2)}</td>
@@ -930,7 +952,7 @@ function initProviderPills() {
     const pill = document.createElement('button');
     pill.className = 'provider-pill';
     pill.dataset.provider = p;
-    pill.innerHTML = p;
+    pill.textContent = p;
 
     setPillState(pill, p, state.activeProviders.has(p));
 
@@ -1019,8 +1041,8 @@ function initEventListeners() {
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'charts') {
         setTimeout(() => {
-          scatterChart.resize();
-          barChart.resize();
+          if (scatterChart) scatterChart.resize();
+          if (barChart) barChart.resize();
           if (radarChart) radarChart.resize();
         }, 50);
       }
@@ -1430,6 +1452,16 @@ function initChatResizer() {
   setupResizer(resizerTL, 'tl');
 }
 
+function setChatDrawerOpen(drawer, isOpen) {
+  drawer.classList.toggle('hide', !isOpen);
+  drawer.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  drawer.inert = !isOpen;
+
+  if (!isOpen && drawer.contains(document.activeElement)) {
+    document.getElementById('chatFab')?.focus();
+  }
+}
+
 function initChatbot() {
   const fab = document.getElementById('chatFab');
   const drawer = document.getElementById('chatDrawer');
@@ -1449,6 +1481,7 @@ function initChatbot() {
 
   // Initialize custom resizer handles
   initChatResizer();
+  setChatDrawerOpen(drawer, CHAT_STATE.isOpen);
 
   // Load state
   if (CHAT_STATE.apiKey) {
@@ -1468,7 +1501,7 @@ function initChatbot() {
   // Listeners
   fab.addEventListener('click', () => {
     CHAT_STATE.isOpen = !CHAT_STATE.isOpen;
-    drawer.classList.toggle('hide', !CHAT_STATE.isOpen);
+    setChatDrawerOpen(drawer, CHAT_STATE.isOpen);
     if (CHAT_STATE.isOpen) {
       if (!CHAT_STATE.apiKey) {
         apiKeyInput.focus();
@@ -1483,7 +1516,7 @@ function initChatbot() {
 
   closeBtn.addEventListener('click', () => {
     CHAT_STATE.isOpen = false;
-    drawer.classList.add('hide');
+    setChatDrawerOpen(drawer, false);
   });
 
   if (clearBtn) {
@@ -2093,7 +2126,7 @@ function addToolStatusMessage(text) {
 
 // Helper to escape HTML characters
 function escapeHtml(text) {
-  return text
+  return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -2341,8 +2374,9 @@ async function init() {
   loadData().then(data => {
     const sameModels = JSON.stringify(data.models) === JSON.stringify(FALLBACK_DATA.models);
     const sameProviders = JSON.stringify(data.providers) === JSON.stringify(FALLBACK_DATA.providers);
+    const sameLastUpdated = data.lastUpdated === FALLBACK_DATA.lastUpdated;
 
-    if (!sameModels || !sameProviders) {
+    if (!sameModels || !sameProviders || !sameLastUpdated) {
       const oldProvidersSet = new Set(ALL_PROVIDERS);
       applyData(data);
       reinitProviderPills(oldProvidersSet);
