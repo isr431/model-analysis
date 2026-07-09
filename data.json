@@ -37,6 +37,14 @@
   },
   "models": [
     {
+      "provider": "xAI",
+      "model": "Grok 4.5",
+      "inputPrice": 2.0,
+      "outputPrice": 6.0,
+      "livebench": 76.3,
+      "aaScore": 54
+    },
+    {
       "provider": "Anthropic",
       "model": "Claude Sonnet 5",
       "inputPrice": 3.0,
