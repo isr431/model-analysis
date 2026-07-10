@@ -37,6 +37,30 @@
   },
   "models": [
     {
+      "provider": "OpenAI",
+      "model": "GPT-5.6 Sol",
+      "inputPrice": 5.0,
+      "outputPrice": 30.0,
+      "livebench": 82.4,
+      "aaScore": 59
+    },
+    {
+      "provider": "OpenAI",
+      "model": "GPT-5.6 Terra",
+      "inputPrice": 2.5,
+      "outputPrice": 15.0,
+      "livebench": 79.8,
+      "aaScore": 55
+    },
+    {
+      "provider": "OpenAI",
+      "model": "GPT-5.6 Luna",
+      "inputPrice": 1.0,
+      "outputPrice": 6.0,
+      "livebench": 74.3,
+      "aaScore": 51
+    },
+    {
       "provider": "xAI",
       "model": "Grok 4.5",
       "inputPrice": 2.0,
