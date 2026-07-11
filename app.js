@@ -16,6 +16,9 @@ const FALLBACK_DATA = {
     'xAI':         { color: '#f43f5e' },
   },
   models: [
+    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,   outputPrice: 30.0,  livebench: 82.4,  aaScore: 59 },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.5,   outputPrice: 15.0,  livebench: 79.8,  aaScore: 55 },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 1.0,   outputPrice: 6.0,   livebench: 74.3,  aaScore: 51 },
     { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,   outputPrice: 6.0,   livebench: 76.3,  aaScore: 54 },
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,   outputPrice: 15.0,  livebench: 75.82, aaScore: 53 },
     { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.84, aaScore: 42 },
