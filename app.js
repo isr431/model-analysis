@@ -233,6 +233,7 @@ const state = {
   sortDirection: 'desc',
   barMetric: 'value',
   highlightedModel: null,
+  compareSet: [],
   _barKeys: [],
   cardValues: {
     bestValue: 0,
@@ -332,8 +333,53 @@ function modelKey(m) {
   return m.provider + '|' + m.model;
 }
 
+// ===== COMPARE SET =====
+const COMPARE_MAX = 4;
+
+function isCompared(key) {
+  return state.compareSet.includes(key);
+}
+
+function toggleCompare(key) {
+  if (!key) return;
+  const idx = state.compareSet.indexOf(key);
+  if (idx >= 0) {
+    state.compareSet.splice(idx, 1);
+  } else if (state.compareSet.length < COMPARE_MAX) {
+    state.compareSet.push(key);
+  } else {
+    const tray = document.getElementById('compareTray');
+    if (tray) {
+      tray.classList.remove('shake');
+      void tray.offsetWidth; // force reflow so the animation restarts on repeated rejections
+      tray.classList.add('shake');
+    }
+    return;
+  }
+  updateCompareUI();
+  syncCompareHash();
+}
+
+function clearCompare() {
+  state.compareSet = [];
+  updateCompareUI();
+  syncCompareHash();
+}
+
+function getCompareModels() {
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const byKey = new Map(allModels.map(m => [modelKey(m), m]));
+  return state.compareSet.map(k => byKey.get(k)).filter(Boolean);
+}
+
+function compareToggleHtml(m) {
+  const k = modelKey(m);
+  const active = isCompared(k);
+  return `<button class="compare-toggle${active ? ' active' : ''}" data-key="${escapeHtml(k)}" aria-pressed="${active}" aria-label="Compare ${escapeHtml(m.model)}">${active ? '✓' : '+'}</button>`;
+}
+
 // ===== CHARTS =====
-let scatterChart, barChart, radarChart;
+let scatterChart, barChart, radarChart, compareRadarChart;
 
 function renderChartsUnavailable() {
   document.querySelectorAll('.chart-canvas-wrap, .chart-canvas-wrap-scatter').forEach(wrap => {
@@ -399,7 +445,12 @@ function initCharts() {
           if (datasetIndex === 0) {
             const index = elements[0].index;
             const modelData = scatterChart.data.datasets[0].data[index];
-            toggleHighlight(modelData.provider + '|' + modelData.model);
+            const key = modelData.provider + '|' + modelData.model;
+            if (e.native && e.native.shiftKey) {
+              toggleCompare(key);
+            } else {
+              toggleHighlight(key);
+            }
           }
         } else {
           toggleHighlight(null);
@@ -461,7 +512,11 @@ function initCharts() {
       onClick: (e, elements) => {
         if (elements.length > 0) {
           const index = elements[0].index;
-          toggleHighlight(state._barKeys[index]);
+          if (e.native && e.native.shiftKey) {
+            toggleCompare(state._barKeys[index]);
+          } else {
+            toggleHighlight(state._barKeys[index]);
+          }
         } else {
           toggleHighlight(null);
         }
@@ -520,6 +575,46 @@ function initCharts() {
           pointRadius: 5,
         }
       ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(255, 255, 255, 0.06)' },
+          grid: { color: 'rgba(255, 255, 255, 0.06)' },
+          pointLabels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'JetBrains Mono', size: 9, weight: '500' } },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.4)',
+            backdropColor: 'transparent',
+            font: { family: 'JetBrains Mono', size: 8 },
+            stepSize: 20
+          },
+          min: 0,
+          max: 100
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'JetBrains Mono', size: 10 } }
+        },
+        tooltip: {
+          ...tooltipStyle,
+          callbacks: {
+            label: item => `${item.dataset.label}: ${item.raw.toFixed(1)}`
+          }
+        }
+      }
+    }
+  });
+
+  compareRadarChart = new Chart(document.getElementById('compareRadarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Value Score', 'Performance', 'Cost Efficiency', 'LiveBench (Norm)', 'AA Score (Norm)'],
+      datasets: []
     },
     options: {
       responsive: true,
@@ -635,6 +730,7 @@ function updateLeaderboard(filtered) {
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
       <span class="leaderboard-score">${m.performance.toFixed(1)}</span>
+      ${compareToggleHtml(m)}
     </div>
   `).join('');
 
@@ -746,6 +842,19 @@ function updateBarChart(filtered) {
   barChart.update();
 }
 
+function computeRadarAxes(m, lbMax, aaMax, maxValue) {
+  const lbNorm = lbMax === 0 ? 0 : (m.livebench / lbMax) * 100;
+  const aaNorm = aaMax === 0 ? 0 : (m.aaScore / aaMax) * 100;
+  const valNorm = maxValue === 0 ? 0 : (m.value / maxValue) * 100;
+
+  const logVal = Math.log10(Math.max(m.blended, 0.01));
+  const costEff = (GLOBAL_LOG_MAX === GLOBAL_LOG_MIN)
+    ? 100
+    : ((GLOBAL_LOG_MAX - logVal) / (GLOBAL_LOG_MAX - GLOBAL_LOG_MIN)) * 100;
+
+  return [valNorm, m.performance, costEff, lbNorm, aaNorm];
+}
+
 function updateRadarChart(filtered) {
   if (!radarChart) return;
 
@@ -764,17 +873,9 @@ function updateRadarChart(filtered) {
   // 2. Calculate the averages of the filtered models
   let sumValue = 0, sumPerf = 0, sumCostEff = 0, sumLb = 0, sumAa = 0;
   filtered.forEach(m => {
-    const lbNorm = lbMax === 0 ? 0 : (m.livebench / lbMax) * 100;
-    const aaNorm = aaMax === 0 ? 0 : (m.aaScore / aaMax) * 100;
-    const valNorm = maxValue === 0 ? 0 : (m.value / maxValue) * 100;
-    
-    const logVal = Math.log10(Math.max(m.blended, 0.01));
-    const costEff = (GLOBAL_LOG_MAX === GLOBAL_LOG_MIN)
-      ? 100
-      : ((GLOBAL_LOG_MAX - logVal) / (GLOBAL_LOG_MAX - GLOBAL_LOG_MIN)) * 100;
-
+    const [valNorm, perf, costEff, lbNorm, aaNorm] = computeRadarAxes(m, lbMax, aaMax, maxValue);
     sumValue += valNorm;
-    sumPerf += m.performance;
+    sumPerf += perf;
     sumCostEff += costEff;
     sumLb += lbNorm;
     sumAa += aaNorm;
@@ -793,16 +894,7 @@ function updateRadarChart(filtered) {
   if (state.highlightedModel) {
     const match = filtered.find(m => modelKey(m) === state.highlightedModel);
     if (match) {
-      const lbNorm = lbMax === 0 ? 0 : (match.livebench / lbMax) * 100;
-      const aaNorm = aaMax === 0 ? 0 : (match.aaScore / aaMax) * 100;
-      const valNorm = maxValue === 0 ? 0 : (match.value / maxValue) * 100;
-      
-      const logVal = Math.log10(Math.max(match.blended, 0.01));
-      const costEff = (GLOBAL_LOG_MAX === GLOBAL_LOG_MIN)
-        ? 100
-        : ((GLOBAL_LOG_MAX - logVal) / (GLOBAL_LOG_MAX - GLOBAL_LOG_MIN)) * 100;
-
-      radarChart.data.datasets[1].data = [valNorm, match.performance, costEff, lbNorm, aaNorm];
+      radarChart.data.datasets[1].data = computeRadarAxes(match, lbMax, aaMax, maxValue);
       radarChart.data.datasets[1].label = match.model;
 
       const baseColor = providerRgb(match.provider);
@@ -844,7 +936,7 @@ function updateTable(filtered) {
   if (sorted.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="9" class="empty-state">
+        <td colspan="10" class="empty-state">
           <p style="margin-bottom: 8px;">No models match your filters</p>
           <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
         </td>
@@ -862,6 +954,7 @@ function updateTable(filtered) {
         <td class="num">${m.aaScore}</td>
         <td class="num" style="color:${colorScale(m.performance, perfMin, perfMax)};font-weight:600">${m.performance.toFixed(1)}</td>
         <td class="num" style="color:${colorScale(m.value, valMin, valMax)};font-weight:600">${m.value.toFixed(1)}</td>
+        <td class="compare-col">${compareToggleHtml(m)}</td>
       </tr>
     `).join('');
   }
@@ -878,6 +971,171 @@ function updateFormulaP() {
   document.getElementById('formulaPVal').textContent = state.p.toFixed(2);
 }
 
+// ===== COMPARE VIEW =====
+const COMPARE_ROWS = [
+  { label: 'Provider', key: 'provider' },
+  { label: 'Input $/1M', key: 'inputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
+  { label: 'Output $/1M', key: 'outputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
+  { label: 'Blended $/1M', key: 'blended', fmt: v => '$' + v.toFixed(2), best: 'min' },
+  { label: 'LiveBench', key: 'livebench', fmt: v => v.toFixed(2), best: 'max' },
+  { label: 'AA Score', key: 'aaScore', fmt: v => String(v), best: 'max' },
+  { label: 'Performance', key: 'performance', fmt: v => v.toFixed(1), best: 'max' },
+  { label: 'Value', key: 'value', fmt: v => v.toFixed(1), best: 'max' },
+];
+
+const COMPARE_DASH_PATTERNS = [[], [6, 4], [2, 3], [10, 4, 2, 4]];
+const COMPARE_POINT_STYLES = ['rect', 'rectRot', 'circle', 'triangle'];
+
+function updateCompareTray() {
+  const tray = document.getElementById('compareTray');
+  const chips = document.getElementById('compareTrayChips');
+  const badge = document.getElementById('compareCountBadge');
+  if (!tray || !chips || !badge) return;
+
+  const models = getCompareModels();
+  tray.classList.toggle('hide', models.length === 0);
+  badge.classList.toggle('hide', models.length === 0);
+  badge.textContent = models.length;
+
+  chips.innerHTML = models.map(m => `
+    <span class="compare-chip" style="border-color: rgba(${providerRgb(m.provider)}, 0.4);">
+      <span class="compare-chip-dot" style="background:${providerColor(m.provider)}"></span>
+      ${escapeHtml(m.model)}
+      <button class="compare-chip-remove" data-key="${escapeHtml(modelKey(m))}" aria-label="Remove ${escapeHtml(m.model)} from comparison">×</button>
+    </span>
+  `).join('');
+}
+
+function updateCompareToggleButtons() {
+  document.querySelectorAll('.compare-toggle[data-key]').forEach(btn => {
+    const active = isCompared(btn.dataset.key);
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', String(active));
+    btn.textContent = active ? '✓' : '+';
+  });
+}
+
+function updateCompareTable(models) {
+  const wrap = document.getElementById('compareTableWrap');
+  if (!wrap) return;
+
+  const header = models.map(m => `
+    <th>
+      <span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span>
+      <span class="compare-table-model">${escapeHtml(m.model)}</span>
+      <button class="compare-col-remove" data-key="${escapeHtml(modelKey(m))}" aria-label="Remove ${escapeHtml(m.model)} from comparison">×</button>
+    </th>
+  `).join('');
+
+  const rows = COMPARE_ROWS.map(row => {
+    let bestVal = null;
+    if (row.best) {
+      const vals = models.map(m => m[row.key]);
+      bestVal = row.best === 'min' ? Math.min(...vals) : Math.max(...vals);
+    }
+    const cells = models.map(m => {
+      const v = m[row.key];
+      const isBest = row.best !== undefined && v === bestVal;
+      const text = row.fmt ? row.fmt(v) : escapeHtml(String(v));
+      return `<td class="${isBest ? 'best-cell' : ''}">${text}</td>`;
+    }).join('');
+    return `<tr><th scope="row">${row.label}</th>${cells}</tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <table class="compare-table">
+      <thead><tr><th></th>${header}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function updateCompareRadar(models) {
+  if (!compareRadarChart) return;
+
+  const lbMax = Math.max(...RAW_DATA.map(m => m.livebench));
+  const aaMax = Math.max(...RAW_DATA.map(m => m.aaScore));
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const maxValue = Math.max(...allModels.map(m => m.value));
+
+  const providerCounts = {};
+  compareRadarChart.data.datasets = models.map((m, i) => {
+    const dupIndex = providerCounts[m.provider] || 0;
+    providerCounts[m.provider] = dupIndex + 1;
+    const rgb = providerRgb(m.provider);
+    return {
+      label: m.model,
+      data: computeRadarAxes(m, lbMax, aaMax, maxValue),
+      backgroundColor: `rgba(${rgb}, ${dupIndex > 0 ? 0.08 : 0.15})`,
+      borderColor: `rgb(${rgb})`,
+      borderWidth: 2,
+      borderDash: COMPARE_DASH_PATTERNS[dupIndex % COMPARE_DASH_PATTERNS.length],
+      pointStyle: COMPARE_POINT_STYLES[i % COMPARE_POINT_STYLES.length],
+      pointRadius: 4,
+    };
+  });
+  compareRadarChart.update();
+}
+
+function updateCompareTab() {
+  const emptyState = document.getElementById('compareEmptyState');
+  const content = document.getElementById('compareContent');
+  if (!emptyState || !content) return;
+
+  const models = getCompareModels();
+  if (models.length < 2) {
+    emptyState.classList.remove('hide');
+    content.classList.add('hide');
+    document.getElementById('compareEmptyMsg').textContent = models.length === 1
+      ? `1 model selected — add at least 1 more to compare (up to ${COMPARE_MAX}).`
+      : `Select at least 2 models to compare (up to ${COMPARE_MAX}).`;
+    return;
+  }
+  emptyState.classList.add('hide');
+  content.classList.remove('hide');
+  updateCompareTable(models);
+  updateCompareRadar(models);
+}
+
+function updateCompareUI() {
+  updateCompareTray();
+  updateCompareToggleButtons();
+  updateCompareTab();
+}
+
+// ===== COMPARE URL HASH SYNC =====
+function syncCompareHash() {
+  if (state.compareSet.length > 0) {
+    history.replaceState(null, '', '#compare=' + state.compareSet.map(encodeURIComponent).join(','));
+  } else if (location.hash.startsWith('#compare=')) {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+}
+
+function restoreCompareFromHash() {
+  const match = location.hash.match(/^#compare=(.+)$/);
+  if (!match) return;
+
+  const keys = [];
+  match[1].split(',').forEach(token => {
+    let key;
+    try { key = decodeURIComponent(token); } catch (e) { return; }
+    if (key && !keys.includes(key)) keys.push(key);
+  });
+  if (keys.length === 0) return;
+
+  state.compareSet = keys.slice(0, COMPARE_MAX);
+  updateCompareUI();
+  switchTab('compare');
+}
+
+function revalidateCompareSet() {
+  const validKeys = new Set(RAW_DATA.map(m => modelKey(m)));
+  state.compareSet = state.compareSet.filter(k => validKeys.has(k));
+  updateCompareUI();
+  syncCompareHash();
+}
+
 // ===== MASTER UPDATE =====
 function updateAll() {
   const allModels = computeAllMetrics(RAW_DATA, state.p);
@@ -889,6 +1147,7 @@ function updateAll() {
   updateRadarChart(filtered);
   updateTable(filtered);
   updateFormulaP();
+  updateCompareTab();
 }
 
 // ===== PROVIDER PILLS STATE HELPERS =====
@@ -1038,19 +1297,7 @@ function initEventListeners() {
   });
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      if (btn.dataset.tab === 'charts') {
-        setTimeout(() => {
-          if (scatterChart) scatterChart.resize();
-          if (barChart) barChart.resize();
-          if (radarChart) radarChart.resize();
-        }, 50);
-      }
-    });
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
   document.querySelectorAll('#modelTable th[data-sort]').forEach(th => {
@@ -1073,10 +1320,13 @@ function initEventListeners() {
 
   // Table row click/keyboard highlighting
   document.getElementById('tableBody').addEventListener('click', e => {
+    const btn = e.target.closest('.compare-toggle');
+    if (btn) { toggleCompare(btn.dataset.key); return; }
     const tr = e.target.closest('tr');
     if (tr && tr.dataset.key) toggleHighlight(tr.dataset.key);
   });
   document.getElementById('tableBody').addEventListener('keydown', e => {
+    if (e.target.closest('.compare-toggle')) return;
     if (e.key === 'Enter' || e.key === ' ') {
       const tr = e.target.closest('tr');
       if (tr && tr.dataset.key) { e.preventDefault(); toggleHighlight(tr.dataset.key); }
@@ -1085,15 +1335,56 @@ function initEventListeners() {
 
   // Leaderboard row click/keyboard highlighting
   document.getElementById('leaderboardList').addEventListener('click', e => {
+    const btn = e.target.closest('.compare-toggle');
+    if (btn) { toggleCompare(btn.dataset.key); return; }
     const row = e.target.closest('.leaderboard-row');
     if (row && row.dataset.key) toggleHighlight(row.dataset.key);
   });
   document.getElementById('leaderboardList').addEventListener('keydown', e => {
+    if (e.target.closest('.compare-toggle')) return;
     if (e.key === 'Enter' || e.key === ' ') {
       const row = e.target.closest('.leaderboard-row');
       if (row && row.dataset.key) { e.preventDefault(); toggleHighlight(row.dataset.key); }
     }
   });
+
+  // Compare tray, empty state, and compare-table column removal
+  document.getElementById('compareTrayChips').addEventListener('click', e => {
+    const btn = e.target.closest('.compare-chip-remove');
+    if (btn) toggleCompare(btn.dataset.key);
+  });
+  document.getElementById('compareTableWrap').addEventListener('click', e => {
+    const btn = e.target.closest('.compare-col-remove');
+    if (btn) toggleCompare(btn.dataset.key);
+  });
+  document.getElementById('compareTrayGo').addEventListener('click', () => switchTab('compare'));
+  document.getElementById('compareTrayClear').addEventListener('click', clearCompare);
+  document.getElementById('compareEmptyBrowse').addEventListener('click', () => switchTab('table'));
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(tabName) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  const section = document.getElementById('tab-' + tabName);
+  if (!btn || !section) return;
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  section.classList.add('active');
+
+  if (tabName === 'charts') {
+    setTimeout(() => {
+      if (scatterChart) scatterChart.resize();
+      if (barChart) barChart.resize();
+      if (radarChart) radarChart.resize();
+    }, 50);
+  }
+  if (tabName === 'compare') {
+    setTimeout(() => {
+      if (compareRadarChart) compareRadarChart.resize();
+    }, 50);
+  }
 }
 
 // ===== THEME MANAGEMENT =====
@@ -1158,10 +1449,10 @@ function updateChartColors(theme) {
     padding: 12,
   };
 
-  [scatterChart, barChart, radarChart].forEach(chart => {
+  [scatterChart, barChart, radarChart, compareRadarChart].forEach(chart => {
     if (!chart) return;
 
-    if (chart === radarChart) {
+    if (chart === radarChart || chart === compareRadarChart) {
       const rScale = chart.options.scales.r;
       if (rScale) {
         if (rScale.angleLines) rScale.angleLines.color = gridColor;
@@ -1173,7 +1464,7 @@ function updateChartColors(theme) {
         chart.options.plugins.legend.labels.color = textColor;
       }
       // Update average dataset colors
-      const avgDataset = chart.data.datasets[0];
+      const avgDataset = chart === radarChart ? chart.data.datasets[0] : null;
       if (avgDataset) {
         if (isLight) {
           avgDataset.backgroundColor = 'rgba(79, 70, 229, 0.08)';
@@ -1758,6 +2049,24 @@ const CHAT_TOOLS = [
         }
       }
     }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'compare_models',
+      description: 'Select 2-4 models and open the side-by-side Compare tab in the dashboard. Use this when the user asks to compare specific models head to head. Returns the full metrics for each matched model.',
+      parameters: {
+        type: 'object',
+        properties: {
+          model_names: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'The names of 2-4 models to compare side by side (e.g. ["DeepSeek V4 Pro", "GLM 5.2"]).'
+          }
+        },
+        required: ['model_names']
+      }
+    }
   }
 ];
 
@@ -1844,6 +2153,46 @@ function executeListAllModels(args) {
   })));
 }
 
+function executeCompareModels(args) {
+  if (!Array.isArray(args.model_names) || args.model_names.length === 0) {
+    return JSON.stringify({ error: 'Missing model_names parameter.' });
+  }
+
+  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const matched = [];
+  const notFound = [];
+  args.model_names.forEach(name => {
+    const query = String(name).toLowerCase().trim();
+    const match = allModels.find(m => m.model.toLowerCase().includes(query));
+    if (!match) {
+      notFound.push(name);
+    } else if (!matched.includes(match)) {
+      matched.push(match);
+    }
+  });
+
+  const selected = matched.slice(0, COMPARE_MAX);
+  state.compareSet = selected.map(m => modelKey(m));
+  updateCompareUI();
+  syncCompareHash();
+  switchTab('compare');
+
+  return JSON.stringify({
+    compared: selected.map(m => ({
+      model: m.model,
+      provider: m.provider,
+      inputPricePerMillion: m.inputPrice,
+      outputPricePerMillion: m.outputPrice,
+      blendedCostPerMillion: m.blended,
+      livebenchScore: m.livebench,
+      aaScore: m.aaScore,
+      normalizedPerformance: m.performance,
+      valueScore: m.value
+    })),
+    notFound
+  });
+}
+
 async function executeTool(name, argsString) {
   let args = {};
   try {
@@ -1867,6 +2216,8 @@ async function executeTool(name, argsString) {
       return executeGetModelDetails(args);
     case 'list_all_models':
       return executeListAllModels(args);
+    case 'compare_models':
+      return executeCompareModels(args);
     default:
       return JSON.stringify({ error: `Tool "${name}" is not implemented.` });
   }
@@ -1895,6 +2246,7 @@ Use tools when asked about:
 - Model rankings/leaderboard data (get_leaderboard_rankings)
 - Model details, prices, or benchmark scores (get_model_details)
 - Listing all models (list_all_models)
+- Comparing 2-4 specific models side by side (compare_models — also opens the Compare tab for the user)
 
 Do NOT assume what the active settings or values are. Call tools to get the correct live data.
 
@@ -2374,6 +2726,14 @@ async function init() {
   updateAll();
   removeSkeletons();
 
+  // Restore a shared comparison from the URL; unknown keys are kept until
+  // the background fetch resolves, then pruned by revalidateCompareSet()
+  restoreCompareFromHash();
+  window.addEventListener('hashchange', () => {
+    restoreCompareFromHash();
+    revalidateCompareSet();
+  });
+
   // Fetch fresh data in the background — swap and refresh only if different
   loadData().then(data => {
     const sameModels = JSON.stringify(data.models) === JSON.stringify(FALLBACK_DATA.models);
@@ -2391,6 +2751,7 @@ async function init() {
     } else {
       console.info('[LLM Analysis] data.json matches fallback — no update needed.');
     }
+    revalidateCompareSet();
   });
 }
 

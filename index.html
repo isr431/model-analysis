@@ -29,7 +29,7 @@
   </noscript>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260702-fixes2" defer></script>
+  <script src="app.js?v=20260712-compare2" defer></script>
 </head>
 <body>
   <main class="app">
@@ -134,7 +134,25 @@
         </svg>
         Table
       </button>
+      <button class="tab-btn" data-tab="compare">
+        <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="18" rx="1"></rect>
+          <rect x="14" y="3" width="7" height="18" rx="1"></rect>
+        </svg>
+        Compare
+        <span class="tab-badge hide" id="compareCountBadge">0</span>
+      </button>
     </nav>
+
+    <!-- COMPARE TRAY -->
+    <div class="compare-tray glass hide" id="compareTray">
+      <span class="compare-tray-label">compare_set</span>
+      <div class="compare-tray-chips" id="compareTrayChips"></div>
+      <div class="compare-tray-actions">
+        <button class="action-link" id="compareTrayGo">Compare →</button>
+        <button class="action-link" id="compareTrayClear">Clear</button>
+      </div>
+    </div>
 
     <!-- TAB: OVERVIEW -->
     <section class="tab-content active" id="tab-overview">
@@ -328,6 +346,7 @@
             </div>
             <div class="radar-legend-hint">
               Click a model in the table, charts, or leaderboard to compare its profile against the filtered average.
+              Shift-click a chart point to add it to the compare set.
             </div>
           </div>
         </div>
@@ -358,6 +377,7 @@
               <th data-sort="aaScore" class="num">AA Score</th>
               <th data-sort="performance" class="num">Performance</th>
               <th data-sort="value" class="num">Value</th>
+              <th class="compare-col">Compare</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -365,6 +385,32 @@
       </div>
     </div>
   </section>
+
+    <!-- TAB: COMPARE -->
+    <section class="tab-content" id="tab-compare">
+      <div class="compare-container glass">
+        <div class="pane-header">
+          <span class="window-controls">
+            <span class="window-dot red"></span>
+            <span class="window-dot yellow"></span>
+            <span class="window-dot green"></span>
+          </span>
+          model_comparison
+        </div>
+        <div class="pane-content">
+          <div class="empty-state hide" id="compareEmptyState">
+            <p id="compareEmptyMsg">Select at least 2 models to compare (up to 4).</p>
+            <button class="reset-btn" id="compareEmptyBrowse">Browse the table</button>
+          </div>
+          <div id="compareContent" class="hide">
+            <div class="compare-table-wrap" id="compareTableWrap"></div>
+            <div class="chart-canvas-wrap">
+              <canvas id="compareRadarChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- FOOTER -->
     <footer class="footer">
