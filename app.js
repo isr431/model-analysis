@@ -6,6 +6,7 @@ const FALLBACK_DATA = {
     'DeepSeek':    { color: '#22d3ee' },
     'Z.ai':        { color: '#6366f1' },
     'MiniMax':     { color: '#f472b6' },
+    'Meta':        { color: '#0082fb' },
     'OpenAI':      { color: '#10b981' },
     'Google':      { color: '#3b82f6' },
     'Alibaba':     { color: '#fb923c' },
@@ -23,7 +24,6 @@ const FALLBACK_DATA = {
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,   outputPrice: 15.0,  livebench: 74.8,  aaScore: 53 },
     { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.6,  aaScore: 42 },
     { provider: 'Anthropic',   model: 'Claude Opus 4.5',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 72.6,  aaScore: 41 },
-    { provider: 'DeepSeek',    model: 'DeepSeek V3.2',          inputPrice: 0.2288,outputPrice: 0.3432,livebench: 62.20, aaScore: 33 },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 68.9,  aaScore: 40 },
     { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',         inputPrice: 0.95,  outputPrice: 4.0,   livebench: 68.4,  aaScore: 42 },
     { provider: 'OpenAI',      model: 'gpt-oss-120b',           inputPrice: 0.039, outputPrice: 0.18,  livebench: 46.09, aaScore: 24 },
@@ -49,9 +49,9 @@ const FALLBACK_DATA = {
     { provider: 'Anthropic',   model: 'Claude Opus 4.6',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 74.5,  aaScore: 44 },
     { provider: 'Mistral AI',  model: 'Mistral Medium 3.5',     inputPrice: 1.5,   outputPrice: 7.5,   livebench: 63.80, aaScore: 30 },
     { provider: 'Anthropic',   model: 'Claude Haiku 4.5',       inputPrice: 1.0,   outputPrice: 5.0,   livebench: 61.32, aaScore: 30 },
-    { provider: 'Google',      model: 'Gemini 3.1 Flash Lite',  inputPrice: 0.25,  outputPrice: 1.5,   livebench: 61.68, aaScore: 25 },
     { provider: 'NVIDIA',      model: 'Nemotron 3 Ultra',       inputPrice: 0.5,   outputPrice: 2.5,   livebench: 51.78, aaScore: 38 },
     { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,   outputPrice: 15.0,  livebench: 78.5,  aaScore: 57 },
+    { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,  outputPrice: 4.25,  livebench: 76.2,  aaScore: 51 },
   ],
 };
 
