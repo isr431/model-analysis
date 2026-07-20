@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-19",
+  "lastUpdated": "2026-07-21",
   "providers": {
     "DeepSeek": {
       "color": "#22d3ee"
@@ -116,7 +116,7 @@
       "model": "gpt-oss-120b",
       "inputPrice": 0.039,
       "outputPrice": 0.18,
-      "livebench": 46.09,
+      "livebench": 46.1,
       "aaScore": 24
     },
     {
@@ -132,7 +132,7 @@
       "model": "GPT-5.3 Codex",
       "inputPrice": 1.75,
       "outputPrice": 14.0,
-      "livebench": 72.76,
+      "livebench": 71.2,
       "aaScore": 44
     },
     {
@@ -268,7 +268,7 @@
       "model": "GLM 5.1",
       "inputPrice": 1.4,
       "outputPrice": 4.4,
-      "livebench": 70.18,
+      "livebench": 68.6,
       "aaScore": 40
     },
     {
@@ -284,7 +284,7 @@
       "model": "Mistral Medium 3.5",
       "inputPrice": 1.5,
       "outputPrice": 7.5,
-      "livebench": 63.80,
+      "livebench": 62.0,
       "aaScore": 30
     },
     {
@@ -292,7 +292,7 @@
       "model": "Claude Haiku 4.5",
       "inputPrice": 1.0,
       "outputPrice": 5.0,
-      "livebench": 61.32,
+      "livebench": 60.7,
       "aaScore": 30
     },
     {
@@ -300,7 +300,7 @@
       "model": "Nemotron 3 Ultra",
       "inputPrice": 0.5,
       "outputPrice": 2.5,
-      "livebench": 51.78,
+      "livebench": 50.8,
       "aaScore": 38
     },
     {
