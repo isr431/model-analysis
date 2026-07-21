@@ -112,7 +112,7 @@
       "outputPrice": 1.95,
       "livebench": 68.9,
       "aaScore": 40,
-      "open": true
+      "open": false
     },
     {
       "provider": "Moonshot AI",
@@ -229,7 +229,7 @@
       "outputPrice": 3.75,
       "livebench": 73.1,
       "aaScore": 46,
-      "open": true
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -319,7 +319,7 @@
       "outputPrice": 7.5,
       "livebench": 62.0,
       "aaScore": 30,
-      "open": false
+      "open": true
     },
     {
       "provider": "Anthropic",
@@ -355,7 +355,7 @@
       "outputPrice": 4.25,
       "livebench": 76.2,
       "aaScore": 51,
-      "open": true
+      "open": false
     },
     {
       "provider": "Thinking Machines",
@@ -364,7 +364,7 @@
       "outputPrice": 4.68,
       "livebench": 71.7,
       "aaScore": 41,
-      "open": false
+      "open": true
     }
   ]
 }
