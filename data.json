@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-21",
+  "lastUpdated": "2026-07-22",
   "providers": {
     "DeepSeek": {
       "color": "#22d3ee"
@@ -365,6 +365,24 @@
       "livebench": 71.7,
       "aaScore": 41,
       "open": true
+    },
+    {
+      "provider": "Google",
+      "model": "Gemini 3.6 Flash",
+      "inputPrice": 1.5,
+      "outputPrice": 7.5,
+      "livebench": 73.6,
+      "aaScore": 50,
+      "open": false
+    },
+    {
+      "provider": "Google",
+      "model": "Gemini 3.5 Flash-Lite",
+      "inputPrice": 0.3,
+      "outputPrice": 2.5,
+      "livebench": 63.9,
+      "aaScore": 36,
+      "open": false
     }
   ]
 }
