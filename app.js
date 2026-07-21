@@ -18,42 +18,42 @@ const FALLBACK_DATA = {
     'Thinking Machines': { color: '#e879f9' },
   },
   models: [
-    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,   outputPrice: 30.0,  livebench: 82.4,  aaScore: 59 },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.5,   outputPrice: 15.0,  livebench: 79.8,  aaScore: 55 },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 1.0,   outputPrice: 6.0,   livebench: 74.3,  aaScore: 51 },
-    { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,   outputPrice: 6.0,   livebench: 76.3,  aaScore: 54 },
-    { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,   outputPrice: 15.0,  livebench: 74.8,  aaScore: 53 },
-    { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.6,  aaScore: 42 },
-    { provider: 'Anthropic',   model: 'Claude Opus 4.5',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 72.6,  aaScore: 41 },
-    { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 68.9,  aaScore: 40 },
-    { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',         inputPrice: 0.95,  outputPrice: 4.0,   livebench: 68.4,  aaScore: 42 },
-    { provider: 'OpenAI',      model: 'gpt-oss-120b',           inputPrice: 0.039, outputPrice: 0.18,  livebench: 46.1,  aaScore: 24 },
-    { provider: 'xAI',         model: 'Grok 4.3',               inputPrice: 1.25,  outputPrice: 2.5,   livebench: 62.3,  aaScore: 38 },
-    { provider: 'OpenAI',      model: 'GPT-5.3 Codex',          inputPrice: 1.75,  outputPrice: 14.0,  livebench: 71.2,  aaScore: 44 },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435, outputPrice: 0.87,  livebench: 71.6,  aaScore: 44 },
-    { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,   outputPrice: 4.4,   livebench: 73.2,  aaScore: 51 },
-    { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,   outputPrice: 1.2,   livebench: 67.3,  aaScore: 44 },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.14,  outputPrice: 0.28,  livebench: 65.5,  aaScore: 40 },
-    { provider: 'OpenAI',      model: 'GPT-5.4',                inputPrice: 2.5,   outputPrice: 15.0,  livebench: 78.0,  aaScore: 51 },
-    { provider: 'Google',      model: 'Gemini 3.5 Flash',       inputPrice: 1.5,   outputPrice: 9.0,   livebench: 74.6,  aaScore: 50 },
-    { provider: 'OpenAI',      model: 'GPT-5.4 nano',           inputPrice: 0.2,   outputPrice: 1.25,  livebench: 69.6,  aaScore: 38 },
-    { provider: 'Google',      model: 'Gemini 3.1 Pro',         inputPrice: 2.0,   outputPrice: 12.0,  livebench: 77.1,  aaScore: 46 },
-    { provider: 'Alibaba',     model: 'Qwen 3.7 Max',           inputPrice: 1.25,  outputPrice: 3.75,  livebench: 73.1,  aaScore: 46 },
-    { provider: 'OpenAI',      model: 'GPT-5.5',                inputPrice: 5.0,   outputPrice: 30.0,  livebench: 79.9,  aaScore: 55 },
-    { provider: 'Anthropic',   model: 'Claude Opus 4.8',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 78.9,  aaScore: 56 },
-    { provider: 'Moonshot AI', model: 'Kimi K2.6',              inputPrice: 0.95,  outputPrice: 4.0,   livebench: 70.5,  aaScore: 43 },
-    { provider: 'Anthropic',   model: 'Claude Opus 4.7',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 76.5,  aaScore: 54 },
-    { provider: 'Anthropic',   model: 'Claude Fable 5',         inputPrice: 10.0,  outputPrice: 50.0,  livebench: 80.8,  aaScore: 60 },
-    { provider: 'Anthropic',   model: 'Claude Sonnet 4.6',      inputPrice: 3.0,   outputPrice: 15.0,  livebench: 73.0,  aaScore: 47 },
-    { provider: 'OpenAI',      model: 'GPT-5.4 mini',           inputPrice: 0.75,  outputPrice: 4.5,   livebench: 66.4,  aaScore: 40 },
-    { provider: 'Z.ai',        model: 'GLM 5.1',                inputPrice: 1.4,   outputPrice: 4.4,   livebench: 68.6,  aaScore: 40 },
-    { provider: 'Anthropic',   model: 'Claude Opus 4.6',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 74.5,  aaScore: 44 },
-    { provider: 'Mistral AI',  model: 'Mistral Medium 3.5',     inputPrice: 1.5,   outputPrice: 7.5,   livebench: 62.0,  aaScore: 30 },
-    { provider: 'Anthropic',   model: 'Claude Haiku 4.5',       inputPrice: 1.0,   outputPrice: 5.0,   livebench: 60.7,  aaScore: 30 },
-    { provider: 'NVIDIA',      model: 'Nemotron 3 Ultra',       inputPrice: 0.5,   outputPrice: 2.5,   livebench: 50.8,  aaScore: 38 },
-    { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,   outputPrice: 15.0,  livebench: 78.5,  aaScore: 57 },
-    { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,  outputPrice: 4.25,  livebench: 76.2,  aaScore: 51 },
-    { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.87,  outputPrice: 4.68,  livebench: 71.7,  aaScore: 41 },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,   outputPrice: 30.0,  livebench: 82.4,  aaScore: 59, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.5,   outputPrice: 15.0,  livebench: 79.8,  aaScore: 55, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 1.0,   outputPrice: 6.0,   livebench: 74.3,  aaScore: 51, open: false },
+    { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,   outputPrice: 6.0,   livebench: 76.3,  aaScore: 54, open: false },
+    { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,   outputPrice: 15.0,  livebench: 74.8,  aaScore: 53, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.2',                inputPrice: 1.75,  outputPrice: 14.0,  livebench: 74.6,  aaScore: 42, open: false },
+    { provider: 'Anthropic',   model: 'Claude Opus 4.5',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 72.6,  aaScore: 41, open: false },
+    { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325, outputPrice: 1.95,  livebench: 68.9,  aaScore: 40, open: true },
+    { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',         inputPrice: 0.95,  outputPrice: 4.0,   livebench: 68.4,  aaScore: 42, open: true },
+    { provider: 'OpenAI',      model: 'gpt-oss-120b',           inputPrice: 0.039, outputPrice: 0.18,  livebench: 46.1,  aaScore: 24, open: true },
+    { provider: 'xAI',         model: 'Grok 4.3',               inputPrice: 1.25,  outputPrice: 2.5,   livebench: 62.3,  aaScore: 38, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.3 Codex',          inputPrice: 1.75,  outputPrice: 14.0,  livebench: 71.2,  aaScore: 44, open: false },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435, outputPrice: 0.87,  livebench: 71.6,  aaScore: 44, open: true },
+    { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,   outputPrice: 4.4,   livebench: 73.2,  aaScore: 51, open: true },
+    { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,   outputPrice: 1.2,   livebench: 67.3,  aaScore: 44, open: true },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.14,  outputPrice: 0.28,  livebench: 65.5,  aaScore: 40, open: true },
+    { provider: 'OpenAI',      model: 'GPT-5.4',                inputPrice: 2.5,   outputPrice: 15.0,  livebench: 78.0,  aaScore: 51, open: false },
+    { provider: 'Google',      model: 'Gemini 3.5 Flash',       inputPrice: 1.5,   outputPrice: 9.0,   livebench: 74.6,  aaScore: 50, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.4 nano',           inputPrice: 0.2,   outputPrice: 1.25,  livebench: 69.6,  aaScore: 38, open: false },
+    { provider: 'Google',      model: 'Gemini 3.1 Pro',         inputPrice: 2.0,   outputPrice: 12.0,  livebench: 77.1,  aaScore: 46, open: false },
+    { provider: 'Alibaba',     model: 'Qwen 3.7 Max',           inputPrice: 1.25,  outputPrice: 3.75,  livebench: 73.1,  aaScore: 46, open: true },
+    { provider: 'OpenAI',      model: 'GPT-5.5',                inputPrice: 5.0,   outputPrice: 30.0,  livebench: 79.9,  aaScore: 55, open: false },
+    { provider: 'Anthropic',   model: 'Claude Opus 4.8',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 78.9,  aaScore: 56, open: false },
+    { provider: 'Moonshot AI', model: 'Kimi K2.6',              inputPrice: 0.95,  outputPrice: 4.0,   livebench: 70.5,  aaScore: 43, open: true },
+    { provider: 'Anthropic',   model: 'Claude Opus 4.7',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 76.5,  aaScore: 54, open: false },
+    { provider: 'Anthropic',   model: 'Claude Fable 5',         inputPrice: 10.0,  outputPrice: 50.0,  livebench: 80.8,  aaScore: 60, open: false },
+    { provider: 'Anthropic',   model: 'Claude Sonnet 4.6',      inputPrice: 3.0,   outputPrice: 15.0,  livebench: 73.0,  aaScore: 47, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.4 mini',           inputPrice: 0.75,  outputPrice: 4.5,   livebench: 66.4,  aaScore: 40, open: false },
+    { provider: 'Z.ai',        model: 'GLM 5.1',                inputPrice: 1.4,   outputPrice: 4.4,   livebench: 68.6,  aaScore: 40, open: true },
+    { provider: 'Anthropic',   model: 'Claude Opus 4.6',        inputPrice: 5.0,   outputPrice: 25.0,  livebench: 74.5,  aaScore: 44, open: false },
+    { provider: 'Mistral AI',  model: 'Mistral Medium 3.5',     inputPrice: 1.5,   outputPrice: 7.5,   livebench: 62.0,  aaScore: 30, open: false },
+    { provider: 'Anthropic',   model: 'Claude Haiku 4.5',       inputPrice: 1.0,   outputPrice: 5.0,   livebench: 60.7,  aaScore: 30, open: false },
+    { provider: 'NVIDIA',      model: 'Nemotron 3 Ultra',       inputPrice: 0.5,   outputPrice: 2.5,   livebench: 50.8,  aaScore: 38, open: true },
+    { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,   outputPrice: 15.0,  livebench: 78.5,  aaScore: 57, open: true },
+    { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,  outputPrice: 4.25,  livebench: 76.2,  aaScore: 51, open: true },
+    { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.87,  outputPrice: 4.68,  livebench: 71.7,  aaScore: 41, open: false },
   ],
 };
 
@@ -231,6 +231,7 @@ const state = {
   priceMin: 0,
   priceMax: 12,
   perfThreshold: 70,
+  sourceFilter: 'all',
   activeProviders: new Set(),
   sortColumn: 'value',
   sortDirection: 'desc',
@@ -295,6 +296,9 @@ function getFilteredModels(allModels) {
     m.blended >= state.priceMin &&
     m.blended <= state.priceMax &&
     m.performance >= state.perfThreshold &&
+    (state.sourceFilter === 'all' ||
+     (state.sourceFilter === 'open' && m.open === true) ||
+     (state.sourceFilter === 'closed' && m.open !== true)) &&
     (state.search === '' ||
      m.model.toLowerCase().includes(state.search.toLowerCase()) ||
      m.provider.toLowerCase().includes(state.search.toLowerCase()))
@@ -379,6 +383,10 @@ function compareToggleHtml(m) {
   const k = modelKey(m);
   const active = isCompared(k);
   return `<button class="compare-toggle${active ? ' active' : ''}" data-key="${escapeHtml(k)}" aria-pressed="${active}" aria-label="Compare ${escapeHtml(m.model)}">${active ? '✓' : '+'}</button>`;
+}
+
+function openBadgeHtml(m) {
+  return m.open === true ? '<span class="open-badge" title="Open model">OPEN</span>' : '';
 }
 
 // ===== CHARTS =====
@@ -728,7 +736,7 @@ function updateLeaderboard(filtered) {
   list.innerHTML = display.map((m, i) => `
     <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-name">${escapeHtml(m.model)} <span class="leaderboard-provider">${escapeHtml(m.provider)}</span></span>
+      <span class="leaderboard-name">${escapeHtml(m.model)} <span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
@@ -949,7 +957,7 @@ function updateTable(filtered) {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
-        <td>${escapeHtml(m.model)}</td>
+        <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num">$${m.blended.toFixed(2)}</td>
@@ -1191,6 +1199,7 @@ function resetFilters() {
   state.priceMin = 0;
   state.priceMax = sliderMax;
   state.perfThreshold = 70;
+  state.sourceFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
   document.getElementById('pSlider').value = 0.07;
@@ -1202,6 +1211,10 @@ function resetFilters() {
   document.getElementById('priceMaxVal').textContent = sliderMax.toFixed(2);
   document.getElementById('perfThreshold').value = 70;
   document.getElementById('perfThresholdVal').textContent = '70';
+
+  document.querySelectorAll('.source-seg').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.source === 'all');
+  });
 
   document.querySelectorAll('.provider-pill').forEach(pill => {
     setPillState(pill, pill.dataset.provider, true);
@@ -1275,6 +1288,16 @@ function initEventListeners() {
     priceMaxInput.style.zIndex = '10';
     updatePriceRangeSliderHighlight();
     updateAll();
+  });
+
+  document.querySelectorAll('.source-seg').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.sourceFilter = btn.dataset.source;
+      document.querySelectorAll('.source-seg').forEach(b => {
+        b.classList.toggle('active', b === btn);
+      });
+      updateAll();
+    });
   });
 
   document.getElementById('providerSelectAll').addEventListener('click', () => {

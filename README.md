@@ -70,9 +70,12 @@ Add a model:
   "inputPrice": 0.039,
   "outputPrice": 0.18,
   "livebench": 46.09,
-  "aaScore": 24
+  "aaScore": 24,
+  "open": true
 }
 ```
+
+`open` marks whether the model's weights are publicly released (`true`) or closed/proprietary (`false`). It powers the "Open" badge and the Source filter (All / Open / Closed).
 
 If you're adding a new provider, also add its color to the `providers` object.
 

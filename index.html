@@ -96,6 +96,14 @@
             <input type="range" id="perfThreshold" min="0" max="100" step="1" value="70" aria-label="Minimum performance threshold">
           </div>
         </div>
+        <div class="control-group full-width" id="sourceFilterGroup">
+          <label>Source</label>
+          <div class="source-toggle" id="sourceToggle" role="group" aria-label="Source filter">
+            <button class="source-seg active" data-source="all">All</button>
+            <button class="source-seg" data-source="open">Open</button>
+            <button class="source-seg" data-source="closed">Closed</button>
+          </div>
+        </div>
         <div class="control-group full-width" id="providerFilters">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
             <label style="margin-bottom: 0;">Providers</label>
