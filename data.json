@@ -36,6 +36,9 @@
     },
     "xAI": {
       "color": "#f43f5e"
+    },
+    "Thinking Machines": {
+      "color": "#e879f9"
     }
   },
   "models": [
@@ -318,6 +321,14 @@
       "outputPrice": 4.25,
       "livebench": 76.2,
       "aaScore": 51
+    },
+    {
+      "provider": "Thinking Machines",
+      "model": "Inkling",
+      "inputPrice": 1.87,
+      "outputPrice": 4.68,
+      "livebench": 71.7,
+      "aaScore": 41
     }
   ]
 }
