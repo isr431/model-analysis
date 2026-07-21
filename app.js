@@ -232,7 +232,7 @@ const state = {
   search: '',
   priceMin: 0,
   priceMax: 12,
-  perfThreshold: 70,
+  perfThreshold: 0,
   sourceFilter: 'all',
   activeProviders: new Set(),
   sortColumn: 'value',
@@ -1200,7 +1200,7 @@ function resetFilters() {
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
-  state.perfThreshold = 70;
+  state.perfThreshold = 0;
   state.sourceFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
@@ -1211,8 +1211,8 @@ function resetFilters() {
   document.getElementById('priceMax').value = sliderMax;
   document.getElementById('priceMinVal').textContent = '0.00';
   document.getElementById('priceMaxVal').textContent = sliderMax.toFixed(2);
-  document.getElementById('perfThreshold').value = 70;
-  document.getElementById('perfThresholdVal').textContent = '70';
+  document.getElementById('perfThreshold').value = 0;
+  document.getElementById('perfThresholdVal').textContent = '0';
 
   document.querySelectorAll('.source-seg').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.source === 'all');
