@@ -15,6 +15,7 @@ const FALLBACK_DATA = {
     'Mistral AI':  { color: '#2dd4bf' },
     'NVIDIA':      { color: '#84cc16' },
     'xAI':         { color: '#f43f5e' },
+    'Thinking Machines': { color: '#e879f9' },
   },
   models: [
     { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,   outputPrice: 30.0,  livebench: 82.4,  aaScore: 59 },
@@ -52,6 +53,7 @@ const FALLBACK_DATA = {
     { provider: 'NVIDIA',      model: 'Nemotron 3 Ultra',       inputPrice: 0.5,   outputPrice: 2.5,   livebench: 50.8,  aaScore: 38 },
     { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,   outputPrice: 15.0,  livebench: 78.5,  aaScore: 57 },
     { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,  outputPrice: 4.25,  livebench: 76.2,  aaScore: 51 },
+    { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.87,  outputPrice: 4.68,  livebench: 71.7,  aaScore: 41 },
   ],
 };
 
