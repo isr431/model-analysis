@@ -15,7 +15,7 @@ const FALLBACK_DATA = {
     'Mistral AI':  { color: '#2dd4bf' },
     'NVIDIA':      { color: '#84cc16' },
     'xAI':         { color: '#f43f5e' },
-    'Thinking Machines': { color: '#e879f9' },
+    'Thinking Machines': { color: '#78716c' },
   },
   models: [
     { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,   outputPrice: 30.0,  livebench: 82.4,  aaScore: 59, open: false },
