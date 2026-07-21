@@ -48,7 +48,8 @@
       "inputPrice": 5.0,
       "outputPrice": 30.0,
       "livebench": 82.4,
-      "aaScore": 59
+      "aaScore": 59,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -56,7 +57,8 @@
       "inputPrice": 2.5,
       "outputPrice": 15.0,
       "livebench": 79.8,
-      "aaScore": 55
+      "aaScore": 55,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -64,7 +66,8 @@
       "inputPrice": 1.0,
       "outputPrice": 6.0,
       "livebench": 74.3,
-      "aaScore": 51
+      "aaScore": 51,
+      "open": false
     },
     {
       "provider": "xAI",
@@ -72,7 +75,8 @@
       "inputPrice": 2.0,
       "outputPrice": 6.0,
       "livebench": 76.3,
-      "aaScore": 54
+      "aaScore": 54,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -80,7 +84,8 @@
       "inputPrice": 3.0,
       "outputPrice": 15.0,
       "livebench": 74.8,
-      "aaScore": 53
+      "aaScore": 53,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -88,7 +93,8 @@
       "inputPrice": 1.75,
       "outputPrice": 14.0,
       "livebench": 74.6,
-      "aaScore": 42
+      "aaScore": 42,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -96,7 +102,8 @@
       "inputPrice": 5.0,
       "outputPrice": 25.0,
       "livebench": 72.6,
-      "aaScore": 41
+      "aaScore": 41,
+      "open": false
     },
     {
       "provider": "Alibaba",
@@ -104,7 +111,8 @@
       "inputPrice": 0.325,
       "outputPrice": 1.95,
       "livebench": 68.9,
-      "aaScore": 40
+      "aaScore": 40,
+      "open": true
     },
     {
       "provider": "Moonshot AI",
@@ -112,7 +120,8 @@
       "inputPrice": 0.95,
       "outputPrice": 4.0,
       "livebench": 68.4,
-      "aaScore": 42
+      "aaScore": 42,
+      "open": true
     },
     {
       "provider": "OpenAI",
@@ -120,7 +129,8 @@
       "inputPrice": 0.039,
       "outputPrice": 0.18,
       "livebench": 46.1,
-      "aaScore": 24
+      "aaScore": 24,
+      "open": true
     },
     {
       "provider": "xAI",
@@ -128,7 +138,8 @@
       "inputPrice": 1.25,
       "outputPrice": 2.5,
       "livebench": 62.3,
-      "aaScore": 38
+      "aaScore": 38,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -136,7 +147,8 @@
       "inputPrice": 1.75,
       "outputPrice": 14.0,
       "livebench": 71.2,
-      "aaScore": 44
+      "aaScore": 44,
+      "open": false
     },
     {
       "provider": "DeepSeek",
@@ -144,7 +156,8 @@
       "inputPrice": 0.435,
       "outputPrice": 0.87,
       "livebench": 71.6,
-      "aaScore": 44
+      "aaScore": 44,
+      "open": true
     },
     {
       "provider": "Z.ai",
@@ -152,7 +165,8 @@
       "inputPrice": 1.4,
       "outputPrice": 4.4,
       "livebench": 73.2,
-      "aaScore": 51
+      "aaScore": 51,
+      "open": true
     },
     {
       "provider": "MiniMax",
@@ -160,7 +174,8 @@
       "inputPrice": 0.3,
       "outputPrice": 1.2,
       "livebench": 67.3,
-      "aaScore": 44
+      "aaScore": 44,
+      "open": true
     },
     {
       "provider": "DeepSeek",
@@ -168,7 +183,8 @@
       "inputPrice": 0.14,
       "outputPrice": 0.28,
       "livebench": 65.5,
-      "aaScore": 40
+      "aaScore": 40,
+      "open": true
     },
     {
       "provider": "OpenAI",
@@ -176,7 +192,8 @@
       "inputPrice": 2.5,
       "outputPrice": 15.0,
       "livebench": 78.0,
-      "aaScore": 51
+      "aaScore": 51,
+      "open": false
     },
     {
       "provider": "Google",
@@ -184,7 +201,8 @@
       "inputPrice": 1.5,
       "outputPrice": 9.0,
       "livebench": 74.6,
-      "aaScore": 50
+      "aaScore": 50,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -192,7 +210,8 @@
       "inputPrice": 0.2,
       "outputPrice": 1.25,
       "livebench": 69.6,
-      "aaScore": 38
+      "aaScore": 38,
+      "open": false
     },
     {
       "provider": "Google",
@@ -200,7 +219,8 @@
       "inputPrice": 2.0,
       "outputPrice": 12.0,
       "livebench": 77.1,
-      "aaScore": 46
+      "aaScore": 46,
+      "open": false
     },
     {
       "provider": "Alibaba",
@@ -208,7 +228,8 @@
       "inputPrice": 1.25,
       "outputPrice": 3.75,
       "livebench": 73.1,
-      "aaScore": 46
+      "aaScore": 46,
+      "open": true
     },
     {
       "provider": "OpenAI",
@@ -216,7 +237,8 @@
       "inputPrice": 5.0,
       "outputPrice": 30.0,
       "livebench": 79.9,
-      "aaScore": 55
+      "aaScore": 55,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -224,7 +246,8 @@
       "inputPrice": 5.0,
       "outputPrice": 25.0,
       "livebench": 78.9,
-      "aaScore": 56
+      "aaScore": 56,
+      "open": false
     },
     {
       "provider": "Moonshot AI",
@@ -232,7 +255,8 @@
       "inputPrice": 0.95,
       "outputPrice": 4.0,
       "livebench": 70.5,
-      "aaScore": 43
+      "aaScore": 43,
+      "open": true
     },
     {
       "provider": "Anthropic",
@@ -240,7 +264,8 @@
       "inputPrice": 5.0,
       "outputPrice": 25.0,
       "livebench": 76.5,
-      "aaScore": 54
+      "aaScore": 54,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -248,7 +273,8 @@
       "inputPrice": 10.0,
       "outputPrice": 50.0,
       "livebench": 80.8,
-      "aaScore": 60
+      "aaScore": 60,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -256,7 +282,8 @@
       "inputPrice": 3.0,
       "outputPrice": 15.0,
       "livebench": 73.0,
-      "aaScore": 47
+      "aaScore": 47,
+      "open": false
     },
     {
       "provider": "OpenAI",
@@ -264,7 +291,8 @@
       "inputPrice": 0.75,
       "outputPrice": 4.5,
       "livebench": 66.4,
-      "aaScore": 40
+      "aaScore": 40,
+      "open": false
     },
     {
       "provider": "Z.ai",
@@ -272,7 +300,8 @@
       "inputPrice": 1.4,
       "outputPrice": 4.4,
       "livebench": 68.6,
-      "aaScore": 40
+      "aaScore": 40,
+      "open": true
     },
     {
       "provider": "Anthropic",
@@ -280,7 +309,8 @@
       "inputPrice": 5.0,
       "outputPrice": 25.0,
       "livebench": 74.5,
-      "aaScore": 44
+      "aaScore": 44,
+      "open": false
     },
     {
       "provider": "Mistral AI",
@@ -288,7 +318,8 @@
       "inputPrice": 1.5,
       "outputPrice": 7.5,
       "livebench": 62.0,
-      "aaScore": 30
+      "aaScore": 30,
+      "open": false
     },
     {
       "provider": "Anthropic",
@@ -296,7 +327,8 @@
       "inputPrice": 1.0,
       "outputPrice": 5.0,
       "livebench": 60.7,
-      "aaScore": 30
+      "aaScore": 30,
+      "open": false
     },
     {
       "provider": "NVIDIA",
@@ -304,7 +336,8 @@
       "inputPrice": 0.5,
       "outputPrice": 2.5,
       "livebench": 50.8,
-      "aaScore": 38
+      "aaScore": 38,
+      "open": true
     },
     {
       "provider": "Moonshot AI",
@@ -312,7 +345,8 @@
       "inputPrice": 3.0,
       "outputPrice": 15.0,
       "livebench": 78.5,
-      "aaScore": 57
+      "aaScore": 57,
+      "open": true
     },
     {
       "provider": "Meta",
@@ -320,7 +354,8 @@
       "inputPrice": 1.25,
       "outputPrice": 4.25,
       "livebench": 76.2,
-      "aaScore": 51
+      "aaScore": 51,
+      "open": true
     },
     {
       "provider": "Thinking Machines",
@@ -328,7 +363,8 @@
       "inputPrice": 1.87,
       "outputPrice": 4.68,
       "livebench": 71.7,
-      "aaScore": 41
+      "aaScore": 41,
+      "open": false
     }
   ]
 }
