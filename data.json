@@ -2,31 +2,31 @@
   "lastUpdated": "2026-07-22",
   "providers": {
     "DeepSeek": {
-      "color": "#22d3ee"
+      "color": "#06b6d4"
     },
     "Z.ai": {
-      "color": "#6366f1"
+      "color": "#a855f7"
     },
     "MiniMax": {
-      "color": "#f472b6"
+      "color": "#ec4899"
     },
     "Meta": {
-      "color": "#0082fb"
+      "color": "#2563eb"
     },
     "OpenAI": {
-      "color": "#10b981"
+      "color": "#059669"
     },
     "Google": {
-      "color": "#3b82f6"
+      "color": "#60a5fa"
     },
     "Alibaba": {
-      "color": "#fb923c"
+      "color": "#f97316"
     },
     "Anthropic": {
-      "color": "#fbbf24"
+      "color": "#d97757"
     },
     "Moonshot AI": {
-      "color": "#c084fc"
+      "color": "#facc15"
     },
     "Mistral AI": {
       "color": "#2dd4bf"
