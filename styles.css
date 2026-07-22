@@ -29,6 +29,7 @@
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
   --max-width: 1400px;
+  --slimbar-h: 48px;
   --transition: all 0.15s ease-in-out;
   --font-xs: 11px;
   --font-sm: 12px;
@@ -180,24 +181,128 @@ body {
   font-size: var(--font-sm);
   font-weight: 400;
 }
+.header .intro {
+  max-width: 640px;
+  margin: var(--spacing-sm) auto 0;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  line-height: 1.6;
+}
+.header .intro strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
 
-/* ===== CONTROLS BAR ===== */
-.controls-bar {
+/* ===== FORMULA MODAL LINK (opens the score-formula modal) ===== */
+.info-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.15s ease;
+  outline: none;
+}
+/* Text link in the intro paragraph */
+.info-link {
+  color: var(--slider-thumb);
+  font-size: var(--font-sm);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.5);
+  padding-bottom: 1px;
+}
+.info-link:hover,
+.info-link:focus-visible {
+  color: var(--slider-thumb);
+  border-bottom-color: var(--slider-thumb);
+}
+
+/* ===== SLIM FILTER BAR (sticky) ===== */
+.filters-bar {
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: var(--slimbar-h);
+  padding: 6px var(--spacing-md);
   margin-bottom: var(--spacing-lg);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-lg);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+/* When the panel is open, sit close to it; the panel supplies the gap below. */
+.filters-bar:has(+ .filters-panel:not([hidden])) {
+  margin-bottom: var(--spacing-sm);
+}
+.filters-bar-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+.filters-bar-search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;
+  margin-left: auto;
+}
+.filters-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  padding: 6px 12px;
+  min-height: 34px;
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+  white-space: nowrap;
+}
+.filters-toggle:hover,
+.filters-toggle[aria-expanded="true"] {
+  color: var(--slider-thumb);
+  border-color: var(--slider-thumb);
+  background: var(--accent-glow);
+}
+.filters-toggle-icon { width: 14px; height: 14px; stroke: currentColor; }
+.filters-toggle-arrow {
+  font-size: 10px;
+  transition: transform 0.15s ease;
+}
+.filters-toggle[aria-expanded="true"] .filters-toggle-arrow {
+  transform: rotate(180deg);
+}
+.filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--slider-thumb);
+  color: var(--bg-primary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+.filters-bar-reset { white-space: nowrap; height: 34px; }
+/* Unify slim-bar control heights (search / toggle / reset all 34px) */
+.filters-bar .search-input { height: 34px; }
+
+/* ===== EXPANDABLE FILTER PANEL (in-flow) ===== */
+.filters-panel {
+  margin-bottom: var(--spacing-lg);
   overflow: hidden;
 }
-:root[data-theme="light"] .controls-bar {
-  background: var(--glass-bg);
-}
+.filters-panel[hidden] { display: none; }
 
 .controls-grid {
   display: grid;
@@ -517,7 +622,11 @@ input[type="range"]::-moz-range-thumb:hover {
   margin-bottom: var(--spacing-lg);
   border-bottom: 2px solid var(--glass-border);
   padding: 0 var(--spacing-sm);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.tab-nav::-webkit-scrollbar { display: none; }
 .tab-btn {
   background: transparent;
   border: 1px solid transparent;
@@ -551,6 +660,7 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 .tab-btn.active {
   color: var(--text-primary);
+  font-weight: 600;
   background: var(--bg-secondary);
   border-color: var(--glass-border);
   border-bottom: 2px solid var(--bg-secondary);
@@ -561,10 +671,13 @@ input[type="range"]::-moz-range-thumb:hover {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   background: var(--slider-thumb);
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
+
+/* ===== MOBILE BOTTOM TAB BAR (shown ≤640px) ===== */
+.bottom-nav { display: none; }
 
 /* ===== TAB CONTENT ===== */
 .tab-content { display: none; }
@@ -682,7 +795,6 @@ input[type="range"]::-moz-range-thumb:hover {
 .summary-card:hover .window-dot,
 .glass:hover .window-dot,
 .overview-leaderboard:hover .window-dot,
-  .formula-card:hover .window-dot,
   .chart-container:hover .window-dot {
     opacity: 1;
   }
@@ -815,17 +927,42 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 .leaderboard-expand.expanded .arrow { transform: rotate(180deg); }
 
-/* ===== FORMULA CARD ===== */
-.formula-card {
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  margin-bottom: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  overflow: hidden;
+/* ===== SCORE FORMULA MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
+.modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  /* Solid, opaque surface — avoids the muddy translucent-glass look */
+  background: #18181f;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:root[data-theme="light"] .modal { background: #ffffff; }
+.modal .pane-header { position: relative; }
+.modal-close {
+  margin-left: auto;
+}
+.modal-body {
+  overflow-y: auto;
+}
+
+/* ===== FORMULA ITEMS (rendered inside the modal) ===== */
 .formula-item { margin-bottom: var(--spacing-md); }
 .formula-item:last-child { margin-bottom: 0; }
 .formula-label {
@@ -1250,32 +1387,101 @@ input[type="range"]::-moz-range-thumb:hover {
   .controls-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .app { padding: var(--spacing-md); padding-top: var(--spacing-lg); }
+  .app {
+    padding: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    /* Reserve space for the fixed bottom tab bar */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
   .header h1 { font-size: 1.5rem; }
-  .controls-bar { padding: 0; }
   .controls-grid { padding: var(--spacing-sm) var(--spacing-md); grid-template-columns: 1fr; }
   .summary-cards { grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
   .summary-card { border-radius: 0; }
   .card-stat { font-size: var(--font-base); }
   .leaderboard-name { min-width: 120px; }
   .compare-tray-actions { margin-left: 0; width: 100%; }
+
+  /* Roomier touch targets in the expanded filter panel */
+  .action-link,
+  .source-seg,
+  .provider-pill { min-height: 34px; }
+  .filters-toggle { min-height: 40px; }
+
+  /* Shorter charts on phones (bar chart stays tall — up to ~38 bars) */
+  .chart-canvas-wrap-scatter { height: 300px; }
+  #radarContainer .chart-canvas-wrap,
+  #tab-compare .chart-canvas-wrap { height: 340px; }
+
+  /* Swap top tabs for a fixed bottom nav */
+  .tab-nav { display: none; }
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 115;
+    height: calc(60px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    margin: 0;
+  }
+  .bottom-nav .tab-btn {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    margin: 0;
+    padding: 6px 2px;
+    border: none;
+    border-radius: 0;
+    font-size: 10px;
+    font-weight: 500;
+    min-height: 44px;
+    color: var(--text-secondary);
+  }
+  .bottom-nav .tab-btn .tab-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.85;
+  }
+  .bottom-nav .tab-btn.active {
+    color: var(--slider-thumb);
+    background: transparent;
+    border: none;
+    font-weight: 600;
+  }
+  .bottom-nav .tab-btn.active .tab-icon { opacity: 1; }
+  .bottom-nav .tab-btn.active::after {
+    top: 0;
+    bottom: auto;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  }
+  .bottom-nav .tab-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 26px);
+  }
+
+  /* Lift the floating chat controls above the bottom nav */
+  .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 480px) {
   .app-header-controls {
     top: 16px;
     right: 16px;
   }
+  .theme-toggle-btn { width: 40px; height: 40px; }
+  .theme-toggle-btn svg { width: 18px; height: 18px; }
   .summary-cards { grid-template-columns: 1fr !important; }
-  .tab-nav {
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: var(--spacing-xs);
-  }
-  .tab-btn {
-    padding: var(--spacing-sm) var(--spacing-sm);
-    font-size: var(--font-sm);
-  }
+  .filters-bar-title { display: none; }
+  .filters-bar .window-controls { display: none; }
   .dual-slider input[type="range"]::-webkit-slider-thumb {
     width: 26px;
     height: 26px;
@@ -1946,7 +2152,7 @@ details[open] .thinking-title::before {
     bottom: 0 !important;
     right: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    height: 100dvh !important;
     border-radius: 0 !important;
     border: none !important;
   }
@@ -1954,8 +2160,9 @@ details[open] .thinking-title::before {
     transform: translateY(100%);
     opacity: 0;
   }
+  /* Keep the FAB above the fixed bottom nav (overrides the ≤640 rule too) */
   .chat-fab {
-    bottom: 16px;
+    bottom: calc(76px + env(safe-area-inset-bottom));
     right: 16px;
   }
   .chat-resizer {
