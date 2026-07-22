@@ -554,6 +554,7 @@ function initCharts() {
         tooltip: {
           ...tooltipStyle,
           callbacks: {
+            title: items => (state._barLabelsFull && state._barLabelsFull[items[0].dataIndex]) || items[0].label,
             label: item => {
               const metricLabels = { value: 'Value', performance: 'Performance', blended: 'Blended Cost', livebench: 'LiveBench', aaScore: 'AA Score' };
               return `${metricLabels[state.barMetric]}: ${item.raw.toFixed(2)}`;
@@ -828,7 +829,17 @@ function updateBarChart(filtered) {
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
   state._barKeys = sorted.map(m => modelKey(m));
-  barChart.data.labels = sorted.map(m => m.model);
+  // Keep full names for the tooltip; on narrow screens truncate axis labels and
+  // reserve a fixed label gutter so names render fully instead of clipping at
+  // the left canvas edge (Chart.js under-measures the mono font otherwise).
+  const narrow = window.matchMedia('(max-width: 640px)').matches;
+  state._barLabelsFull = sorted.map(m => m.model);
+  barChart.data.labels = narrow
+    ? state._barLabelsFull.map(n => n.length > 18 ? n.slice(0, 17) + '…' : n)
+    : state._barLabelsFull;
+  barChart.options.scales.y.ticks.font.size = narrow ? 9 : 10;
+  barChart.options.scales.y.afterFit = narrow ? (scale) => { scale.width = 112; } : null;
+  barChart.options.layout.padding.left = narrow ? 2 : 12;
   barChart.data.datasets[0].data = sorted.map(m => m[metric]);
 
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -978,6 +989,43 @@ function updateTable(filtered) {
       th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
     }
   });
+
+  updateTableScrollHints();
+}
+
+// Toggle scroll-hint classes so the sticky model column casts a shadow once
+// scrolled, and the container shows a right-edge fade while more columns remain.
+// (CSS scopes the visual effect to <=640px; running this everywhere is harmless.)
+function updateTableScrollHints() {
+  const wrap = document.querySelector('.table-wrapper');
+  const container = document.getElementById('tableContainer');
+  if (!wrap || !container) return;
+  wrap.classList.toggle('scrolled-x', wrap.scrollLeft > 4);
+  container.classList.toggle('more-x', wrap.scrollLeft < wrap.scrollWidth - wrap.clientWidth - 4);
+}
+
+// Same left-shadow cue for the Compare tab's side-by-side table, whose sticky
+// column is the metric-label column.
+function updateCompareScrollHint() {
+  const wrap = document.getElementById('compareTableWrap');
+  if (!wrap) return;
+  wrap.classList.toggle('scrolled-x', wrap.scrollLeft > 4);
+}
+
+function initTableScrollHints() {
+  const wrap = document.querySelector('.table-wrapper');
+  if (wrap) {
+    wrap.addEventListener('scroll', updateTableScrollHints, { passive: true });
+    updateTableScrollHints();
+  }
+  const compareWrap = document.getElementById('compareTableWrap');
+  if (compareWrap) {
+    compareWrap.addEventListener('scroll', updateCompareScrollHint, { passive: true });
+  }
+  window.addEventListener('resize', () => {
+    updateTableScrollHints();
+    updateCompareScrollHint();
+  }, { passive: true });
 }
 
 function updateFormulaP() {
@@ -1067,6 +1115,8 @@ function updateCompareTable(models) {
       <tbody>${rows}</tbody>
     </table>
   `;
+
+  updateCompareScrollHint();
 }
 
 function updateCompareRadar(models) {
@@ -1489,6 +1539,12 @@ function switchTab(tabName) {
     b.setAttribute('aria-current', 'page');
   });
   section.classList.add('active');
+
+  // On phones the bottom nav can be tapped from anywhere in a long tab, so
+  // reset scroll to the top of the newly shown tab. Desktop scroll is untouched.
+  if (window.matchMedia('(max-width: 640px)').matches) {
+    window.scrollTo(0, 0);
+  }
 
   if (tabName === 'charts') {
     setTimeout(() => {
@@ -2840,6 +2896,11 @@ async function init() {
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
   initChatbot();
+  initTableScrollHints();
+
+  // Re-render when crossing the phone breakpoint (e.g. rotation) so bar-chart
+  // labels and table scroll hints re-derive for the new width.
+  window.matchMedia('(max-width: 640px)').addEventListener('change', () => updateAll());
 
   // First paint with fallback data; remove skeleton state
   updateAll();

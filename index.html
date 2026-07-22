@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260722-mobile2">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260722-restructure" defer></script>
+  <script src="app.js?v=20260722-mobile2" defer></script>
 </head>
 <body>
   <main class="app">
@@ -339,8 +339,10 @@
               <canvas id="radarChart"></canvas>
             </div>
             <div class="radar-legend-hint">
-              Click a model in the table, charts, or leaderboard to compare its profile against the filtered average.
-              Shift-click a chart point to add it to the compare set.
+              <span class="hint-fine-pointer">Click a model in the table, charts, or leaderboard to compare its profile against the filtered average.
+              Shift-click a chart point to add it to the compare set.</span>
+              <span class="hint-coarse-pointer">Tap a model in the table, charts, or leaderboard to compare its profile against the filtered average.
+              Use the <strong>+</strong> button on a leaderboard or table row to add models to the compare set.</span>
             </div>
           </div>
         </div>
