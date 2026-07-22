@@ -1027,6 +1027,12 @@ input[type="range"]::-moz-range-thumb:hover {
   text-align: center;
   margin-top: var(--spacing-sm);
 }
+/* Show shift-click guidance on fine pointers, tap/+ guidance on touch */
+.radar-legend-hint .hint-coarse-pointer { display: none; }
+@media (pointer: coarse) {
+  .radar-legend-hint .hint-fine-pointer { display: none; }
+  .radar-legend-hint .hint-coarse-pointer { display: inline; }
+}
 .metric-select {
   background: var(--bg-primary);
   border: 1px solid var(--glass-border);
@@ -1349,6 +1355,17 @@ input[type="range"]::-moz-range-thumb:hover {
   color: var(--success);
   font-weight: 600;
 }
+/* Pin the metric-label column so each row stays identifiable while the model
+   columns scroll horizontally (same treatment as the main table). */
+.compare-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--table-sticky-bg);
+}
+.compare-table-wrap.scrolled-x .compare-table th:first-child {
+  box-shadow: 6px 0 8px -4px rgba(0, 0, 0, 0.35);
+}
 
 /* ===== EMPTY STATE ===== */
 .empty-state {
@@ -1393,24 +1410,154 @@ input[type="range"]::-moz-range-thumb:hover {
     /* Reserve space for the fixed bottom tab bar */
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
-  .header h1 { font-size: 1.5rem; }
+  /* Keep the centered title clear of the absolute theme toggle */
+  .header { padding: 0 48px; }
+  .header h1 { font-size: 1.35rem; }
+  .app-header-controls { top: 16px; right: 16px; }
+  .theme-toggle-btn { width: 40px; height: 40px; }
+  .theme-toggle-btn svg { width: 18px; height: 18px; }
   .controls-grid { padding: var(--spacing-sm) var(--spacing-md); grid-template-columns: 1fr; }
   .summary-cards { grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
-  .summary-card { border-radius: 0; }
   .card-stat { font-size: var(--font-base); }
-  .leaderboard-name { min-width: 120px; }
+  /* Hide the inner card label — the pane-header title already names each card */
+  .summary-card .card-label { display: none; }
   .compare-tray-actions { margin-left: 0; width: 100%; }
+
+  /* Leaderboard rows become a two-line grid so nothing clips or scrolls off.
+     Line 1: rank + name/provider/badge (ellipsized). Line 2: bar + score.
+     The compare toggle is pinned right, spanning both lines. */
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto 44px;
+    grid-template-areas:
+      "rank name  name   toggle"
+      "bar  bar   score  toggle";
+    row-gap: 8px;
+    column-gap: var(--spacing-sm);
+    align-items: center;
+    padding: 12px 12px;
+  }
+  .leaderboard-rank { grid-area: rank; }
+  .leaderboard-name {
+    grid-area: name;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .leaderboard-bar-track { grid-area: bar; }
+  .leaderboard-score { grid-area: score; width: auto; }
+  .leaderboard-row .compare-toggle {
+    grid-area: toggle;
+    justify-self: end;
+    align-self: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 0;
+    font-size: var(--font-lg);
+  }
 
   /* Roomier touch targets in the expanded filter panel */
   .action-link,
   .source-seg,
   .provider-pill { min-height: 34px; }
-  .filters-toggle { min-height: 40px; }
+  /* Filters-bar controls share one height (search input is 40px, above) */
+  .filters-toggle,
+  .filters-bar .filters-bar-reset { min-height: 40px; }
 
   /* Shorter charts on phones (bar chart stays tall — up to ~38 bars) */
   .chart-canvas-wrap-scatter { height: 300px; }
-  #radarContainer .chart-canvas-wrap,
+  #radarContainer .chart-canvas-wrap { height: 300px; }
   #tab-compare .chart-canvas-wrap { height: 340px; }
+
+  /* ===== Inputs: 16px font stops iOS Safari auto-zoom on focus =====
+     Ancestor-qualified so these beat the base rules (which sit later in the
+     source and would otherwise win the equal-specificity tie). */
+  .search-input,
+  .chat-drawer .chat-input,
+  .chat-drawer .chat-key-input,
+  .chat-drawer .chat-model-select,
+  .pane-header .metric-select,
+  .metric-select {
+    font-size: 16px;
+  }
+  .search-input,
+  .filters-bar .search-input { height: 40px; }
+  .pane-header .metric-select { height: 32px; }
+
+  /* ===== Larger touch targets ===== */
+  .compare-toggle {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-lg);
+  }
+  .compare-chip-remove,
+  .compare-col-remove {
+    min-width: 32px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Ancestor-qualified to beat the base rules that follow in source order */
+  .chat-drawer .chat-icon-btn,
+  .modal .chat-icon-btn { width: 32px; height: 32px; }
+  .chat-drawer .chat-send-btn { width: 44px; height: 44px; }
+
+  /* ===== Table: sticky header + sticky model column + scroll hints ===== */
+  .table-container { position: relative; }
+  .table-wrapper {
+    overflow: auto;
+    max-height: calc(100dvh - 220px);
+  }
+  #modelTable thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--table-sticky-bg);
+  }
+  /* Hide the provider column so the model column can pin cleanly at the edge */
+  #modelTable th:nth-child(1),
+  #modelTable td:nth-child(1) { display: none; }
+  /* Pin the model column (now the first visible column) */
+  #modelTable th:nth-child(2),
+  #modelTable td:nth-child(2) {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: var(--table-sticky-bg);
+  }
+  /* Header/model intersection sits above both sticky axes */
+  #modelTable thead th:nth-child(2) { z-index: 3; }
+  #modelTable tbody tr:hover td:nth-child(2) { background: var(--table-sticky-hover-bg); }
+  /* Highlighted row: keep the sticky cell opaque under the translucent glow */
+  #modelTable tbody tr.highlighted td:nth-child(2) {
+    background: linear-gradient(var(--accent-glow), var(--accent-glow)), var(--table-sticky-bg);
+  }
+  #modelTable th.num,
+  #modelTable td.num { min-width: 72px; padding: 10px 8px; font-size: var(--font-xs); }
+  /* Left shadow appears once the model column is scrolled past */
+  .table-wrapper.scrolled-x #modelTable td:nth-child(2),
+  .table-wrapper.scrolled-x #modelTable th:nth-child(2) {
+    box-shadow: 6px 0 8px -4px rgba(0, 0, 0, 0.35);
+  }
+  /* Right-edge fade hints that more columns exist */
+  .table-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: linear-gradient(to right, transparent, var(--bg-secondary));
+  }
+  .table-container.more-x::after { opacity: 0.9; }
 
   /* Swap top tabs for a fixed bottom nav */
   .tab-nav { display: none; }
@@ -1473,12 +1620,7 @@ input[type="range"]::-moz-range-thumb:hover {
   .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 480px) {
-  .app-header-controls {
-    top: 16px;
-    right: 16px;
-  }
-  .theme-toggle-btn { width: 40px; height: 40px; }
-  .theme-toggle-btn svg { width: 18px; height: 18px; }
+  /* Theme-toggle enlargement now lives in the ≤640 block (applies here too) */
   .summary-cards { grid-template-columns: 1fr !important; }
   .filters-bar-title { display: none; }
   .filters-bar .window-controls { display: none; }
@@ -2153,8 +2295,15 @@ details[open] .thinking-title::before {
     right: 0 !important;
     width: 100vw !important;
     height: 100dvh !important;
+    /* Base rule's min/max clamps would otherwise cap this to ~360x690 */
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
     border-radius: 0 !important;
     border: none !important;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .chat-drawer.hide {
     transform: translateY(100%);
