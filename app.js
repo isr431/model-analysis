@@ -1010,6 +1010,12 @@ function updateCompareTray() {
   badge.classList.toggle('hide', models.length === 0);
   badge.textContent = models.length;
 
+  const mBadge = document.getElementById('compareCountBadgeMobile');
+  if (mBadge) {
+    mBadge.classList.toggle('hide', models.length === 0);
+    mBadge.textContent = models.length;
+  }
+
   chips.innerHTML = models.map(m => `
     <span class="compare-chip" style="border-color: rgba(${providerRgb(m.provider)}, 0.4);">
       <span class="compare-chip-dot" style="background:${providerColor(m.provider)}"></span>
@@ -1160,6 +1166,7 @@ function updateAll() {
   updateRadarChart(filtered);
   updateTable(filtered);
   updateFormulaP();
+  updateFilterSummary();
   updateCompareTab();
 }
 
@@ -1224,6 +1231,82 @@ function resetFilters() {
 
   updatePriceRangeSliderHighlight();
   updateAll();
+}
+
+// ===== FILTER PANEL (collapsible) =====
+// Count how many filters differ from their defaults, for the slim-bar badge.
+function countActiveFilters() {
+  let n = 0;
+  if (state.search.trim() !== '') n++;
+  if (state.p !== 0.07) n++;
+  const priceMaxEl = document.getElementById('priceMax');
+  const sliderMax = priceMaxEl ? (parseFloat(priceMaxEl.max) || 12) : 12;
+  if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
+  if (state.perfThreshold > 0) n++;
+  if (state.sourceFilter !== 'all') n++;
+  if (state.activeProviders.size !== ALL_PROVIDERS.length) n++;
+  return n;
+}
+
+function updateFilterSummary() {
+  const badge = document.getElementById('filterCountBadge');
+  if (!badge) return;
+  const n = countActiveFilters();
+  badge.textContent = n;
+  badge.classList.toggle('hide', n === 0);
+}
+
+function initFilterPanel() {
+  const toggle = document.getElementById('filtersToggle');
+  const panel = document.getElementById('filtersPanel');
+  if (!toggle || !panel) return;
+  toggle.addEventListener('click', () => {
+    const willOpen = panel.hasAttribute('hidden');
+    panel.toggleAttribute('hidden', !willOpen);
+    toggle.setAttribute('aria-expanded', String(willOpen));
+  });
+  const barReset = document.getElementById('filtersBarReset');
+  if (barReset) barReset.addEventListener('click', resetFilters);
+}
+
+// ===== SCORE FORMULA MODAL =====
+let formulaModalLastFocus = null;
+function openFormulaModal() {
+  const modal = document.getElementById('formulaModal');
+  if (!modal) return;
+  formulaModalLastFocus = document.activeElement;
+  modal.classList.remove('hide');
+  const closeBtn = document.getElementById('formulaModalClose');
+  if (closeBtn) closeBtn.focus();
+}
+function closeFormulaModal() {
+  const modal = document.getElementById('formulaModal');
+  if (!modal || modal.classList.contains('hide')) return;
+  modal.classList.add('hide');
+  if (formulaModalLastFocus && typeof formulaModalLastFocus.focus === 'function') {
+    formulaModalLastFocus.focus();
+  }
+  formulaModalLastFocus = null;
+}
+function initFormulaModal() {
+  document.querySelectorAll('.info-btn[data-modal="formula"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      openFormulaModal();
+    });
+  });
+  const closeBtn = document.getElementById('formulaModalClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeFormulaModal);
+  const modal = document.getElementById('formulaModal');
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeFormulaModal();
+    });
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeFormulaModal();
+  });
 }
 
 // ===== PROVIDER PILLS =====
@@ -1392,13 +1475,19 @@ function initEventListeners() {
 
 // ===== TAB SWITCHING =====
 function switchTab(tabName) {
-  const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  const btns = document.querySelectorAll(`.tab-btn[data-tab="${tabName}"]`);
   const section = document.getElementById('tab-' + tabName);
-  if (!btn || !section) return;
+  if (!btns.length || !section) return;
 
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.removeAttribute('aria-current');
+  });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
+  btns.forEach(b => {
+    b.classList.add('active');
+    b.setAttribute('aria-current', 'page');
+  });
   section.classList.add('active');
 
   if (tabName === 'charts') {
@@ -2745,6 +2834,8 @@ async function init() {
   updateChartColors(activeTheme);
   initProviderPills();
   initEventListeners();
+  initFilterPanel();
+  initFormulaModal();
   initRangeSliderZIndexFix();
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
