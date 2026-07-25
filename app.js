@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-07-22',
+  lastUpdated: '2026-07-25',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -56,6 +56,7 @@ const FALLBACK_DATA = {
     { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.87,  outputPrice: 4.68,  livebench: 71.7,  aaScore: 41, open: true },
     { provider: 'Google',      model: 'Gemini 3.6 Flash',       inputPrice: 1.5,   outputPrice: 7.5,   livebench: 73.6,  aaScore: 50, open: false },
     { provider: 'Google',      model: 'Gemini 3.5 Flash-Lite',  inputPrice: 0.3,   outputPrice: 2.5,   livebench: 63.9,  aaScore: 36, open: false },
+    { provider: 'Anthropic',   model: 'Claude Opus 5',          inputPrice: 5.0,   outputPrice: 25.0,  livebench: 80.3,  aaScore: 61, open: false },
   ],
 };
 
