@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-22",
+  "lastUpdated": "2026-07-25",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -382,6 +382,15 @@
       "outputPrice": 2.5,
       "livebench": 63.9,
       "aaScore": 36,
+      "open": false
+    },
+    {
+      "provider": "Anthropic",
+      "model": "Claude Opus 5",
+      "inputPrice": 5.0,
+      "outputPrice": 25.0,
+      "livebench": 80.3,
+      "aaScore": 61,
       "open": false
     }
   ]
