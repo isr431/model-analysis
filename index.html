@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260722-mobile2">
+  <link rel="stylesheet" href="styles.css?v=20260725-chattools">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260722-mobile2" defer></script>
+  <script src="app.js?v=20260725-chattools" defer></script>
 </head>
 <body>
   <main class="app">
@@ -552,21 +552,19 @@
         <div class="settings-group">
           <label class="settings-label">AI Model</label>
           <select id="chatModelSelect" class="chat-model-select" aria-label="Select AI Model">
-            <option value="google/gemini-3.5-flash">Gemini 3.5 Flash</option>
-            <option value="deepseek/deepseek-v4-pro" selected>DeepSeek V4 Pro</option>
-            <option value="deepseek/deepseek-v4-flash">DeepSeek V4 Flash</option>
-            <option value="z-ai/glm-5.2">GLM 5.2</option>
+            <option value="deepseek/deepseek-v4-flash">DeepSeek V4 Flash (fastest and cheapest)</option>
+            <option value="deepseek/deepseek-v4-pro" selected>DeepSeek V4 Pro (best value)</option>
+            <option value="openai/gpt-5.6-luna">GPT-5.6 Luna (balanced)</option>
+            <option value="openai/gpt-5.6-terra">GPT-5.6 Terra (most capable)</option>
           </select>
         </div>
 
         <div class="settings-group">
           <label class="settings-label">Reasoning Effort</label>
           <select id="chatReasoningSelect" class="chat-model-select" aria-label="Select Reasoning Effort">
-            <option value="high">High (Deep reasoning)</option>
-            <option value="medium" selected>Medium (Moderate reasoning)</option>
-            <option value="low">Low (Light reasoning)</option>
-            <option value="minimal">Minimal (Basic reasoning)</option>
-            <option value="none">None (Standard output)</option>
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
           </select>
         </div>
       </div>
