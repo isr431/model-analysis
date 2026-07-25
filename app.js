@@ -66,6 +66,7 @@ let PROVIDER_COLORS = {};
 let ALL_PROVIDERS = [];
 let GLOBAL_LOG_MIN = 0;
 let GLOBAL_LOG_MAX = 0;
+let DATA_LAST_UPDATED = FALLBACK_DATA.lastUpdated || '';
 
 // ===== UTILITIES =====
 function hexToRgb(hex) {
@@ -132,6 +133,7 @@ function applyData(data) {
   RAW_DATA = data.models;
   PROVIDER_COLORS = buildProviderColors(data.providers);
   ALL_PROVIDERS = deriveProviderList(data.models);
+  DATA_LAST_UPDATED = data.lastUpdated || '';
 
   for (const name of Object.keys(data.providers)) {
     if (!ALL_PROVIDERS.includes(name)) {
@@ -308,7 +310,36 @@ function getFilteredModels(allModels) {
   );
 }
 
+// Highlight models from a filtered set: best value, best performance, cheapest, priciest.
+// Returns model references (not formatted values) so both the summary cards and the
+// chat tools can project them however they need.
+function getSummaryStats(filtered) {
+  if (filtered.length === 0) return null;
+  return {
+    bestValue: filtered.reduce((a, b) => (a.value > b.value ? a : b)),
+    bestPerf: filtered.reduce((a, b) => (a.performance > b.performance ? a : b)),
+    cheapest: filtered.reduce((a, b) => (a.blended < b.blended ? a : b)),
+    expensive: filtered.reduce((a, b) => (a.blended > b.blended ? a : b)),
+  };
+}
+
 // ===== UTILITIES =====
+// Rounding helpers mirror the precision the table renders at, so numbers quoted by the
+// chat assistant always match what the user sees on screen.
+function round1(n) {
+  return typeof n === 'number' && isFinite(n) ? Math.round(n * 10) / 10 : n;
+}
+
+function round2(n) {
+  return typeof n === 'number' && isFinite(n) ? Math.round(n * 100) / 100 : n;
+}
+
+function clampInt(value, min, max, fallback) {
+  const n = Math.floor(Number(value));
+  if (!isFinite(n)) return fallback;
+  return Math.min(Math.max(n, min), max);
+}
+
 function debounce(fn, delay) {
   let timer;
   return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
@@ -680,10 +711,7 @@ function updateSummaryCards(filtered) {
     return;
   }
 
-  const bestValue = filtered.reduce((a, b) => a.value > b.value ? a : b);
-  const bestPerf = filtered.reduce((a, b) => a.performance > b.performance ? a : b);
-  const cheapest = filtered.reduce((a, b) => a.blended < b.blended ? a : b);
-  const expensive = filtered.reduce((a, b) => a.blended > b.blended ? a : b);
+  const { bestValue, bestPerf, cheapest, expensive } = getSummaryStats(filtered);
 
   document.getElementById('bestValueModel').textContent = bestValue.model;
   document.getElementById('bestPerfModel').textContent = bestPerf.model;
@@ -1284,6 +1312,75 @@ function resetFilters() {
   updateAll();
 }
 
+// Apply a partial filter change, keeping `state` and the controls in sync the same way
+// resetFilters does. Only the keys present in `patch` are touched. Values are rounded to
+// each input's step so the slider thumb and the state can't drift apart.
+function setDashboardFilters(patch) {
+  if (patch.reset) resetFilters();
+
+  const priceMaxEl = document.getElementById('priceMax');
+  const sliderMax = (priceMaxEl && parseFloat(priceMaxEl.max)) || state.priceMax;
+
+  if (Array.isArray(patch.providers)) {
+    state.activeProviders = new Set(patch.providers);
+    document.querySelectorAll('.provider-pill').forEach(pill => {
+      setPillState(pill, pill.dataset.provider, state.activeProviders.has(pill.dataset.provider));
+    });
+  }
+
+  if (patch.sourceFilter) {
+    state.sourceFilter = patch.sourceFilter;
+    document.querySelectorAll('.source-seg').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.source === state.sourceFilter);
+    });
+  }
+
+  if (typeof patch.priceMin === 'number' || typeof patch.priceMax === 'number') {
+    let lo = typeof patch.priceMin === 'number' ? patch.priceMin : state.priceMin;
+    let hi = typeof patch.priceMax === 'number' ? patch.priceMax : state.priceMax;
+    lo = Math.round(Math.min(Math.max(lo, 0), sliderMax) * 10) / 10;
+    hi = Math.round(Math.min(Math.max(hi, 0), sliderMax) * 10) / 10;
+    if (lo > hi) { const t = lo; lo = hi; hi = t; }
+
+    state.priceMin = lo;
+    state.priceMax = hi;
+    const minEl = document.getElementById('priceMin');
+    if (minEl) minEl.value = lo;
+    if (priceMaxEl) priceMaxEl.value = hi;
+    const minLabel = document.getElementById('priceMinVal');
+    const maxLabel = document.getElementById('priceMaxVal');
+    if (minLabel) minLabel.textContent = lo.toFixed(2);
+    if (maxLabel) maxLabel.textContent = hi.toFixed(2);
+    updatePriceRangeSliderHighlight();
+  }
+
+  if (typeof patch.perfThreshold === 'number') {
+    const v = Math.round(Math.min(Math.max(patch.perfThreshold, 0), 100));
+    state.perfThreshold = v;
+    const el = document.getElementById('perfThreshold');
+    if (el) el.value = v;
+    const label = document.getElementById('perfThresholdVal');
+    if (label) label.textContent = String(v);
+  }
+
+  if (typeof patch.search === 'string') {
+    state.search = patch.search;
+    const el = document.getElementById('searchInput');
+    if (el) el.value = patch.search;
+  }
+
+  if (typeof patch.p === 'number') {
+    const v = Math.round(Math.min(Math.max(patch.p, 0), 1) * 100) / 100;
+    state.p = v;
+    const el = document.getElementById('pSlider');
+    if (el) el.value = v;
+    const label = document.getElementById('pValue');
+    if (label) label.textContent = v.toFixed(2);
+  }
+
+  updateAll();
+}
+
 // ===== FILTER PANEL (collapsible) =====
 // Count how many filters differ from their defaults, for the slim-bar badge.
 function countActiveFilters() {
@@ -1789,8 +1886,19 @@ const CHAT_STATE = {
   apiKey: localStorage.getItem('openrouter_api_key') || '',
   selectedModel: localStorage.getItem('openrouter_chat_model') || 'deepseek/deepseek-v4-pro',
   reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'medium',
-  messages: []
+  messages: [],
+  abortController: null
 };
+
+// Abort any in-flight request. Without this, clearing or closing mid-stream lets the
+// loop keep pushing onto a history the user just reset, producing an unsendable
+// tool/assistant sequence on the next turn.
+function abortChatRequest() {
+  if (CHAT_STATE.abortController) {
+    CHAT_STATE.abortController.abort();
+    CHAT_STATE.abortController = null;
+  }
+}
 
 function initChatResizer() {
   const drawer = document.getElementById('chatDrawer');
@@ -1931,6 +2039,20 @@ function setChatDrawerOpen(drawer, isOpen) {
   }
 }
 
+// Point a select at a saved preference, falling back to its default when that option is
+// no longer offered. Without this, a dropped option leaves the dropdown showing one thing
+// while requests keep sending the stale saved value.
+function restoreSelectValue(select, saved, storageKey) {
+  const offered = Array.from(select.options).map(o => o.value);
+  let value = saved;
+  if (!offered.includes(value)) {
+    value = select.querySelector('option[selected]')?.value || offered[0];
+    localStorage.setItem(storageKey, value);
+  }
+  select.value = value;
+  return value;
+}
+
 function initChatbot() {
   const fab = document.getElementById('chatFab');
   const drawer = document.getElementById('chatDrawer');
@@ -1961,10 +2083,10 @@ function initChatbot() {
   }
 
   if (modelSelect) {
-    modelSelect.value = CHAT_STATE.selectedModel;
+    CHAT_STATE.selectedModel = restoreSelectValue(modelSelect, CHAT_STATE.selectedModel, 'openrouter_chat_model');
   }
   if (reasoningSelect) {
-    reasoningSelect.value = CHAT_STATE.reasoningEffort;
+    CHAT_STATE.reasoningEffort = restoreSelectValue(reasoningSelect, CHAT_STATE.reasoningEffort, 'openrouter_reasoning_effort');
   }
 
   // Listeners
@@ -1985,24 +2107,25 @@ function initChatbot() {
 
   closeBtn.addEventListener('click', () => {
     CHAT_STATE.isOpen = false;
+    abortChatRequest();
     setChatDrawerOpen(drawer, false);
   });
 
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear the chat context?')) {
-        CHAT_STATE.messages = [];
-        const logs = document.getElementById('chatLogs');
-        if (logs) {
-          logs.innerHTML = `
-            <div class="chat-message assistant">
-              <div class="chat-sender-label">Assistant</div>
-              <div class="message-bubble">
-                Hello! I am your AI Assistant. Ask me anything about the model scores, value calculations, or current filter rankings!
-              </div>
+      abortChatRequest();
+      setChatLoading(false);
+      CHAT_STATE.messages = [];
+      const logs = document.getElementById('chatLogs');
+      if (logs) {
+        logs.innerHTML = `
+          <div class="chat-message assistant">
+            <div class="chat-sender-label">Assistant</div>
+            <div class="message-bubble">
+              Hello! I am your AI Assistant. Ask me anything about the model scores, value calculations, or current filter rankings!
             </div>
-          `;
-        }
+          </div>
+        `;
       }
     });
   }
@@ -2085,6 +2208,7 @@ function handleChatSubmit() {
   if (!chatInput) return;
   const text = chatInput.value.trim();
   if (!text) return;
+  if (CHAT_STATE.abortController) return; // a turn is already in flight
 
   if (!CHAT_STATE.apiKey) {
     const keyView = document.getElementById('chatApiKeyView');
@@ -2106,6 +2230,7 @@ function handleChatSubmit() {
 
   // Send request
   streamResponse(text).catch(err => {
+    if (err && err.name === 'AbortError') return; // user cancelled; not an error
     console.error(err);
     appendMessage('system', `Error: ${err.message || 'Failed to stream response.'}`);
     setChatLoading(false);
@@ -2149,291 +2274,635 @@ function setChatLoading(isLoading) {
   }
 }
 
+// ===== CHAT TOOL HELPERS =====
+// Hard cap on rows any single tool result may carry, so a broad query can't flood
+// the model's context with the whole dataset.
+const TOOL_MAX_ROWS = 25;
 
+const TOOL_SORT_KEYS = ['value', 'performance', 'blended', 'inputPrice', 'outputPrice',
+  'livebench', 'aaScore', 'model', 'provider'];
 
-const CHAT_TOOLS = [
-  {
-    type: 'function',
-    function: {
-      name: 'get_dashboard_settings',
-      description: 'Retrieve the current active settings from the dashboard. Use this when the user asks what cost sensitivity (P), min performance, active providers, or price bounds are currently set on their screen. Returns Cost Sensitivity P, searchQuery, activeProviders list, priceMin, priceMax, and performanceThreshold.',
-      parameters: {
-        type: 'object',
-        properties: {}
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'get_summary_stats',
-      description: 'Retrieve the highlight stats from the summary cards. Use this to find the names and values/costs of the best value model, best performance model, cheapest model, and most expensive model currently matching filters.',
-      parameters: {
-        type: 'object',
-        properties: {}
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'get_leaderboard_rankings',
-      description: 'Retrieve the leaderboard list of models matching the current filters. Use this tool when the user asks for rankings, lists of top-performing models, or comparisons of the highest-rated models on the leaderboard. Returns ranks, model names, providers, performance scores, value scores, and blended costs.',
-      parameters: {
-        type: 'object',
-        properties: {
-          limit: {
-            type: 'number',
-            description: 'The maximum number of ranking rows to return (default is 10).',
-            default: 10
-          }
-        }
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'get_model_details',
-      description: 'Retrieve detailed attributes and scores for a specific language model by searching for its name. Use this tool when the user queries a specific model\'s input price, output price, blended cost, LiveBench score, AA score, normalized performance, or value score.',
-      parameters: {
-        type: 'object',
-        properties: {
-          model_name: {
-            type: 'string',
-            description: 'The name of the model to look up (e.g. "DeepSeek V4 Pro", "Gemini 3.5 Flash", "GLM 5.2").'
-          }
-        },
-        required: ['model_name']
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'list_all_models',
-      description: 'Retrieve a list of all models and their providers in the database. Use this tool to see the names of all models, list models for a specific provider, or check if a model exists in the database before querying details.',
-      parameters: {
-        type: 'object',
-        properties: {
-          provider: {
-            type: 'string',
-            description: 'Filter models list to only include this provider (e.g. "OpenAI", "DeepSeek", "Google").'
-          }
-        }
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'compare_models',
-      description: 'Select 2-4 models and open the side-by-side Compare tab in the dashboard. Use this when the user asks to compare specific models head to head. Returns the full metrics for each matched model.',
-      parameters: {
-        type: 'object',
-        properties: {
-          model_names: {
-            type: 'array',
-            items: { type: 'string' },
-            description: 'The names of 2-4 models to compare side by side (e.g. ["DeepSeek V4 Pro", "GLM 5.2"]).'
-          }
-        },
-        required: ['model_names']
-      }
-    }
-  }
-];
-
-function executeGetDashboardSettings() {
-  const activeProvidersStr = Array.from(state.activeProviders).join(', ');
-  return JSON.stringify({
-    costSensitivityP: state.p,
-    searchQuery: state.search,
-    activeProviders: activeProvidersStr,
-    priceMin: state.priceMin,
-    priceMax: state.priceMax,
-    perfThreshold: state.perfThreshold
-  });
+function toolOk(payload) {
+  return JSON.stringify({ ok: true, ...payload });
 }
 
-function executeGetSummaryStats() {
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
-  const filtered = getFilteredModels(allModels);
-  if (filtered.length === 0) return JSON.stringify({ error: "No models match current filters." });
-
-  const bestValue = filtered.reduce((a, b) => a.value > b.value ? a : b);
-  const bestPerf = filtered.reduce((a, b) => a.performance > b.performance ? a : b);
-  const cheapest = filtered.reduce((a, b) => a.blended < b.blended ? a : b);
-  const expensive = filtered.reduce((a, b) => a.blended > b.blended ? a : b);
-
-  return JSON.stringify({
-    bestValue: { model: bestValue.model, provider: bestValue.provider, valueScore: bestValue.value },
-    bestPerformance: { model: bestPerf.model, provider: bestPerf.provider, performanceScore: bestPerf.performance },
-    cheapest: { model: cheapest.model, provider: cheapest.provider, blendedCost: cheapest.blended },
-    mostExpensive: { model: expensive.model, provider: expensive.provider, blendedCost: expensive.blended }
-  });
+function toolError(message, extra) {
+  return JSON.stringify({ ok: false, error: message, ...(extra || {}) });
 }
 
-function executeGetLeaderboardRankings(args) {
-  const limit = args.limit || 10;
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
-  const filtered = getFilteredModels(allModels);
-  const sorted = [...filtered].sort((a, b) => b.performance - a.performance);
-  
-  return JSON.stringify(sorted.slice(0, limit).map((m, i) => ({
-    rank: i + 1,
+// Every tool works off the same two projections: the full dataset at the user's current
+// cost sensitivity, and that dataset narrowed by their on-screen filters.
+function getToolModelSets() {
+  const all = computeAllMetrics(RAW_DATA, state.p);
+  return { all, filtered: getFilteredModels(all) };
+}
+
+function compareByKey(a, b, key, asc) {
+  const va = a[key];
+  const vb = b[key];
+  let result = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+  if (!asc) result = -result;
+  // Tie-break on name so results are stable regardless of data.json ordering.
+  return result !== 0 ? result : a.model.localeCompare(b.model);
+}
+
+// Project a model for a tool result. Numbers are rounded to the precision the table
+// renders at; `open` is included because it drives a dashboard filter.
+function serializeModel(m, detail) {
+  const base = {
     model: m.model,
     provider: m.provider,
-    performance: m.performance,
-    value: m.value,
-    blendedCost: m.blended
-  })));
+    open: m.open === true,
+    blendedCost: round2(m.blended),
+    performance: round1(m.performance),
+    value: round1(m.value),
+  };
+  if (detail !== 'full') return base;
+  return {
+    ...base,
+    inputPrice: round2(m.inputPrice),
+    outputPrice: round2(m.outputPrice),
+    livebench: round2(m.livebench),
+    aaScore: m.aaScore,
+  };
+}
+
+// Resolve a free-text model name against the dataset in tiers: exact, then prefix, then
+// substring, then all-tokens-present. Only the best non-empty tier is kept, so a precise
+// query ("GPT-5.4") wins outright even though looser names also match. Reports ambiguity
+// rather than guessing — silently picking one of five "Opus" models yields confidently
+// wrong numbers.
+function resolveModelQuery(query, allModels) {
+  const q = String(query == null ? '' : query).toLowerCase().trim();
+  if (!q) return { status: 'not_found', match: null, candidates: [], matchQuality: null };
+
+  const tokens = q.split(/\s+/).filter(Boolean);
+  const tiers = [[], [], [], []];
+
+  allModels.forEach(m => {
+    const name = m.model.toLowerCase();
+    const full = (m.provider + ' ' + m.model).toLowerCase();
+    if (name === q || full === q) tiers[0].push(m);
+    else if (name.startsWith(q) || full.startsWith(q)) tiers[1].push(m);
+    else if (name.includes(q) || full.includes(q)) tiers[2].push(m);
+    else if (tokens.every(t => full.includes(t))) tiers[3].push(m);
+  });
+
+  const qualities = ['exact', 'prefix', 'substring', 'tokens'];
+  for (let i = 0; i < tiers.length; i++) {
+    const hits = tiers[i];
+    if (hits.length === 0) continue;
+    hits.sort((a, b) => (b.performance - a.performance) || a.model.localeCompare(b.model));
+    return {
+      status: hits.length === 1 ? 'found' : 'ambiguous',
+      match: hits.length === 1 ? hits[0] : null,
+      candidates: hits,
+      matchQuality: qualities[i],
+    };
+  }
+
+  return { status: 'not_found', match: null, candidates: [], matchQuality: null };
+}
+
+// Snapshot of everything the user currently has on screen. Shared by the read tool and
+// returned by the write tool, so the assistant always sees the post-change state.
+function buildDashboardContext() {
+  const { all, filtered } = getToolModelSets();
+  const stats = getSummaryStats(filtered);
+  const priceMaxEl = document.getElementById('priceMax');
+  const sliderMax = priceMaxEl ? parseFloat(priceMaxEl.max) : state.priceMax;
+  const active = Array.from(state.activeProviders);
+
+  const context = {
+    dataAsOf: DATA_LAST_UPDATED,
+    totalModels: all.length,
+    totalProviders: ALL_PROVIDERS.length,
+    matchedModels: filtered.length,
+    filtersActive: countActiveFilters() > 0,
+    settings: {
+      costSensitivityP: state.p,
+      searchQuery: state.search,
+      priceMin: round2(state.priceMin),
+      priceMax: round2(state.priceMax),
+      priceSliderMax: round2(sliderMax),
+      minPerformance: state.perfThreshold,
+      weightsFilter: state.sourceFilter,
+      activeProviders: active,
+      inactiveProviders: ALL_PROVIDERS.filter(p => !state.activeProviders.has(p)),
+      tableSort: { column: state.sortColumn, direction: state.sortDirection },
+    },
+    summaryCards: stats ? {
+      bestValue: serializeModel(stats.bestValue),
+      bestPerformance: serializeModel(stats.bestPerf),
+      cheapest: serializeModel(stats.cheapest),
+      mostExpensive: serializeModel(stats.expensive),
+    } : null,
+    compareSelection: state.compareSet.slice(),
+  };
+
+  if (!stats) {
+    context.note = 'No models pass the current filters; the dashboard is showing its empty state.';
+  }
+  return context;
+}
+
+// ===== CHAT TOOL SCHEMAS =====
+// Built per turn rather than declared as a constant: the provider enum is derived from
+// ALL_PROVIDERS, which is empty at parse time and only populated once data is applied.
+function buildChatTools() {
+  const providerEnum = ALL_PROVIDERS.slice();
+  return [
+    {
+      type: 'function',
+      function: {
+        name: 'query_models',
+        description: 'Search, filter, sort and rank models from the dashboard\'s dataset. This is the main data tool — use it for rankings, leaderboards, "top N", "cheapest", "best value", "which open models…", or any question about a set of models rather than one named model. Read-only: it never changes what the user sees. Set scope="dashboard" (the default) to answer about what is currently on the user\'s screen, or scope="dataset" to search every model regardless of their filters. Returns rounded metrics plus a record of exactly which filters were applied.',
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            scope: {
+              type: 'string',
+              enum: ['dashboard', 'dataset'],
+              default: 'dashboard',
+              description: '"dashboard" = only models passing the user\'s current on-screen filters (providers, price range, min performance, open/closed, search box). "dataset" = every model, ignoring their filters. Use "dataset" when the user asks about models in general, or when a "dashboard" query returns nothing.'
+            },
+            sort_by: {
+              type: 'string',
+              enum: TOOL_SORT_KEYS,
+              default: 'performance',
+              description: 'Metric to sort by. "value" = value score (performance per cost at the user\'s current P). "blended" = blended cost per million tokens. Default "performance".'
+            },
+            order: {
+              type: 'string',
+              enum: ['desc', 'asc'],
+              default: 'desc',
+              description: 'Sort direction. Default "desc" (highest first). Use "asc" with sort_by="blended" for cheapest-first.'
+            },
+            providers: {
+              type: 'array',
+              items: { type: 'string', enum: providerEnum },
+              description: 'Only include models from these providers. Omit for all providers.'
+            },
+            weights: {
+              type: 'string',
+              enum: ['any', 'open', 'closed'],
+              default: 'any',
+              description: 'Filter by weight availability: "open" = open-weights models only, "closed" = proprietary only, "any" = both.'
+            },
+            max_blended_cost: {
+              type: 'number',
+              minimum: 0,
+              description: 'Only include models whose blended cost per million tokens is at most this (USD).'
+            },
+            min_blended_cost: {
+              type: 'number',
+              minimum: 0,
+              description: 'Only include models whose blended cost per million tokens is at least this (USD).'
+            },
+            min_performance: {
+              type: 'number',
+              minimum: 0,
+              maximum: 100,
+              description: 'Only include models with a normalized performance score at least this high (0-100).'
+            },
+            name_contains: {
+              type: 'string',
+              description: 'Free-text substring matched case-insensitively against both model name and provider name. Use for broad filters like "all Gemini models". To look up one specific model, use get_model_details instead.'
+            },
+            pareto_only: {
+              type: 'boolean',
+              default: false,
+              description: 'When true, return only the cost/performance Pareto frontier of the result set — the models not beaten on both price and performance by another model. This is the frontier line drawn on the dashboard scatter chart. Use for "which models are actually worth considering".'
+            },
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: TOOL_MAX_ROWS,
+              default: 10,
+              description: 'Maximum number of models to return. Default 10, hard maximum ' + TOOL_MAX_ROWS + '.'
+            }
+          }
+        }
+      }
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'get_model_details',
+        description: 'Look up full details for one or more specific models by name: input price, output price, blended cost, LiveBench score, AA score, normalized performance, value score, and whether the weights are open. Matching is exact-first, then prefix, then substring, across both model and provider names. If a name is ambiguous (e.g. "Opus" or "Claude") this tool does not guess — it returns the candidates so you can ask the user or re-query with a precise name. Read-only, and it ignores the user\'s dashboard filters, so it can find models currently filtered out of their view.',
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            model_names: {
+              type: 'array',
+              items: { type: 'string' },
+              minItems: 1,
+              maxItems: 8,
+              description: 'One to eight model names, e.g. ["Claude Opus 5"] or ["DeepSeek V4 Pro", "GLM 5.2"]. Use the fullest name you have.'
+            }
+          },
+          required: ['model_names']
+        }
+      }
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'get_dashboard_context',
+        description: 'Read the user\'s current dashboard state: every active filter (cost-sensitivity P, search box, price range, minimum performance, open/closed weights filter, selected providers, table sort), how many models pass those filters out of the full dataset, and the four highlight cards shown on screen (best value, best performance, cheapest, most expensive). Call this before answering anything about "my dashboard", "my current view", or "what am I looking at", and whenever you need to explain why a model is missing from a result.',
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {}
+        }
+      }
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'compare_models',
+        description: 'Put 2 to 4 named models side by side in the dashboard\'s Compare tab and switch the user\'s view to it. This CHANGES what the user sees, so only call it when the user actually asks to compare specific models — for read-only lookups use get_model_details. Uses the same name matching as get_model_details and refuses rather than guesses on an ambiguous name. Returns full metrics for the models it selected, plus any names it could not resolve.',
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            model_names: {
+              type: 'array',
+              items: { type: 'string' },
+              minItems: 2,
+              maxItems: COMPARE_MAX,
+              description: 'The 2-4 models to compare, e.g. ["Claude Opus 5", "GPT-5.6 Sol"]. The Compare view holds at most ' + COMPARE_MAX + '.'
+            }
+          },
+          required: ['model_names']
+        }
+      }
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'apply_dashboard_filters',
+        description: 'Change the user\'s dashboard filters for them — providers, price range, minimum performance, open/closed weights, search box, or cost-sensitivity P. This CHANGES what the user sees on screen, so only call it when the user asks to filter, narrow, widen, or reset their view ("show me only open models under $1", "reset the filters"). Do not call it just to answer a question — use query_models with scope="dataset" for that. Only the fields you provide are changed; everything else is left alone. Returns the resulting filter state and how many models now match.',
+        parameters: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            reset: {
+              type: 'boolean',
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07) before applying any other field in this call.'
+            },
+            providers: {
+              type: 'array',
+              items: { type: 'string', enum: providerEnum },
+              description: 'Replace the selected providers with exactly these. Must not be empty — at least one provider has to stay selected or the dashboard shows nothing.'
+            },
+            weights: {
+              type: 'string',
+              enum: ['any', 'open', 'closed'],
+              description: 'Set the Open/Closed segmented control.'
+            },
+            price_min: {
+              type: 'number',
+              minimum: 0,
+              description: 'Lower bound of the blended-cost range slider, USD per million tokens.'
+            },
+            price_max: {
+              type: 'number',
+              minimum: 0,
+              description: 'Upper bound of the blended-cost range slider, USD per million tokens. Clamped to the slider maximum.'
+            },
+            min_performance: {
+              type: 'number',
+              minimum: 0,
+              maximum: 100,
+              description: 'Minimum performance slider (0-100).'
+            },
+            search: {
+              type: 'string',
+              description: 'Text for the dashboard search box; matches model or provider name. Pass an empty string to clear it.'
+            },
+            cost_sensitivity: {
+              type: 'number',
+              minimum: 0,
+              maximum: 1,
+              description: 'Cost Sensitivity P (0-1). Higher makes cheap models score better on Value. Changing this changes every value score, so tell the user.'
+            }
+          }
+        }
+      }
+    }
+  ];
+}
+
+// ===== CHAT TOOL EXECUTORS =====
+// Match provider names case-insensitively against the dataset so the model doesn't have
+// to reproduce exact casing.
+function normalizeProviderNames(names) {
+  const resolved = [];
+  const unknown = [];
+  names.forEach(name => {
+    const needle = String(name).toLowerCase().trim();
+    const hit = ALL_PROVIDERS.find(p => p.toLowerCase() === needle);
+    if (hit) {
+      if (!resolved.includes(hit)) resolved.push(hit);
+    } else {
+      unknown.push(name);
+    }
+  });
+  return { resolved, unknown };
+}
+
+function executeQueryModels(args) {
+  const { all, filtered } = getToolModelSets();
+  const scope = args.scope === 'dataset' ? 'dataset' : 'dashboard';
+  let rows = scope === 'dataset' ? all : filtered;
+  const applied = {};
+
+  if (Array.isArray(args.providers) && args.providers.length > 0) {
+    const { resolved, unknown } = normalizeProviderNames(args.providers);
+    if (resolved.length === 0) {
+      return toolError('None of those providers exist in the dataset.', { knownProviders: ALL_PROVIDERS });
+    }
+    rows = rows.filter(m => resolved.includes(m.provider));
+    applied.providers = resolved;
+    if (unknown.length > 0) applied.unknownProviders = unknown;
+  }
+
+  if (args.weights === 'open' || args.weights === 'closed') {
+    const wantOpen = args.weights === 'open';
+    rows = rows.filter(m => (m.open === true) === wantOpen);
+    applied.weights = args.weights;
+  }
+
+  if (typeof args.max_blended_cost === 'number') {
+    rows = rows.filter(m => m.blended <= args.max_blended_cost);
+    applied.maxBlendedCost = args.max_blended_cost;
+  }
+  if (typeof args.min_blended_cost === 'number') {
+    rows = rows.filter(m => m.blended >= args.min_blended_cost);
+    applied.minBlendedCost = args.min_blended_cost;
+  }
+  if (typeof args.min_performance === 'number') {
+    rows = rows.filter(m => m.performance >= args.min_performance);
+    applied.minPerformance = args.min_performance;
+  }
+
+  if (typeof args.name_contains === 'string' && args.name_contains.trim() !== '') {
+    const needle = args.name_contains.toLowerCase().trim();
+    rows = rows.filter(m => m.model.toLowerCase().includes(needle) ||
+      m.provider.toLowerCase().includes(needle));
+    applied.nameContains = args.name_contains.trim();
+  }
+
+  if (args.pareto_only === true) {
+    rows = getParetoFrontier(rows);
+    applied.paretoOnly = true;
+  }
+
+  const sortBy = TOOL_SORT_KEYS.includes(args.sort_by) ? args.sort_by : 'performance';
+  const asc = args.order === 'asc';
+  const sorted = [...rows].sort((a, b) => compareByKey(a, b, sortBy, asc));
+
+  const limit = clampInt(args.limit, 1, TOOL_MAX_ROWS, 10);
+  const page = sorted.slice(0, limit);
+
+  const payload = {
+    scope,
+    sortedBy: sortBy,
+    order: asc ? 'asc' : 'desc',
+    filtersApplied: applied,
+    dashboardFiltersActive: scope === 'dashboard' && countActiveFilters() > 0,
+    matched: sorted.length,
+    returned: page.length,
+    totalInDataset: all.length,
+    truncated: sorted.length > page.length,
+    models: page.map(m => serializeModel(m)),
+  };
+
+  if (sorted.length === 0 && scope === 'dashboard') {
+    payload.hint = 'Nothing matched. The user\'s dashboard filters are active — call get_dashboard_context to see why, or retry with scope="dataset" to search all ' + all.length + ' models.';
+  }
+
+  return toolOk(payload);
 }
 
 function executeGetModelDetails(args) {
-  if (!args.model_name) return JSON.stringify({ error: "Missing model_name parameter." });
-  const query = args.model_name.toLowerCase().trim();
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
-  
-  const match = allModels.find(m => m.model.toLowerCase().includes(query));
-  if (!match) return JSON.stringify({ error: `Model "${args.model_name}" not found.` });
+  // Tolerate a singular model_name, which models sometimes emit out of habit.
+  const names = Array.isArray(args.model_names)
+    ? args.model_names
+    : (args.model_name ? [args.model_name] : []);
 
-  return JSON.stringify({
-    model: match.model,
-    provider: match.provider,
-    inputPricePerMillion: match.inputPrice,
-    outputPricePerMillion: match.outputPrice,
-    blendedCostPerMillion: match.blended,
-    livebenchScore: match.livebench,
-    aaScore: match.aaScore,
-    normalizedPerformance: match.performance,
-    valueScore: match.value
+  if (names.length === 0) {
+    return toolError('Provide at least one name in model_names.');
+  }
+
+  const { all } = getToolModelSets();
+  const results = names.slice(0, 8).map(name => {
+    const res = resolveModelQuery(name, all);
+    if (res.status === 'found') {
+      return { query: name, status: 'found', model: serializeModel(res.match, 'full') };
+    }
+    if (res.status === 'ambiguous') {
+      return {
+        query: name,
+        status: 'ambiguous',
+        matchQuality: res.matchQuality,
+        candidates: res.candidates.slice(0, 10).map(m => serializeModel(m)),
+        note: res.candidates.length + ' models match. Ask the user which one, or answer for all of them and say so.',
+      };
+    }
+    return { query: name, status: 'not_found' };
   });
+
+  return toolOk({ results });
 }
 
-function executeListAllModels(args) {
-  const providerFilter = args.provider ? args.provider.toLowerCase().trim() : null;
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
-  
-  let list = allModels;
-  if (providerFilter) {
-    list = allModels.filter(m => m.provider.toLowerCase() === providerFilter);
-  }
-  
-  return JSON.stringify(list.map(m => ({
-    model: m.model,
-    provider: m.provider,
-    blendedCost: m.blended
-  })));
+function executeGetDashboardContext() {
+  return toolOk(buildDashboardContext());
 }
 
 function executeCompareModels(args) {
   if (!Array.isArray(args.model_names) || args.model_names.length === 0) {
-    return JSON.stringify({ error: 'Missing model_names parameter.' });
+    return toolError('Missing model_names parameter.');
   }
 
-  const allModels = computeAllMetrics(RAW_DATA, state.p);
+  const { all } = getToolModelSets();
   const matched = [];
-  const notFound = [];
+  const results = [];
+
   args.model_names.forEach(name => {
-    const query = String(name).toLowerCase().trim();
-    const match = allModels.find(m => m.model.toLowerCase().includes(query));
-    if (!match) {
-      notFound.push(name);
-    } else if (!matched.includes(match)) {
-      matched.push(match);
+    const res = resolveModelQuery(name, all);
+    if (res.status === 'found') {
+      if (!matched.some(m => modelKey(m) === modelKey(res.match))) matched.push(res.match);
+      results.push({ query: name, status: 'found', model: res.match.model });
+    } else if (res.status === 'ambiguous') {
+      results.push({
+        query: name,
+        status: 'ambiguous',
+        candidates: res.candidates.slice(0, 10).map(m => m.model),
+      });
+    } else {
+      results.push({ query: name, status: 'not_found' });
     }
   });
 
+  // Refuse rather than half-apply: a one-model compare view is not what was asked for.
+  if (matched.length < 2) {
+    return toolError('Need at least 2 unambiguous models to compare. The dashboard was not changed.', { results });
+  }
+
   const selected = matched.slice(0, COMPARE_MAX);
+  const droppedForLimit = matched.slice(COMPARE_MAX).map(m => m.model);
+
   state.compareSet = selected.map(m => modelKey(m));
   updateCompareUI();
   syncCompareHash();
   switchTab('compare');
 
-  return JSON.stringify({
-    compared: selected.map(m => ({
-      model: m.model,
-      provider: m.provider,
-      inputPricePerMillion: m.inputPrice,
-      outputPricePerMillion: m.outputPrice,
-      blendedCostPerMillion: m.blended,
-      livebenchScore: m.livebench,
-      aaScore: m.aaScore,
-      normalizedPerformance: m.performance,
-      valueScore: m.value
-    })),
-    notFound
+  return toolOk({
+    viewChanged: true,
+    note: 'The Compare tab is now open with these models selected.',
+    compared: selected.map(m => serializeModel(m, 'full')),
+    droppedForLimit,
+    results,
   });
 }
 
+function executeApplyDashboardFilters(args) {
+  const patch = {};
+
+  if (args.reset === true) patch.reset = true;
+
+  if (Array.isArray(args.providers)) {
+    if (args.providers.length === 0) {
+      return toolError('Refusing to deselect every provider — the dashboard would show nothing.');
+    }
+    const { resolved, unknown } = normalizeProviderNames(args.providers);
+    if (resolved.length === 0) {
+      return toolError('None of those providers exist in the dataset.', { knownProviders: ALL_PROVIDERS });
+    }
+    patch.providers = resolved;
+    if (unknown.length > 0) patch.unknownProviders = unknown;
+  }
+
+  if (args.weights === 'any' || args.weights === 'open' || args.weights === 'closed') {
+    patch.sourceFilter = args.weights === 'any' ? 'all' : args.weights;
+  }
+  if (typeof args.price_min === 'number') patch.priceMin = args.price_min;
+  if (typeof args.price_max === 'number') patch.priceMax = args.price_max;
+  if (typeof args.min_performance === 'number') patch.perfThreshold = args.min_performance;
+  if (typeof args.search === 'string') patch.search = args.search;
+  if (typeof args.cost_sensitivity === 'number') patch.p = args.cost_sensitivity;
+
+  const keys = Object.keys(patch).filter(k => k !== 'unknownProviders');
+  if (keys.length === 0) {
+    return toolError('No recognised filter fields were provided, so nothing was changed.');
+  }
+
+  setDashboardFilters(patch);
+
+  const payload = buildDashboardContext();
+  payload.viewChanged = true;
+  payload.changed = keys;
+  if (patch.unknownProviders) payload.unknownProviders = patch.unknownProviders;
+  payload.note = 'The user\'s dashboard filters were updated. Tell them what changed.';
+  return toolOk(payload);
+}
+
+const TOOL_HANDLERS = {
+  query_models: executeQueryModels,
+  get_model_details: executeGetModelDetails,
+  get_dashboard_context: executeGetDashboardContext,
+  compare_models: executeCompareModels,
+  apply_dashboard_filters: executeApplyDashboardFilters,
+};
+
 async function executeTool(name, argsString) {
   let args = {};
-  try {
-    if (argsString) {
+  if (argsString) {
+    try {
       args = JSON.parse(argsString);
+    } catch (e) {
+      console.error('[Chatbot Tool] Bad arguments JSON for', name, argsString, e);
+      return toolError('Could not parse the tool arguments as JSON. Retry with valid JSON.',
+        { rawArguments: String(argsString).slice(0, 200) });
     }
-  } catch (e) {
-    console.error("Failed to parse tool arguments:", argsString, e);
   }
+  if (!args || typeof args !== 'object' || Array.isArray(args)) args = {};
 
   console.info(`[Chatbot Tool] Invoking "${name}" with args:`, args);
 
-  switch (name) {
-    case 'get_dashboard_settings':
-      return executeGetDashboardSettings();
-    case 'get_summary_stats':
-      return executeGetSummaryStats();
-    case 'get_leaderboard_rankings':
-      return executeGetLeaderboardRankings(args);
-    case 'get_model_details':
-      return executeGetModelDetails(args);
-    case 'list_all_models':
-      return executeListAllModels(args);
-    case 'compare_models':
-      return executeCompareModels(args);
-    default:
-      return JSON.stringify({ error: `Tool "${name}" is not implemented.` });
+  const handler = TOOL_HANDLERS[name];
+  if (!handler) {
+    return toolError(`Tool "${name}" is not implemented.`, { availableTools: Object.keys(TOOL_HANDLERS) });
   }
+
+  // A throwing handler must become a tool result, not an unhandled rejection: bailing out
+  // of the loop would leave an assistant tool_calls message with no matching tool reply,
+  // which every later request would then be rejected for.
+  try {
+    return handler(args);
+  } catch (err) {
+    console.error(`[Chatbot Tool] "${name}" threw:`, err);
+    return toolError(`The "${name}" tool failed: ${err.message || 'unknown error'}`);
+  }
+}
+
+// ===== CHAT PIPELINE =====
+// Deliberately does not enumerate tool names — the tool descriptions carry that, and
+// duplicating them here just guarantees the two drift apart.
+function buildSystemPrompt() {
+  return `You are the analysis assistant built into an interactive LLM comparison dashboard.
+
+DATA
+Your tools read the dashboard's live data: ${RAW_DATA.length} models from ${ALL_PROVIDERS.length} providers, current as of ${DATA_LAST_UPDATED}. This is the only data you have. It covers price, two benchmark scores, and whether a model's weights are open. It does NOT cover context length, speed, latency, rate limits, licences, modalities or release dates — if asked about those, say the dashboard does not track them rather than answering from memory.
+
+The user is looking at a filtered view. Their filters — providers, price range, minimum performance, open/closed weights, search box — hide models from the dashboard but not from you. Anything you say about "the best" or "the cheapest" must be explicit about which set you mean: their current view, or the full dataset.
+
+TOOLS
+Never state a price, score, ranking, count or filter setting that did not come from a tool result in this conversation. You do not know these numbers, and you must not carry them over from earlier in the conversation, because the user can change the dashboard between turns. When a question depends on what the user is currently looking at, read the dashboard context first. Prefer one well-parameterised query over dumping the whole list and filtering it yourself.
+
+Two of the tools change what the user sees on screen: one opens the Compare tab, one edits their filters. Use them only when the user asks for that action, never merely to answer a question, and always tell the user what you changed.
+
+When a name is ambiguous the tools return the candidates instead of guessing. Do not pick one silently — either ask the user, or answer for every candidate and say that you did.
+
+METRICS
+- Blended cost = 0.9573 x input price + 0.0427 x output price, USD per million tokens, assuming a 37:1 input:output ratio.
+- Performance = 50% normalised LiveBench + 50% normalised Artificial Analysis score. Each benchmark is normalised against the highest score in this dataset, so 100 means "top of this dataset", not "perfect".
+- Value = performance / blended_cost^P, where P is the user's Cost Sensitivity slider. P is a preference, not a fact: at low P value tracks raw performance, at high P it tracks cheapness. Say which P a value score is for. If P changes, every value score you quoted earlier is void.
+
+ANSWERING
+- Report numbers exactly as the tools return them. They are already rounded to match what is on screen — do not add digits and do not recompute them yourself.
+- Rankings are close. When two models are within about 1 point, call it a tie and separate them on price or open weights instead of pretending the order is meaningful.
+- Be brief and concrete. Lead with the answer, then a short bullet list of the supporting numbers. No preamble, no restating the question.
+- Use each model's full name as it appears in the data, with its provider on first mention.
+- If a tool returns an error, no matches, or an ambiguity, say what happened and what you need. Never invent a plausible answer to paper over it.`;
 }
 
 async function streamResponse(userPrompt) {
   let loopCount = 0;
   const maxLoops = 5;
-  
+
   const logs = document.getElementById('chatLogs');
   if (!logs) return;
-  
+
   let currentMessageDiv = null;
   let currentBubbleDiv = null;
   let currentThinkingDetails = null;
   let currentThinkingContentDiv = null;
+  let finished = false;
 
+  // Loop-invariant: build once per turn, not once per tool round.
+  const systemPrompt = buildSystemPrompt();
+  const chatTools = buildChatTools();
+
+  const controller = new AbortController();
+  CHAT_STATE.abortController = controller;
+
+  try {
   while (loopCount < maxLoops) {
-    const systemPrompt = `You are a helpful AI Assistant embedded in an interactive LLM Model Analysis dashboard.
-You help users analyze models, compute values, and compare prices.
-
-You have access to tools that query the dashboard state and model details.
-Use tools when asked about:
-- What filters or settings are currently set (get_dashboard_settings)
-- Summary statistics/cards (get_summary_stats)
-- Model rankings/leaderboard data (get_leaderboard_rankings)
-- Model details, prices, or benchmark scores (get_model_details)
-- Listing all models (list_all_models)
-- Comparing 2-4 specific models side by side (compare_models — also opens the Compare tab for the user)
-
-Do NOT assume what the active settings or values are. Call tools to get the correct live data.
-
-Formula Guidelines:
-- Blended Cost = 0.9573 * Input Price + 0.0427 * Output Price
-- Performance = 50% * (Normalized LiveBench) + 50% * (Normalized AA Score)
-- Value = Performance / Blended Cost^P
-
-Answer rules:
-1. Cite values and rankings from the tool execution results.
-2. Be brief, professional, and clear. Use bullet points and lists.
-3. Keep answers short and relevant to model analysis.`;
-
     const messagesToSend = [
       { role: 'system', content: systemPrompt },
       ...CHAT_STATE.messages
@@ -2447,13 +2916,14 @@ Answer rules:
         'HTTP-Referer': 'https://github.com/isr431/model-analysis',
         'X-Title': 'LLM Model Analysis Dashboard'
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: CHAT_STATE.selectedModel,
         messages: messagesToSend,
         stream: true,
-        tools: CHAT_TOOLS,
+        tools: chatTools,
         max_tokens: 4096,
-        reasoning: CHAT_STATE.reasoningEffort === 'none' ? { exclude: true } : { effort: CHAT_STATE.reasoningEffort }
+        reasoning: { effort: CHAT_STATE.reasoningEffort }
       })
     });
 
@@ -2637,11 +3107,23 @@ Answer rules:
       } else if (contentText.trim().length > 0) {
         CHAT_STATE.messages.push({ role: 'assistant', content: contentText });
       }
+      finished = true;
       break;
     }
   }
 
-  setChatLoading(false);
+  // Running out of tool rounds used to leave the UI silently idle. The history push is
+  // not cosmetic: without it the conversation ends on tool messages, and the next user
+  // turn produces a tool -> user adjacency that providers reject.
+  if (!finished) {
+    const msg = `Stopped after ${maxLoops} rounds of tool calls without reaching a final answer. Try narrowing the question.`;
+    addSystemMessage(msg);
+    CHAT_STATE.messages.push({ role: 'assistant', content: msg });
+  }
+  } finally {
+    if (CHAT_STATE.abortController === controller) CHAT_STATE.abortController = null;
+    setChatLoading(false);
+  }
 }
 
 function addToolStatusMessage(text) {

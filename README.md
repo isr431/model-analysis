@@ -86,8 +86,10 @@ The dashboard includes a built-in AI assistant powered by OpenRouter.
 ### What it can do
 
 - Answer questions about the current leaderboard
+- Search, filter, and rank models by price, performance, value, or open weights
 - Compare models in the active dataset
-- Read your current filters and settings
+- Read your current filters and settings, and explain why a model is filtered out
+- Apply filters for you — "show me only open models under $1" updates the dashboard
 - Show pricing and benchmark information
 - Support different reasoning levels for compatible models
 
