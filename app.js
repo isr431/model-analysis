@@ -2874,9 +2874,6 @@ Two of your tools change the user's screen: one opens the Compare tab, one edits
 }
 
 async function streamResponse(userPrompt) {
-  let loopCount = 0;
-  const maxLoops = 5;
-
   const logs = document.getElementById('chatLogs');
   if (!logs) return;
 
@@ -2884,7 +2881,6 @@ async function streamResponse(userPrompt) {
   let currentBubbleDiv = null;
   let currentThinkingDetails = null;
   let currentThinkingContentDiv = null;
-  let finished = false;
 
   // Loop-invariant: build once per turn, not once per tool round.
   const systemPrompt = buildSystemPrompt();
@@ -2894,7 +2890,9 @@ async function streamResponse(userPrompt) {
   CHAT_STATE.abortController = controller;
 
   try {
-  while (loopCount < maxLoops) {
+  // Runs until the model answers instead of requesting more tools — there is no round
+  // cap. The escape hatch is the clear-chat or close button; both abort the request.
+  while (true) {
     const messagesToSend = [
       { role: 'system', content: systemPrompt },
       ...CHAT_STATE.messages
@@ -3087,7 +3085,6 @@ async function streamResponse(userPrompt) {
         });
       }
 
-      loopCount++;
       currentMessageDiv = null;
       currentBubbleDiv = null;
       currentThinkingDetails = null;
@@ -3099,18 +3096,8 @@ async function streamResponse(userPrompt) {
       } else if (contentText.trim().length > 0) {
         CHAT_STATE.messages.push({ role: 'assistant', content: contentText });
       }
-      finished = true;
       break;
     }
-  }
-
-  // Running out of tool rounds used to leave the UI silently idle. The history push is
-  // not cosmetic: without it the conversation ends on tool messages, and the next user
-  // turn produces a tool -> user adjacency that providers reject.
-  if (!finished) {
-    const msg = `Stopped after ${maxLoops} rounds of tool calls without reaching a final answer. Try narrowing the question.`;
-    addSystemMessage(msg);
-    CHAT_STATE.messages.push({ role: 'assistant', content: msg });
   }
   } finally {
     if (CHAT_STATE.abortController === controller) CHAT_STATE.abortController = null;
