@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260727-nocap">
+  <link rel="stylesheet" href="styles.css?v=20260727-stopbtn2">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260727-nocap" defer></script>
+  <script src="app.js?v=20260727-stopbtn2" defer></script>
 </head>
 <body>
   <main class="app">
@@ -584,9 +584,12 @@
     <div class="chat-footer">
       <textarea id="chatInput" class="chat-input" placeholder="Type a message..." rows="1"></textarea>
       <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="19" x2="12" y2="5"></line>
           <polyline points="5 12 12 5 19 12"></polyline>
+        </svg>
+        <svg class="stop-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <rect x="6" y="6" width="12" height="12" rx="1.5"></rect>
         </svg>
       </button>
     </div>

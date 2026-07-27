@@ -2244,6 +2244,24 @@ details[open] .thinking-title::before {
   fill: none;
   stroke: currentColor;
 }
+/* The send control doubles as a stop button while a response is streaming. */
+.chat-send-btn .stop-icon,
+.chat-send-btn.streaming .send-icon {
+  display: none;
+}
+.chat-send-btn.streaming .stop-icon {
+  display: block;
+  fill: currentColor;
+  stroke: none;
+}
+.chat-send-btn.streaming {
+  background-color: var(--danger);
+  color: var(--bg-primary);
+}
+.chat-send-btn.streaming:hover {
+  background-color: var(--danger);
+  filter: brightness(1.1);
+}
 
 /* Chat Settings Group styling */
 .settings-group {

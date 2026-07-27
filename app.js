@@ -2183,7 +2183,13 @@ function initChatbot() {
     }
   });
 
-  sendBtn.addEventListener('click', handleChatSubmit);
+  sendBtn.addEventListener('click', () => {
+    if (CHAT_STATE.abortController) {
+      abortChatRequest();
+    } else {
+      handleChatSubmit();
+    }
+  });
 }
 
 function scrollToBottom() {
@@ -2267,7 +2273,13 @@ function setChatLoading(isLoading) {
   const chatInput = document.getElementById('chatInput');
   const statusIndicator = document.querySelector('.chat-status-indicator');
 
-  if (sendBtn) sendBtn.disabled = isLoading;
+  // The send button stays enabled while streaming — it becomes the stop button.
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.classList.toggle('streaming', isLoading);
+    sendBtn.setAttribute('aria-label', isLoading ? 'Stop generating' : 'Send message');
+    sendBtn.title = isLoading ? 'Stop generating' : '';
+  }
   if (chatInput) chatInput.disabled = isLoading;
   if (statusIndicator) {
     statusIndicator.classList.toggle('loading', isLoading);
@@ -2881,6 +2893,7 @@ async function streamResponse(userPrompt) {
   let currentBubbleDiv = null;
   let currentThinkingDetails = null;
   let currentThinkingContentDiv = null;
+  let partialContent = '';
 
   // Loop-invariant: build once per turn, not once per tool round.
   const systemPrompt = buildSystemPrompt();
@@ -2930,6 +2943,9 @@ async function streamResponse(userPrompt) {
     let contentText = '';
     let buffer = '';
     let toolCalls = [];
+    // Reset per round: only the current round's text is unsaved, since a round that
+    // ends in tool calls stores its text on the assistant message below.
+    partialContent = '';
 
     while (true) {
       const { done, value } = await reader.read();
@@ -2974,6 +2990,7 @@ async function streamResponse(userPrompt) {
                   currentThinkingDetails.open = false;
                 }
                 contentText += contentChunk;
+                partialContent = contentText;
                 currentBubbleDiv.innerHTML = parseMarkdown(contentText);
                 scrollToBottom();
               }
@@ -3015,6 +3032,7 @@ async function streamResponse(userPrompt) {
               if (contentChunk) {
                 if (!currentMessageDiv) createAssistantMessageNodes();
                 contentText += contentChunk;
+                partialContent = contentText;
                 currentBubbleDiv.innerHTML = parseMarkdown(contentText);
                 scrollToBottom();
               }
@@ -3099,6 +3117,13 @@ async function streamResponse(userPrompt) {
       break;
     }
   }
+  } catch (err) {
+    // A stopped reply is already rendered on screen, so keep it in history too —
+    // otherwise the model has no record of what the user can plainly see it said.
+    if (err && err.name === 'AbortError' && partialContent.trim().length > 0) {
+      CHAT_STATE.messages.push({ role: 'assistant', content: partialContent });
+    }
+    throw err;
   } finally {
     if (CHAT_STATE.abortController === controller) CHAT_STATE.abortController = null;
     setChatLoading(false);
