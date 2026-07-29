@@ -100,15 +100,6 @@
       "open": true
     },
     {
-      "provider": "xAI",
-      "model": "Grok 4.3",
-      "inputPrice": 1.25,
-      "outputPrice": 2.5,
-      "livebench": 62.25,
-      "aaScore": 38,
-      "open": false
-    },
-    {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro",
       "inputPrice": 0.435,
