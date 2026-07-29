@@ -106,7 +106,7 @@ Your API key is stored locally in your browser and is only sent to OpenRouter.
 
 ### Blended Cost
 
-A weighted cost estimate based on a 37:1 input-to-output token ratio.
+A weighted cost estimate based on a 22.4:1 input-to-output token ratio.
 
 $$
 \text{Blended Cost} = (0.9573 \times \text{Input Price}) + (0.0427 \times \text{Output Price})
@@ -114,11 +114,21 @@ $$
 
 ### Performance
 
-Performance is the average of the normalized LiveBench and Artificial Analysis scores.
+Performance is a weighted blend of the normalized LiveBench and Artificial Analysis scores.
 
 $$
-\text{Performance} = \frac{\text{Normalized(LiveBench)} + \text{Normalized(AA Score)}}{2} \times 100
+\text{Performance} = \left( w_{\text{LB}} \cdot \frac{\text{LiveBench}}{\max(\text{LiveBench})} + w_{\text{AA}} \cdot \frac{\text{AA Score}}{\max(\text{AA Score})} \right) \times 100
 $$
+
+Normalizing by each benchmark's maximum pins the top of both scales to 1, but it leaves their *spreads* untouched — and spread, not the ceiling, decides how much a benchmark actually moves the composite. Artificial Analysis ranges over a much wider slice of its scale than LiveBench does (roughly 1.9× the spread on current data), so an even 50/50 split would in practice give AA about two-thirds of the influence.
+
+The weights correct for this by scaling each benchmark inversely to its spread:
+
+$$
+w_{\text{LB}} = \frac{\sigma_{\text{AA}}}{\sigma_{\text{LB}} + \sigma_{\text{AA}}}, \qquad w_{\text{AA}} = \frac{\sigma_{\text{LB}}}{\sigma_{\text{LB}} + \sigma_{\text{AA}}}
+$$
+
+where $\sigma$ is the standard deviation of the normalized scores. On current data this gives roughly $w_{\text{LB}} = 0.66$ and $w_{\text{AA}} = 0.34$, which is what an even contribution actually looks like. The weights are recomputed from the loaded dataset rather than hard-coded, so they stay correct as models are added. The live values are shown in the score formula panel.
 
 ### Value
 
