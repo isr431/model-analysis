@@ -23,7 +23,6 @@ const FALLBACK_DATA = {
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,    outputPrice: 15.0,   livebench: 76.04, aaScore: 53, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325,  outputPrice: 1.95,   livebench: 68.91, aaScore: 40, open: false },
     { provider: 'Moonshot AI', model: 'Kimi K2.7 Code',         inputPrice: 0.95,   outputPrice: 4.0,    livebench: 68.41, aaScore: 42, open: true },
-    { provider: 'xAI',         model: 'Grok 4.3',               inputPrice: 1.25,   outputPrice: 2.5,    livebench: 62.25, aaScore: 38, open: false },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435,  outputPrice: 0.87,   livebench: 71.57, aaScore: 44, open: true },
     { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 73.16, aaScore: 51, open: true },
     { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,    outputPrice: 1.2,    livebench: 67.26, aaScore: 44, open: true },
@@ -213,7 +212,7 @@ async function loadData() {
 
 // ===== STATE =====
 const state = {
-  p: 0.07,
+  p: 0.80,
   search: '',
   priceMin: 0,
   priceMax: 12,
@@ -1264,7 +1263,7 @@ function resetFilters() {
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
 
-  state.p = 0.07;
+  state.p = 0.80;
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
@@ -1272,8 +1271,8 @@ function resetFilters() {
   state.sourceFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  document.getElementById('pSlider').value = 0.07;
-  document.getElementById('pValue').textContent = '0.07';
+  document.getElementById('pSlider').value = 0.80;
+  document.getElementById('pValue').textContent = '0.80';
   document.getElementById('searchInput').value = '';
   document.getElementById('priceMin').value = 0;
   document.getElementById('priceMax').value = sliderMax;
@@ -1368,7 +1367,7 @@ function setDashboardFilters(patch) {
 function countActiveFilters() {
   let n = 0;
   if (state.search.trim() !== '') n++;
-  if (state.p !== 0.07) n++;
+  if (state.p !== 0.80) n++;
   const priceMaxEl = document.getElementById('priceMax');
   const sliderMax = priceMaxEl ? (parseFloat(priceMaxEl.max) || 12) : 12;
   if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
@@ -2545,7 +2544,7 @@ function buildChatTools() {
           properties: {
             reset: {
               type: 'boolean',
-              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07) before applying any other field in this call.'
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.80) before applying any other field in this call.'
             },
             providers: {
               type: 'array',
