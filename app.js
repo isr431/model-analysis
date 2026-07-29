@@ -212,7 +212,7 @@ async function loadData() {
 
 // ===== STATE =====
 const state = {
-  p: 0.08,
+  p: 0.07,
   search: '',
   priceMin: 0,
   priceMax: 12,
@@ -238,16 +238,44 @@ function computeBlended(inputPrice, outputPrice) {
   return 0.9573 * inputPrice + 0.0427 * outputPrice;
 }
 
+function stdDev(values) {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (values.length - 1));
+}
+
+// Dividing each benchmark by its own maximum pins the top of both scales to 1, but it
+// leaves their spreads untouched — and spread, not the ceiling, is what decides how much
+// a benchmark actually moves the composite. AA ranges over a much wider slice of its
+// scale than LiveBench does (~1.9x the spread on current data), so a nominal 50/50 split
+// really lands nearer 34/66 in favour of AA. Weighting each benchmark by the inverse of
+// its spread cancels that out and gives both an equal say.
+//
+// The weights are derived from the loaded data rather than hard-coded so they stay
+// correct as models are added and the two benchmarks' spreads drift apart.
+function equalContributionWeights(lbNorm, aaNorm) {
+  const lbSd = stdDev(lbNorm);
+  const aaSd = stdDev(aaNorm);
+  if (!(lbSd > 0) || !(aaSd > 0)) return { lb: 0.5, aa: 0.5 };
+  return { lb: aaSd / (lbSd + aaSd), aa: lbSd / (lbSd + aaSd) };
+}
+
+// Last weights computed by computeAllMetrics, surfaced so the formula modal can show the
+// numbers actually in play instead of a stale literal.
+let perfWeights = { lb: 0.5, aa: 0.5 };
+
 function computeAllMetrics(data, p) {
   const models = data.map(d => ({ ...d, blended: computeBlended(d.inputPrice, d.outputPrice) }));
 
   const lbMax = Math.max(...models.map(m => m.livebench));
   const aaMax = Math.max(...models.map(m => m.aaScore));
 
-  models.forEach(m => {
-    const lbNorm = lbMax === 0 ? 0 : m.livebench / lbMax;
-    const aaNorm = aaMax === 0 ? 0 : m.aaScore / aaMax;
-    m.performance = (0.5 * lbNorm + 0.5 * aaNorm) * 100;
+  const lbNorm = models.map(m => (lbMax === 0 ? 0 : m.livebench / lbMax));
+  const aaNorm = models.map(m => (aaMax === 0 ? 0 : m.aaScore / aaMax));
+  perfWeights = equalContributionWeights(lbNorm, aaNorm);
+
+  models.forEach((m, i) => {
+    m.performance = (perfWeights.lb * lbNorm[i] + perfWeights.aa * aaNorm[i]) * 100;
   });
 
   models.forEach(m => {
@@ -1040,6 +1068,10 @@ function initTableScrollHints() {
 
 function updateFormulaP() {
   document.getElementById('formulaPVal').textContent = state.p.toFixed(2);
+  const lbEl = document.getElementById('formulaWLive');
+  const aaEl = document.getElementById('formulaWAa');
+  if (lbEl) lbEl.textContent = perfWeights.lb.toFixed(3);
+  if (aaEl) aaEl.textContent = perfWeights.aa.toFixed(3);
 }
 
 // ===== COMPARE VIEW =====
@@ -1263,7 +1295,7 @@ function resetFilters() {
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
 
-  state.p = 0.08;
+  state.p = 0.07;
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
@@ -1271,8 +1303,8 @@ function resetFilters() {
   state.sourceFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  document.getElementById('pSlider').value = 0.08;
-  document.getElementById('pValue').textContent = '0.08';
+  document.getElementById('pSlider').value = 0.07;
+  document.getElementById('pValue').textContent = '0.07';
   document.getElementById('searchInput').value = '';
   document.getElementById('priceMin').value = 0;
   document.getElementById('priceMax').value = sliderMax;
@@ -1367,7 +1399,7 @@ function setDashboardFilters(patch) {
 function countActiveFilters() {
   let n = 0;
   if (state.search.trim() !== '') n++;
-  if (state.p !== 0.08) n++;
+  if (state.p !== 0.07) n++;
   const priceMaxEl = document.getElementById('priceMax');
   const sliderMax = priceMaxEl ? (parseFloat(priceMaxEl.max) || 12) : 12;
   if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
@@ -2544,7 +2576,7 @@ function buildChatTools() {
           properties: {
             reset: {
               type: 'boolean',
-              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.08) before applying any other field in this call.'
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07) before applying any other field in this call.'
             },
             providers: {
               type: 'array',
@@ -2858,7 +2890,7 @@ Get numbers from your tools rather than memory, since the data and the user's fi
 
 HOW TO ANSWER
 - Answer the actual question first, conversationally. Use a number or two to back up your point, not as the point — you're a guide, not a spreadsheet. One clear recommendation beats an exhaustive rundown.
-- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost weights input price heavily over output price; performance averages the two benchmarks, scaled so the best model in the dataset sets the bar; value = performance / cost^P.)
+- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost weights input price heavily over output price; performance blends the two benchmarks, each scaled so the best model in the dataset sets the bar and weighted so neither benchmark dominates; value = performance / cost^P.)
 - Near-identical scores are a tie. Don't crown a winner over a decimal point — point to what genuinely separates the models, like price or open weights.
 - If a name could mean several models (like "Opus"), just ask which one they meant.
 

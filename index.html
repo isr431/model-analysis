@@ -90,9 +90,9 @@
     <div class="filters-panel glass" id="filtersPanel" hidden>
       <div class="controls-grid">
         <div class="control-group full-width" id="pSliderGroup">
-          <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.08</span></label>
+          <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.07</span></label>
           <div class="control-input-wrap">
-            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.08" aria-label="Cost sensitivity">
+            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07" aria-label="Cost sensitivity">
           </div>
           <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
         </div>
@@ -470,17 +470,17 @@
         <div class="formula-item">
           <div class="formula-label">Blended Cost</div>
           <code><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.9573</span> * inputPrice + <span class="syntax-number">0.0427</span> * outputPrice;</code>
-          <div class="formula-desc">Weighted for a 37:1 input-to-output token ratio</div>
+          <div class="formula-desc">Weighted for a 22.4:1 input-to-output token ratio</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Performance</div>
-          <code><span class="syntax-keyword">const</span> performance = (<span class="syntax-number">0.5</span> * (liveBench / maxLiveBench) + <span class="syntax-number">0.5</span> * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
-          <div class="formula-desc">Each benchmark is normalized against its dataset maximum for equal weighting</div>
+          <code><span class="syntax-keyword">const</span> performance = (wLive * (liveBench / maxLiveBench) + wAA * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
+          <div class="formula-desc">Each benchmark is normalized against its dataset maximum, then weighted by the inverse of its spread so both contribute equally (currently wLive <span id="formulaWLive">0.658</span>, wAA <span id="formulaWAa">0.342</span>)</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
           <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P);</code>
-          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.08</span>)</div>
+          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
         </div>
       </div>
     </div>
