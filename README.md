@@ -67,8 +67,8 @@ Add a model:
 {
   "provider": "OpenAI",
   "model": "gpt-oss-120b",
-  "inputPrice": 0.039,
-  "outputPrice": 0.18,
+  "inputPrice": 0.037,
+  "outputPrice": 0.17,
   "livebench": 46.09,
   "aaScore": 24,
   "open": true
