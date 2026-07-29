@@ -90,9 +90,9 @@
     <div class="filters-panel glass" id="filtersPanel" hidden>
       <div class="controls-grid">
         <div class="control-group full-width" id="pSliderGroup">
-          <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.80</span></label>
+          <label>Cost Sensitivity (P): <span id="pValue" class="control-badge">0.08</span></label>
           <div class="control-input-wrap">
-            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.80" aria-label="Cost sensitivity">
+            <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.08" aria-label="Cost sensitivity">
           </div>
           <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
         </div>
@@ -480,7 +480,7 @@
         <div class="formula-item">
           <div class="formula-label">Value</div>
           <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P);</code>
-          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.80</span>)</div>
+          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.08</span>)</div>
         </div>
       </div>
     </div>
