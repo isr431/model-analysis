@@ -212,7 +212,7 @@ async function loadData() {
 
 // ===== STATE =====
 const state = {
-  p: 0.80,
+  p: 0.08,
   search: '',
   priceMin: 0,
   priceMax: 12,
@@ -1263,7 +1263,7 @@ function resetFilters() {
   const maxBlended = Math.max(...allModels.map(m => m.blended));
   const sliderMax = Math.ceil(maxBlended);
 
-  state.p = 0.80;
+  state.p = 0.08;
   state.search = '';
   state.priceMin = 0;
   state.priceMax = sliderMax;
@@ -1271,8 +1271,8 @@ function resetFilters() {
   state.sourceFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
-  document.getElementById('pSlider').value = 0.80;
-  document.getElementById('pValue').textContent = '0.80';
+  document.getElementById('pSlider').value = 0.08;
+  document.getElementById('pValue').textContent = '0.08';
   document.getElementById('searchInput').value = '';
   document.getElementById('priceMin').value = 0;
   document.getElementById('priceMax').value = sliderMax;
@@ -1367,7 +1367,7 @@ function setDashboardFilters(patch) {
 function countActiveFilters() {
   let n = 0;
   if (state.search.trim() !== '') n++;
-  if (state.p !== 0.80) n++;
+  if (state.p !== 0.08) n++;
   const priceMaxEl = document.getElementById('priceMax');
   const sliderMax = priceMaxEl ? (parseFloat(priceMaxEl.max) || 12) : 12;
   if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
@@ -2544,7 +2544,7 @@ function buildChatTools() {
           properties: {
             reset: {
               type: 'boolean',
-              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.80) before applying any other field in this call.'
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.08) before applying any other field in this call.'
             },
             providers: {
               type: 'array',
