@@ -91,15 +91,6 @@
       "open": false
     },
     {
-      "provider": "Moonshot AI",
-      "model": "Kimi K2.7 Code",
-      "inputPrice": 0.95,
-      "outputPrice": 4,
-      "livebench": 68.41,
-      "aaScore": 42,
-      "open": true
-    },
-    {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro",
       "inputPrice": 0.435,
@@ -161,15 +152,6 @@
       "livebench": 73.14,
       "aaScore": 46,
       "open": false
-    },
-    {
-      "provider": "Moonshot AI",
-      "model": "Kimi K2.6",
-      "inputPrice": 0.95,
-      "outputPrice": 4,
-      "livebench": 70.54,
-      "aaScore": 44,
-      "open": true
     },
     {
       "provider": "Anthropic",
