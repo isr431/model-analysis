@@ -17,8 +17,8 @@ const FALLBACK_DATA = {
   },
   models: [
     { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,    outputPrice: 30.0,   livebench: 81.05, aaScore: 59, open: false },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.5,    outputPrice: 15.0,   livebench: 77.94, aaScore: 55, open: false },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 1.0,    outputPrice: 6.0,    livebench: 73.56, aaScore: 51, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.0,    outputPrice: 12.0,   livebench: 77.94, aaScore: 55, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 0.2,    outputPrice: 1.2,    livebench: 73.56, aaScore: 51, open: false },
     { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 75.77, aaScore: 54, open: false },
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,    outputPrice: 15.0,   livebench: 76.04, aaScore: 53, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325,  outputPrice: 1.95,   livebench: 68.91, aaScore: 40, open: false },
