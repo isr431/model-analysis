@@ -30,6 +30,9 @@
   --spacing-2xl: 48px;
   --max-width: 1400px;
   --slimbar-h: 48px;
+  /* Leaderboard name column: identical on every row, so bar tracks never shift with
+     name length. Scales with the viewport so narrow screens keep a usable bar. */
+  --lb-name-col: clamp(260px, 24%, 280px);
   --transition: all 0.15s ease-in-out;
   --font-xs: 11px;
   --font-sm: 12px;
@@ -810,12 +813,21 @@ input[type="range"]::-moz-range-thumb:hover {
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   overflow: hidden;
 }
+/* Fixed columns keep every bar track starting at the same x, whatever the name length. */
 .leaderboard-row {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    32px                /* rank */
+    var(--lb-name-col)  /* name */
+    minmax(60px, 1fr)   /* bar */
+    50px                /* score */
+    auto;               /* compare toggle */
   align-items: center;
   gap: var(--spacing-sm);
   padding: 10px 8px;
   border-bottom: 1px solid var(--divider);
+  /* Reserved so the highlight border does not nudge the row's columns. */
+  border-left: 2px solid transparent;
   transition: background 0.15s ease, border-left-color 0.15s ease;
 }
 .leaderboard-row:hover {
@@ -836,7 +848,6 @@ input[type="range"]::-moz-range-thumb:hover {
   justify-content: center;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
-  flex-shrink: 0;
   border: 1px solid transparent;
 }
 :root[data-theme="light"] .leaderboard-rank {
@@ -864,16 +875,31 @@ input[type="range"]::-moz-range-thumb:hover {
 .leaderboard-name {
   font-size: var(--font-sm);
   font-weight: 500;
-  min-width: 200px;
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.leaderboard-model {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .leaderboard-provider {
   font-size: var(--font-xs);
   color: var(--text-muted);
-  margin-left: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* The provider gives up space before the model name does. */
+  flex-shrink: 100;
+}
+.leaderboard-name .open-badge {
+  flex: none;
+  margin-left: 0;
 }
 .leaderboard-bar-track {
-  flex: 1;
   height: 6px;
   background: var(--bg-primary);
   border-radius: var(--radius-sm);
@@ -890,7 +916,6 @@ input[type="range"]::-moz-range-thumb:hover {
   font-size: var(--font-xs);
   font-weight: 600;
   width: 50px;
-  flex-shrink: 0;
   text-align: right;
   color: var(--text-secondary);
   font-family: 'JetBrains Mono', monospace;
@@ -1172,9 +1197,8 @@ input[type="range"]::-moz-range-thumb:hover {
 .leaderboard-row.highlighted {
   background: var(--accent-glow) !important;
   border-radius: 0;
-  padding-left: var(--spacing-sm);
-  padding-right: var(--spacing-sm);
-  border-left: 2px solid var(--slider-thumb);
+  /* Colour only: the base row already reserves the 2px border. */
+  border-left-color: var(--slider-thumb);
   transition: var(--transition);
 }
 
@@ -1433,13 +1457,8 @@ input[type="range"]::-moz-range-thumb:hover {
     padding: 12px 12px;
   }
   .leaderboard-rank { grid-area: rank; }
-  .leaderboard-name {
-    grid-area: name;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  /* Truncation lives on .leaderboard-model and carries over here. */
+  .leaderboard-name { grid-area: name; }
   .leaderboard-bar-track { grid-area: bar; }
   .leaderboard-score { grid-area: score; width: auto; }
   .leaderboard-row .compare-toggle {

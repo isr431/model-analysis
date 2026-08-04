@@ -767,7 +767,7 @@ function updateLeaderboard(filtered) {
   list.innerHTML = display.map((m, i) => `
     <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-name">${escapeHtml(m.model)} <span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
+      <span class="leaderboard-name" title="${escapeHtml(m.model)} — ${escapeHtml(m.provider)}"><span class="leaderboard-model">${escapeHtml(m.model)}</span><span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
