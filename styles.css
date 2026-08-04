@@ -38,10 +38,10 @@
   --font-xl: 18px;
   --font-2xl: 24px;
   --theme-transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  /* Skeleton tokens */
+  /* Loading state */
   --skeleton-bg: #23232c;
   --skeleton-pulse-bg: #2d2d38;
-  /* Sticky Table columns */
+  /* Sticky table columns */
   --table-sticky-bg: #18181f;
   --table-sticky-hover-bg: #23232c;
   /* Compare view */
@@ -91,7 +91,7 @@ body {
   background-size: 20px 20px;
 }
 
-/* ===== GLASS MIXIN (Restructured for Terminal Panes) ===== */
+/* ===== TERMINAL PANE SURFACE ===== */
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -111,7 +111,7 @@ body {
   position: relative;
 }
 
-/* ===== APP HEADER CONTROLS ===== */
+/* ===== HEADER CONTROLS ===== */
 .app-header-controls {
   position: absolute;
   top: 24px;
@@ -193,7 +193,6 @@ body {
   font-weight: 600;
 }
 
-/* ===== FORMULA MODAL LINK (opens the score-formula modal) ===== */
 .info-btn {
   background: transparent;
   border: none;
@@ -203,7 +202,6 @@ body {
   transition: color 0.15s ease;
   outline: none;
 }
-/* Text link in the intro paragraph */
 .info-link {
   color: var(--slider-thumb);
   font-size: var(--font-sm);
@@ -217,7 +215,7 @@ body {
   border-bottom-color: var(--slider-thumb);
 }
 
-/* ===== SLIM FILTER BAR (sticky) ===== */
+/* ===== STICKY FILTER BAR ===== */
 .filters-bar {
   position: sticky;
   top: 0;
@@ -294,10 +292,9 @@ body {
   line-height: 1;
 }
 .filters-bar-reset { white-space: nowrap; height: 34px; }
-/* Unify slim-bar control heights (search / toggle / reset all 34px) */
 .filters-bar .search-input { height: 34px; }
 
-/* ===== EXPANDABLE FILTER PANEL (in-flow) ===== */
+/* ===== EXPANDABLE FILTER PANEL ===== */
 .filters-panel {
   margin-bottom: var(--spacing-lg);
   overflow: hidden;
@@ -366,7 +363,7 @@ body {
   margin-top: 1px;
 }
 
-/* Range slider styling */
+/* Range controls */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -421,7 +418,7 @@ input[type="range"]::-moz-range-thumb:hover {
   box-shadow: 0 0 0 1px var(--slider-thumb), 0 0 14px var(--slider-thumb);
 }
 
-/* Search input with icon */
+/* Search control */
 .search-input-wrap {
   position: relative;
   width: 100%;
@@ -460,7 +457,7 @@ input[type="range"]::-moz-range-thumb:hover {
   filter: drop-shadow(0 0 3px var(--slider-thumb));
 }
 
-/* Dual slider container */
+/* Price range dual slider */
 .dual-slider {
   position: relative;
   height: 24px;
@@ -505,8 +502,8 @@ input[type="range"]::-moz-range-thumb:hover {
   z-index: 11;
 }
 
-  /* Provider pills */
-  .pill-container {
+/* Provider pills */
+.pill-container {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -676,7 +673,7 @@ input[type="range"]::-moz-range-thumb:hover {
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
-/* ===== MOBILE BOTTOM TAB BAR (shown ≤640px) ===== */
+/* Mobile bottom navigation is activated at the phone breakpoint. */
 .bottom-nav { display: none; }
 
 /* ===== TAB CONTENT ===== */
@@ -779,7 +776,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .card-stat.blue { color: var(--slider-thumb); }
 .card-stat.red { color: var(--danger); }
 
-/* ===== WINDOW CONTROLS DECORATIONS ===== */
+/* Terminal-style window decorations */
 .window-controls {
   display: flex;
   gap: 5px;
@@ -962,7 +959,7 @@ input[type="range"]::-moz-range-thumb:hover {
   overflow-y: auto;
 }
 
-/* ===== FORMULA ITEMS (rendered inside the modal) ===== */
+/* Formula content */
 .formula-item { margin-bottom: var(--spacing-md); }
 .formula-item:last-child { margin-bottom: 0; }
 .formula-label {
@@ -989,7 +986,7 @@ input[type="range"]::-moz-range-thumb:hover {
   color: var(--text-muted);
 }
 
-/* Syntax highlighting for formulas */
+/* Formula syntax highlighting */
 .syntax-keyword { color: #c678dd; font-weight: bold; }
 .syntax-number { color: #d19a66; }
 :root[data-theme="light"] .syntax-keyword { color: #a626a4; }
@@ -1119,7 +1116,7 @@ input[type="range"]::-moz-range-thumb:hover {
   border-right: 1px solid var(--divider);
 }
 
-/* Dim pricing columns for better readability of final scores */
+/* De-emphasize prices so computed scores remain the visual focus. */
 #modelTable td:nth-child(3),
 #modelTable td:nth-child(4),
 #modelTable td:nth-child(5) {
@@ -1181,7 +1178,7 @@ input[type="range"]::-moz-range-thumb:hover {
   transition: var(--transition);
 }
 
-/* ===== COMPARE FEATURE ===== */
+/* ===== COMPARE ===== */
 .compare-tray {
   display: flex;
   align-items: center;
@@ -1375,7 +1372,7 @@ input[type="range"]::-moz-range-thumb:hover {
   font-size: var(--font-base);
 }
 
-/* ===== SKELETON / SHIMMER LOADING ===== */
+/* ===== SKELETON LOADING ===== */
 @keyframes pulse {
   0% { background-color: var(--skeleton-bg); }
   50% { background-color: var(--skeleton-pulse-bg); }
@@ -1407,10 +1404,10 @@ input[type="range"]::-moz-range-thumb:hover {
   .app {
     padding: var(--spacing-md);
     padding-top: var(--spacing-lg);
-    /* Reserve space for the fixed bottom tab bar */
+    /* Reserve space for the fixed bottom navigation. */
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
-  /* Keep the centered title clear of the absolute theme toggle */
+  /* Keep the centered title clear of the absolute theme toggle. */
   .header { padding: 0 48px; }
   .header h1 { font-size: 1.35rem; }
   .app-header-controls { top: 16px; right: 16px; }
@@ -1419,13 +1416,11 @@ input[type="range"]::-moz-range-thumb:hover {
   .controls-grid { padding: var(--spacing-sm) var(--spacing-md); grid-template-columns: 1fr; }
   .summary-cards { grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
   .card-stat { font-size: var(--font-base); }
-  /* Hide the inner card label — the pane-header title already names each card */
+  /* The pane header already names each summary card. */
   .summary-card .card-label { display: none; }
   .compare-tray-actions { margin-left: 0; width: 100%; }
 
-  /* Leaderboard rows become a two-line grid so nothing clips or scrolls off.
-     Line 1: rank + name/provider/badge (ellipsized). Line 2: bar + score.
-     The compare toggle is pinned right, spanning both lines. */
+  /* A two-line grid prevents horizontal clipping; the compare toggle spans both rows. */
   .leaderboard-row {
     display: grid;
     grid-template-columns: 32px minmax(0, 1fr) auto 44px;
@@ -1457,22 +1452,20 @@ input[type="range"]::-moz-range-thumb:hover {
     font-size: var(--font-lg);
   }
 
-  /* Roomier touch targets in the expanded filter panel */
+  /* Roomier touch targets in the expanded filter panel. */
   .action-link,
   .source-seg,
   .provider-pill { min-height: 34px; }
-  /* Filters-bar controls share one height (search input is 40px, above) */
+  /* Keep slim-bar controls aligned to the 40px mobile search input. */
   .filters-toggle,
   .filters-bar .filters-bar-reset { min-height: 40px; }
 
-  /* Shorter charts on phones (bar chart stays tall — up to ~38 bars) */
+  /* Shorter charts fit phone viewports; the ranked bar chart remains data-driven. */
   .chart-canvas-wrap-scatter { height: 300px; }
   #radarContainer .chart-canvas-wrap { height: 300px; }
   #tab-compare .chart-canvas-wrap { height: 340px; }
 
-  /* ===== Inputs: 16px font stops iOS Safari auto-zoom on focus =====
-     Ancestor-qualified so these beat the base rules (which sit later in the
-     source and would otherwise win the equal-specificity tie). */
+  /* 16px prevents iOS Safari focus zoom; extra specificity beats later base rules. */
   .search-input,
   .chat-drawer .chat-input,
   .chat-drawer .chat-key-input,
@@ -1485,7 +1478,7 @@ input[type="range"]::-moz-range-thumb:hover {
   .filters-bar .search-input { height: 40px; }
   .pane-header .metric-select { height: 32px; }
 
-  /* ===== Larger touch targets ===== */
+  /* Larger touch targets for compare and drawer controls. */
   .compare-toggle {
     width: 40px;
     height: 40px;
@@ -1504,7 +1497,7 @@ input[type="range"]::-moz-range-thumb:hover {
   .modal .chat-icon-btn { width: 32px; height: 32px; }
   .chat-drawer .chat-send-btn { width: 44px; height: 44px; }
 
-  /* ===== Table: sticky header + sticky model column + scroll hints ===== */
+  /* Sticky header/model column plus horizontal-scroll affordances. */
   .table-container { position: relative; }
   .table-wrapper {
     overflow: auto;
@@ -1516,10 +1509,10 @@ input[type="range"]::-moz-range-thumb:hover {
     z-index: 2;
     background: var(--table-sticky-bg);
   }
-  /* Hide the provider column so the model column can pin cleanly at the edge */
+  /* Hide provider so the model column can pin at the visible edge. */
   #modelTable th:nth-child(1),
   #modelTable td:nth-child(1) { display: none; }
-  /* Pin the model column (now the first visible column) */
+  /* Model is now the first visible column. */
   #modelTable th:nth-child(2),
   #modelTable td:nth-child(2) {
     position: sticky;
@@ -1559,7 +1552,7 @@ input[type="range"]::-moz-range-thumb:hover {
   }
   .table-container.more-x::after { opacity: 0.9; }
 
-  /* Swap top tabs for a fixed bottom nav */
+  /* Replace top tabs with a fixed bottom navigation on phones. */
   .tab-nav { display: none; }
   .bottom-nav {
     display: flex;
@@ -1620,7 +1613,6 @@ input[type="range"]::-moz-range-thumb:hover {
   .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 480px) {
-  /* Theme-toggle enlargement now lives in the ≤640 block (applies here too) */
   .summary-cards { grid-template-columns: 1fr !important; }
   .filters-bar-title { display: none; }
   .filters-bar .window-controls { display: none; }
@@ -1645,12 +1637,12 @@ input[type="range"]::-moz-range-thumb:hover {
   .glass { transition: none; }
 }
 
-/* ===== CHATBOT STYLES ===== */
+/* ===== CHAT ASSISTANT ===== */
 .hide {
   display: none !important;
 }
 
-/* FAB Button (Console Style Widget Trigger) */
+/* Floating launcher */
 .chat-fab {
   position: fixed;
   bottom: 24px;
@@ -1708,7 +1700,7 @@ input[type="range"]::-moz-range-thumb:hover {
   100% { opacity: 0.7; }
 }
 
-/* Chat Drawer container */
+/* Resizable drawer */
 .chat-drawer {
   position: fixed;
   bottom: 84px;
@@ -1740,7 +1732,7 @@ input[type="range"]::-moz-range-thumb:hover {
   display: flex !important;
 }
 
-/* Custom resizer handles */
+/* Custom resize handles */
 .chat-resizer {
   position: absolute;
   z-index: 150;
@@ -1772,7 +1764,7 @@ input[type="range"]::-moz-range-thumb:hover {
   transition: none !important;
 }
 
-/* Chat Header */
+/* Drawer header */
 .chat-header {
   display: flex;
   justify-content: space-between;
@@ -1862,7 +1854,7 @@ input[type="range"]::-moz-range-thumb:hover {
   stroke: currentColor;
 }
 
-/* API Key View */
+/* Settings and API-key overlay */
 .chat-api-key-view {
   position: absolute;
   top: 38px;
@@ -1957,7 +1949,7 @@ input[type="range"]::-moz-range-thumb:hover {
   background: rgba(248, 113, 113, 0.1);
 }
 
-/* Chat Logs */
+/* Message log */
 .chat-logs {
   flex: 1;
   overflow-y: auto;
@@ -2027,7 +2019,7 @@ input[type="range"]::-moz-range-thumb:hover {
   align-self: center;
 }
 
-/* Collapsible Reasoning Block inside Assistant Bubble */
+/* Collapsible reasoning block */
 .thinking-block {
   margin-bottom: 12px;
   font-size: var(--font-xs);
@@ -2075,7 +2067,7 @@ details[open] .thinking-title::before {
   line-height: 1.4;
 }
 
-/* Chat Markdown Formatting */
+/* Markdown content */
 .message-bubble code {
   font-family: inherit;
   background: rgba(255, 255, 255, 0.06);
@@ -2113,6 +2105,7 @@ details[open] .thinking-title::before {
 .message-bubble ul,
 .message-bubble ol,
 .message-bubble pre,
+/* Markdown tables */
 .message-bubble table {
   margin-top: 0;
 }
@@ -2162,7 +2155,6 @@ details[open] .thinking-title::before {
   margin: 12px 0;
 }
 
-/* Chat Markdown Table styling */
 .message-bubble table {
   width: 100%;
   border-collapse: collapse;
@@ -2187,7 +2179,7 @@ details[open] .thinking-title::before {
   border-bottom: none;
 }
 
-/* Chat Footer Input */
+/* Message input */
 .chat-footer {
   display: flex;
   align-items: flex-end;
@@ -2263,7 +2255,7 @@ details[open] .thinking-title::before {
   filter: brightness(1.1);
 }
 
-/* Chat Settings Group styling */
+/* Settings groups */
 .settings-group {
   display: flex;
   flex-direction: column;
@@ -2282,7 +2274,7 @@ details[open] .thinking-title::before {
   letter-spacing: 0.05em;
 }
 
-/* Tool status message styling */
+/* Tool execution status */
 .chat-message.tool-status {
   align-self: center;
   max-width: 100%;
@@ -2306,7 +2298,7 @@ details[open] .thinking-title::before {
   100% { opacity: 0.7; }
 }
 
-/* Mobile responsive Chat Widget */
+/* Full-screen chat drawer on phones */
 @media (max-width: 480px) {
   .chat-drawer {
     bottom: 0 !important;
