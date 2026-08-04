@@ -41,7 +41,8 @@ const FALLBACK_DATA = {
   ],
 };
 
-// ===== ACTIVE DATA (starts as fallback, replaced by fetched data) =====
+// ===== ACTIVE DATA =====
+// Starts with the fallback snapshot and is replaced when data.json loads successfully.
 let RAW_DATA = FALLBACK_DATA.models;
 let PROVIDER_COLORS = {};
 let ALL_PROVIDERS = [];
@@ -122,13 +123,12 @@ function applyData(data) {
     }
   }
 
-  // Calculate global min/max log blended costs
+  // Anchor radar cost efficiency to the full dataset so filtering cannot rescale it.
   const blendedCosts = data.models.map(m => computeBlended(m.inputPrice, m.outputPrice));
   const floorCosts = blendedCosts.map(c => Math.max(c, 0.01));
   GLOBAL_LOG_MIN = Math.log10(Math.min(...floorCosts));
   GLOBAL_LOG_MAX = Math.log10(Math.max(...floorCosts));
 
-  // Update dynamic subtitle
   const modelCountEl = document.getElementById('modelCountVal');
   const providerCountEl = document.getElementById('providerCountVal');
   const lastUpdatedEl = document.getElementById('lastUpdatedVal');
@@ -244,15 +244,11 @@ function stdDev(values) {
   return Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (values.length - 1));
 }
 
-// Dividing each benchmark by its own maximum pins the top of both scales to 1, but it
-// leaves their spreads untouched — and spread, not the ceiling, is what decides how much
-// a benchmark actually moves the composite. AA ranges over a much wider slice of its
-// scale than LiveBench does (~1.9x the spread on current data), so a nominal 50/50 split
-// really lands nearer 34/66 in favour of AA. Weighting each benchmark by the inverse of
-// its spread cancels that out and gives both an equal say.
-//
-// The weights are derived from the loaded data rather than hard-coded so they stay
-// correct as models are added and the two benchmarks' spreads drift apart.
+// Max-normalization aligns benchmark ceilings but not their spreads, and spread is what
+// decides how much a benchmark moves the composite: AA's spread runs ~1.9x LiveBench's,
+// so a nominal 50/50 split really lands nearer 34/66 in AA's favour. Inverse-spread
+// weighting cancels that out, and deriving the weights from the loaded data keeps them
+// correct as models are added and the two spreads drift apart.
 function equalContributionWeights(lbNorm, aaNorm) {
   const lbSd = stdDev(lbNorm);
   const aaSd = stdDev(aaNorm);
@@ -260,8 +256,7 @@ function equalContributionWeights(lbNorm, aaNorm) {
   return { lb: aaSd / (lbSd + aaSd), aa: lbSd / (lbSd + aaSd) };
 }
 
-// Last weights computed by computeAllMetrics, surfaced so the formula modal can show the
-// numbers actually in play instead of a stale literal.
+// The formula modal displays the weights actually used for the current dataset.
 let perfWeights = { lb: 0.5, aa: 0.5 };
 
 function computeAllMetrics(data, p) {
@@ -319,9 +314,7 @@ function getFilteredModels(allModels) {
   );
 }
 
-// Highlight models from a filtered set: best value, best performance, cheapest, priciest.
-// Returns model references (not formatted values) so both the summary cards and the
-// chat tools can project them however they need.
+// Returns model references so dashboard views and chat tools can format them independently.
 function getSummaryStats(filtered) {
   if (filtered.length === 0) return null;
   return {
@@ -332,9 +325,8 @@ function getSummaryStats(filtered) {
   };
 }
 
-// ===== UTILITIES =====
-// Rounding helpers mirror the precision the table renders at, so numbers quoted by the
-// chat assistant always match what the user sees on screen.
+// ===== DISPLAY AND TOOLING HELPERS =====
+// Keep assistant tool results at the same precision as the table.
 function round1(n) {
   return typeof n === 'number' && isFinite(n) ? Math.round(n * 10) / 10 : n;
 }
@@ -449,7 +441,7 @@ function initCharts() {
   if (typeof Chart === 'undefined') {
     renderChartsUnavailable();
     console.warn('[LLM Analysis] Chart.js is unavailable. Charts are disabled, but the dashboard data and filters remain usable.');
-    return false;
+    return;
   }
 
   const tooltipStyle = {
@@ -704,11 +696,9 @@ function initCharts() {
       }
     }
   });
-
-  return true;
 }
 
-// ===== VIEW UPDATE FUNCTIONS =====
+// ===== VIEW UPDATES =====
 function updateSummaryCards(filtered) {
   if (filtered.length === 0) {
     ['bestValueModel', 'bestPerfModel', 'cheapestModel', 'expensiveModel'].forEach(id => {
@@ -775,7 +765,7 @@ function updateLeaderboard(filtered) {
   btn.style.display = filtered.length > 10 ? 'flex' : 'none';
 
   list.innerHTML = display.map((m, i) => `
-    <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" tabindex="0" role="button">
+    <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
       <span class="leaderboard-name">${escapeHtml(m.model)} <span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
       <div class="leaderboard-bar-track">
@@ -867,9 +857,8 @@ function updateBarChart(filtered) {
   document.getElementById('barChart').parentElement.style.height = barHeight + 'px';
 
   state._barKeys = sorted.map(m => modelKey(m));
-  // Keep full names for the tooltip; on narrow screens truncate axis labels and
-  // reserve a fixed label gutter so names render fully instead of clipping at
-  // the left canvas edge (Chart.js under-measures the mono font otherwise).
+  // Chart.js under-measures the mono font on narrow screens, so reserve a fixed
+  // label gutter and keep full names separately for tooltips.
   const narrow = window.matchMedia('(max-width: 640px)').matches;
   state._barLabelsFull = sorted.map(m => m.model);
   barChart.data.labels = narrow
@@ -927,12 +916,10 @@ function updateRadarChart(filtered) {
     return;
   }
 
-  // 1. Calculate the Max/Min bounds in the filtered set for normalization
   const lbMax = Math.max(...RAW_DATA.map(m => m.livebench));
   const aaMax = Math.max(...RAW_DATA.map(m => m.aaScore));
   const maxValue = Math.max(...filtered.map(m => m.value));
 
-  // 2. Calculate the averages of the filtered models
   let sumValue = 0, sumPerf = 0, sumCostEff = 0, sumLb = 0, sumAa = 0;
   filtered.forEach(m => {
     const [valNorm, perf, costEff, lbNorm, aaNorm] = computeRadarAxes(m, lbMax, aaMax, maxValue);
@@ -952,7 +939,6 @@ function updateRadarChart(filtered) {
 
   radarChart.data.datasets[0].data = [avgValue, avgPerf, avgCostEff, avgLb, avgAa];
 
-  // 3. Highlighted Model dataset
   if (state.highlightedModel) {
     const match = filtered.find(m => modelKey(m) === state.highlightedModel);
     if (match) {
@@ -1006,7 +992,7 @@ function updateTable(filtered) {
     `;
   } else {
     tbody.innerHTML = sorted.map(m => `
-      <tr data-key="${escapeHtml(modelKey(m))}" data-model="${escapeHtml(m.model)}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
+      <tr data-key="${escapeHtml(modelKey(m))}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
         <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
@@ -1031,9 +1017,8 @@ function updateTable(filtered) {
   updateTableScrollHints();
 }
 
-// Toggle scroll-hint classes so the sticky model column casts a shadow once
-// scrolled, and the container shows a right-edge fade while more columns remain.
-// (CSS scopes the visual effect to <=640px; running this everywhere is harmless.)
+// CSS scopes these scroll affordances to phones; updating them everywhere keeps
+// the JS independent of media-query state.
 function updateTableScrollHints() {
   const wrap = document.querySelector('.table-wrapper');
   const container = document.getElementById('tableContainer');
@@ -1042,8 +1027,7 @@ function updateTableScrollHints() {
   container.classList.toggle('more-x', wrap.scrollLeft < wrap.scrollWidth - wrap.clientWidth - 4);
 }
 
-// Same left-shadow cue for the Compare tab's side-by-side table, whose sticky
-// column is the metric-label column.
+// The Compare table uses the same cue on its sticky metric-label column.
 function updateCompareScrollHint() {
   const wrap = document.getElementById('compareTableWrap');
   if (!wrap) return;
@@ -1230,7 +1214,7 @@ function restoreCompareFromHash() {
   const keys = [];
   match[1].split(',').forEach(token => {
     let key;
-    try { key = decodeURIComponent(token); } catch (e) { return; }
+    try { key = decodeURIComponent(token); } catch { return; }
     if (key && !keys.includes(key)) keys.push(key);
   });
   if (keys.length === 0) return;
@@ -1262,7 +1246,7 @@ function updateAll() {
   updateCompareTab();
 }
 
-// ===== PROVIDER PILLS STATE HELPERS =====
+// ===== PROVIDER PILL STATE =====
 function setPillState(pill, p, active) {
   if (active) {
     pill.classList.add('active');
@@ -1325,9 +1309,7 @@ function resetFilters() {
   updateAll();
 }
 
-// Apply a partial filter change, keeping `state` and the controls in sync the same way
-// resetFilters does. Only the keys present in `patch` are touched. Values are rounded to
-// each input's step so the slider thumb and the state can't drift apart.
+// Round numeric patches to the controls' steps so state and slider thumbs cannot drift.
 function setDashboardFilters(patch) {
   if (patch.reset) resetFilters();
 
@@ -1394,8 +1376,8 @@ function setDashboardFilters(patch) {
   updateAll();
 }
 
-// ===== FILTER PANEL (collapsible) =====
-// Count how many filters differ from their defaults, for the slim-bar badge.
+// ===== FILTER PANEL =====
+// Counts filters that differ from their defaults for the slim-bar badge.
 function countActiveFilters() {
   let n = 0;
   if (state.search.trim() !== '') n++;
@@ -1590,7 +1572,7 @@ function initEventListeners() {
     updateAll();
   });
 
-  // Table row click/keyboard highlighting
+  // Table row click and keyboard highlighting.
   document.getElementById('tableBody').addEventListener('click', e => {
     const btn = e.target.closest('.compare-toggle');
     if (btn) { toggleCompare(btn.dataset.key); return; }
@@ -1605,7 +1587,7 @@ function initEventListeners() {
     }
   });
 
-  // Leaderboard row click/keyboard highlighting
+  // Leaderboard row click and keyboard highlighting.
   document.getElementById('leaderboardList').addEventListener('click', e => {
     const btn = e.target.closest('.compare-toggle');
     if (btn) { toggleCompare(btn.dataset.key); return; }
@@ -1620,7 +1602,7 @@ function initEventListeners() {
     }
   });
 
-  // Compare tray, empty state, and compare-table column removal
+  // Compare tray, empty state, and table-column removal.
   document.getElementById('compareTrayChips').addEventListener('click', e => {
     const btn = e.target.closest('.compare-chip-remove');
     if (btn) toggleCompare(btn.dataset.key);
@@ -1747,7 +1729,7 @@ function updateChartColors(theme) {
       if (chart.options.plugins && chart.options.plugins.legend) {
         chart.options.plugins.legend.labels.color = textColor;
       }
-      // Update average dataset colors
+      // Keep the filtered-average radar dataset legible in both themes.
       const avgDataset = chart === radarChart ? chart.data.datasets[0] : null;
       if (avgDataset) {
         if (isLight) {
@@ -1781,20 +1763,18 @@ function updateChartColors(theme) {
 }
 
 // ===== COUNTER ANIMATION =====
-// Per-element rAF handle map; cancel any in-progress loop before starting a new one.
+// One rAF handle per element prevents overlapping counter animations.
 const _animHandles = new WeakMap();
 
 function animateValue(element, start, end, duration = 400, isPrice = false) {
   if (isNaN(start)) start = 0;
   if (isNaN(end)) end = 0;
 
-  // Cancel any in-progress animation on this element
   const existing = _animHandles.get(element);
   if (existing != null) cancelAnimationFrame(existing);
 
   const format = v => isPrice ? '$' + v.toFixed(2) : v.toFixed(1);
 
-  // Instant set for same value or when user prefers reduced motion
   if (start === end || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     element.textContent = format(end);
     _animHandles.delete(element);
@@ -1820,7 +1800,7 @@ function animateValue(element, start, end, duration = 400, isPrice = false) {
   _animHandles.set(element, requestAnimationFrame(update));
 }
 
-// ===== DUAL SLIDER OVERLAP FIX =====
+// ===== DUAL-SLIDER OVERLAP FIX =====
 function initRangeSliderZIndexFix() {
   const dualSliderContainer = document.querySelector('.dual-slider');
   const priceMinInput = document.getElementById('priceMin');
@@ -1858,7 +1838,7 @@ function initRangeSliderZIndexFix() {
   dualSliderContainer.addEventListener('touchstart', handleDualSliderPointer, { passive: true });
 }
 
-// ===== HIGHLIGHTING MANAGEMENT =====
+// ===== HIGHLIGHTING =====
 function toggleHighlight(modelName) {
   state.highlightedModel = state.highlightedModel === modelName ? null : modelName;
   updateHighlights();
@@ -1893,7 +1873,7 @@ function removeSkeletons() {
   });
 }
 
-// ===== CHATBOT CONTROLLER =====
+// ===== CHAT ASSISTANT =====
 const CHAT_STATE = {
   isOpen: false,
   apiKey: localStorage.getItem('openrouter_api_key') || '',
@@ -1903,9 +1883,8 @@ const CHAT_STATE = {
   abortController: null
 };
 
-// Abort any in-flight request. Without this, clearing or closing mid-stream lets the
-// loop keep pushing onto a history the user just reset, producing an unsendable
-// tool/assistant sequence on the next turn.
+// Clearing or closing mid-stream must not append into reset history and leave an
+// assistant tool call without its matching tool result.
 function abortChatRequest() {
   if (CHAT_STATE.abortController) {
     CHAT_STATE.abortController.abort();
@@ -1921,7 +1900,7 @@ function initChatResizer() {
 
   if (!drawer || !resizerT || !resizerL || !resizerTL) return;
 
-  // Restore saved dimensions
+  // Restore persisted desktop dimensions, clamped to the current viewport.
   const savedWidth = localStorage.getItem('chat_drawer_width');
   const savedHeight = localStorage.getItem('chat_drawer_height');
   const maxWidth = window.innerWidth * 0.95;
@@ -1990,7 +1969,6 @@ function initChatResizer() {
         newWidth = startWidth - dx;
       }
 
-      // Clamp dimensions
       const minWidth = 360;
       const minHeight = 400;
       const maxWidth = window.innerWidth * 0.95;
@@ -2052,9 +2030,7 @@ function setChatDrawerOpen(drawer, isOpen) {
   }
 }
 
-// Point a select at a saved preference, falling back to its default when that option is
-// no longer offered. Without this, a dropped option leaves the dropdown showing one thing
-// while requests keep sending the stale saved value.
+// Reject stale saved options so the visible selection matches outgoing requests.
 function restoreSelectValue(select, saved, storageKey) {
   const offered = Array.from(select.options).map(o => o.value);
   let value = saved;
@@ -2083,11 +2059,11 @@ function initChatbot() {
 
   if (!fab || !drawer) return;
 
-  // Initialize custom resizer handles
+  // Initialize drawer state and custom resize behavior.
   initChatResizer();
   setChatDrawerOpen(drawer, CHAT_STATE.isOpen);
 
-  // Load state
+  // Restore persisted credentials and offered model/reasoning selections.
   if (CHAT_STATE.apiKey) {
     apiKeyInput.value = CHAT_STATE.apiKey;
     clearKeyBtn.classList.remove('hide');
@@ -2102,7 +2078,7 @@ function initChatbot() {
     CHAT_STATE.reasoningEffort = restoreSelectValue(reasoningSelect, CHAT_STATE.reasoningEffort, 'openrouter_reasoning_effort');
   }
 
-  // Listeners
+  // Drawer, settings, and input event handlers.
   fab.addEventListener('click', () => {
     CHAT_STATE.isOpen = !CHAT_STATE.isOpen;
     setChatDrawerOpen(drawer, CHAT_STATE.isOpen);
@@ -2113,7 +2089,6 @@ function initChatbot() {
         chatInput.focus();
       }
       scrollToBottom();
-      // Remove badge animation once chat is opened
       document.querySelector('.chat-fab-badge')?.classList.remove('pulse-badge');
     }
   });
@@ -2184,7 +2159,6 @@ function initChatbot() {
   }
 
   chatInput.addEventListener('input', () => {
-    // Auto-grow textarea height
     chatInput.style.height = 'auto';
     chatInput.style.height = Math.min(80, chatInput.scrollHeight) + 'px';
   });
@@ -2227,7 +2201,7 @@ function handleChatSubmit() {
   if (!chatInput) return;
   const text = chatInput.value.trim();
   if (!text) return;
-  if (CHAT_STATE.abortController) return; // a turn is already in flight
+  if (CHAT_STATE.abortController) return;
 
   if (!CHAT_STATE.apiKey) {
     const keyView = document.getElementById('chatApiKeyView');
@@ -2237,19 +2211,15 @@ function handleChatSubmit() {
     return;
   }
 
-  // Clear input
   chatInput.value = '';
   chatInput.style.height = 'auto';
 
-  // Append user message
   appendMessage('user', text);
 
-  // Disable inputs during streaming
   setChatLoading(true);
 
-  // Send request
   streamResponse(text).catch(err => {
-    if (err && err.name === 'AbortError') return; // user cancelled; not an error
+    if (err && err.name === 'AbortError') return;
     console.error(err);
     appendMessage('system', `Error: ${err.message || 'Failed to stream response.'}`);
     setChatLoading(false);
@@ -2275,7 +2245,6 @@ function appendMessage(role, text) {
   logs.appendChild(div);
   scrollToBottom();
   
-  // Save to message history
   if (role !== 'system') {
     CHAT_STATE.messages.push({ role, content: text });
   }
@@ -2300,8 +2269,7 @@ function setChatLoading(isLoading) {
 }
 
 // ===== CHAT TOOL HELPERS =====
-// Hard cap on rows any single tool result may carry, so a broad query can't flood
-// the model's context with the whole dataset.
+// Prevent broad queries from flooding the model context.
 const TOOL_MAX_ROWS = 25;
 
 const TOOL_SORT_KEYS = ['value', 'performance', 'blended', 'inputPrice', 'outputPrice',
@@ -2315,8 +2283,8 @@ function toolError(message, extra) {
   return JSON.stringify({ ok: false, error: message, ...(extra || {}) });
 }
 
-// Every tool works off the same two projections: the full dataset at the user's current
-// cost sensitivity, and that dataset narrowed by their on-screen filters.
+// All tools share the full dataset at the current cost sensitivity and its
+// dashboard-filtered projection.
 function getToolModelSets() {
   const all = computeAllMetrics(RAW_DATA, state.p);
   return { all, filtered: getFilteredModels(all) };
@@ -2331,8 +2299,7 @@ function compareByKey(a, b, key, asc) {
   return result !== 0 ? result : a.model.localeCompare(b.model);
 }
 
-// Project a model for a tool result. Numbers are rounded to the precision the table
-// renders at; `open` is included because it drives a dashboard filter.
+// Numbers mirror table precision; `open` is included because it drives a filter.
 function serializeModel(m, detail) {
   const base = {
     model: m.model,
@@ -2352,11 +2319,8 @@ function serializeModel(m, detail) {
   };
 }
 
-// Resolve a free-text model name against the dataset in tiers: exact, then prefix, then
-// substring, then all-tokens-present. Only the best non-empty tier is kept, so a precise
-// query ("GPT-5.4") wins outright even though looser names also match. Reports ambiguity
-// rather than guessing — silently picking one of five "Opus" models yields confidently
-// wrong numbers.
+// Resolve names by exact, prefix, substring, then all-token matches. Keep only the
+// most precise non-empty tier and report ambiguity rather than guessing.
 function resolveModelQuery(query, allModels) {
   const q = String(query == null ? '' : query).toLowerCase().trim();
   if (!q) return { status: 'not_found', match: null, candidates: [], matchQuality: null };
@@ -2389,8 +2353,8 @@ function resolveModelQuery(query, allModels) {
   return { status: 'not_found', match: null, candidates: [], matchQuality: null };
 }
 
-// Snapshot of everything the user currently has on screen. Shared by the read tool and
-// returned by the write tool, so the assistant always sees the post-change state.
+// Snapshot the visible dashboard state. Read and write tools share this so write
+// results always describe the post-change state.
 function buildDashboardContext() {
   const { all, filtered } = getToolModelSets();
   const stats = getSummaryStats(filtered);
@@ -2432,8 +2396,7 @@ function buildDashboardContext() {
 }
 
 // ===== CHAT TOOL SCHEMAS =====
-// Built per turn rather than declared as a constant: the provider enum is derived from
-// ALL_PROVIDERS, which is empty at parse time and only populated once data is applied.
+// Build per turn because the provider enum is populated only after data is applied.
 function buildChatTools() {
   const providerEnum = ALL_PROVIDERS.slice();
   return [
@@ -2622,8 +2585,7 @@ function buildChatTools() {
 }
 
 // ===== CHAT TOOL EXECUTORS =====
-// Match provider names case-insensitively against the dataset so the model doesn't have
-// to reproduce exact casing.
+// Match provider names case-insensitively so tool calls need not reproduce display casing.
 function normalizeProviderNames(names) {
   const resolved = [];
   const unknown = [];
@@ -2876,10 +2838,7 @@ async function executeTool(name, argsString) {
 }
 
 // ===== CHAT PIPELINE =====
-// Deliberately does not enumerate tool names — the tool descriptions carry that, and
-// duplicating them here just guarantees the two drift apart. Tone matters as much as
-// rules here: the assistant is meant to be an approachable guide to the data, not an
-// analyst reciting figures.
+// Tool descriptions are the source of truth; do not duplicate tool names here.
 function buildSystemPrompt() {
   return `You are the built-in assistant for an LLM comparison dashboard. Your job is to make the data easy to understand: help people figure out which models are good, what they cost, and what fits their needs — in plain, friendly language.
 
@@ -2908,7 +2867,7 @@ async function streamResponse(userPrompt) {
   let currentThinkingContentDiv = null;
   let partialContent = '';
 
-  // Loop-invariant: build once per turn, not once per tool round.
+  // These are invariant across tool rounds within a single user turn.
   const systemPrompt = buildSystemPrompt();
   const chatTools = buildChatTools();
 
@@ -2916,8 +2875,7 @@ async function streamResponse(userPrompt) {
   CHAT_STATE.abortController = controller;
 
   try {
-  // Runs until the model answers instead of requesting more tools — there is no round
-  // cap. The escape hatch is the clear-chat or close button; both abort the request.
+  // Tool rounds are uncapped; clearing or closing the drawer aborts the loop.
   while (true) {
     const messagesToSend = [
       { role: 'system', content: systemPrompt },
@@ -2956,8 +2914,8 @@ async function streamResponse(userPrompt) {
     let contentText = '';
     let buffer = '';
     let toolCalls = [];
-    // Reset per round: only the current round's text is unsaved, since a round that
-    // ends in tool calls stores its text on the assistant message below.
+    // Text from a tool-call round is stored with that assistant message, so only
+    // the current round remains eligible to become a preserved stopped reply.
     partialContent = '';
 
     while (true) {
@@ -2966,7 +2924,7 @@ async function streamResponse(userPrompt) {
 
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
-      buffer = lines.pop(); // keep last partial line
+      buffer = lines.pop(); // Preserve an incomplete SSE frame for the next chunk.
 
       for (const line of lines) {
         const cleaned = line.trim();
@@ -3025,8 +2983,8 @@ async function streamResponse(userPrompt) {
                 });
               }
             }
-          } catch (e) {
-            // Ignore parse errors
+          } catch {
+            // Ignore malformed SSE frames and continue consuming the stream.
           }
         }
       }
@@ -3050,7 +3008,9 @@ async function streamResponse(userPrompt) {
                 scrollToBottom();
               }
             }
-          } catch (e) {}
+          } catch {
+            // A malformed trailing frame must not discard the completed response.
+          }
         }
       }
     }
@@ -3059,7 +3019,6 @@ async function streamResponse(userPrompt) {
       currentMessageDiv = document.createElement('div');
       currentMessageDiv.className = 'chat-message assistant';
 
-      // Prepend label
       const labelDiv = document.createElement('div');
       labelDiv.className = 'chat-sender-label';
       labelDiv.textContent = 'Assistant';
@@ -3153,7 +3112,7 @@ function addToolStatusMessage(text) {
   scrollToBottom();
 }
 
-// Helper to escape HTML characters
+// ===== CHAT MARKDOWN RENDERING =====
 function escapeHtml(text) {
   return String(text)
     .replace(/&/g, "&amp;")
@@ -3163,18 +3122,17 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
-// Simple markdown parsing helper
 function parseMarkdown(markdown) {
   let normalized = markdown.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   let html = escapeHtml(normalized);
 
-  // 1. Block Preservation: Extract code blocks
+  // Preserve code blocks before applying inline Markdown transforms.
   const codeBlocks = [];
   html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
     const placeholder = `%%CODEBLOCK_${codeBlocks.length}%%`;
     let cleanCode = code.replace(/^\n/, '');
     
-    // Detect and strip language identifier (e.g. ```javascript\n)
+    // Strip an optional fenced-code language identifier.
     const firstLineEnd = cleanCode.indexOf('\n');
     let lang = '';
     if (firstLineEnd !== -1) {
@@ -3196,7 +3154,7 @@ function parseMarkdown(markdown) {
     return `\n${placeholder}\n`;
   });
 
-  // 2. Block Preservation: Extract inline code blocks
+  // Preserve inline code for the same reason.
   const inlineCodes = [];
   html = html.replace(/`([^`]+)`/g, (match, code) => {
     const placeholder = `%%INLINECODE_${inlineCodes.length}%%`;
@@ -3204,16 +3162,17 @@ function parseMarkdown(markdown) {
     return placeholder;
   });
 
-  // 3. Link Parsing & Security Check
+  // Links are parsed before other inline formatting.
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
     const cleanUrl = url.trim();
+    // Reject javascript: links.
     if (cleanUrl.toLowerCase().startsWith('javascript:')) {
       return text;
     }
     return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
   });
 
-  // 4. Tables Parsing
+  // Tables must be recognized before paragraph wrapping.
   const linesForTable = html.split('\n');
   let inTable = false;
   let tableRows = [];
@@ -3242,22 +3201,19 @@ function parseMarkdown(markdown) {
   }
   html = parsedLines.join('\n');
 
-  // 5. Headers
   html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
   html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
   html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
-  // 6. Horizontal Rules
   html = html.replace(/^\s*---+\s*$/gim, '<hr>');
 
-  // 7. Bold & Italic text
   html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*([\s\S]*?)\*/g, '<em>$1</em>');
   html = html.replace(/_([\s\S]*?)_/g, '<em>$1</em>');
 
-  // 8. Lists (ordered & unordered)
+  // Group adjacent ordered and unordered list items before paragraph wrapping.
   const lines = html.split('\n');
-  let inListType = null; // 'ul', 'ol', or null
+  let inListType = null;
   let result = [];
 
   for (let i = 0; i < lines.length; i++) {
@@ -3278,7 +3234,7 @@ function parseMarkdown(markdown) {
       }
       result.push(`<li>${listMatch[3]}</li>`);
     } else if (line.trim() === '' && inListType) {
-      // Lookahead: check if the next non-empty line continues list of same type
+      // Blank lines within a list should not split it.
       let nextListItemType = null;
       for (let j = i + 1; j < lines.length; j++) {
         const nextLine = lines[j].trim();
@@ -3293,7 +3249,7 @@ function parseMarkdown(markdown) {
       }
       
       if (nextListItemType === inListType) {
-        continue; // Keep list open and discard formatting whitespace
+        continue;
       } else {
         result.push(`</${inListType}>`);
         inListType = null;
@@ -3312,7 +3268,7 @@ function parseMarkdown(markdown) {
   }
   html = result.join('\n');
 
-  // 9. Wrap Paragraphs
+  // Wrap remaining text after block-level structures have been extracted.
   const paragraphs = html.split(/\n{2,}/);
   let finalHtml = paragraphs.map(p => {
     const trimmed = p.trim();
@@ -3325,7 +3281,7 @@ function parseMarkdown(markdown) {
     return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
   }).filter(Boolean).join('');
 
-  // 10. Restore Preserved Blocks
+  // Restore protected code after all other transforms.
   codeBlocks.forEach((block, idx) => {
     finalHtml = finalHtml.replace(`%%CODEBLOCK_${idx}%%`, block);
   });
@@ -3374,12 +3330,12 @@ function renderMarkdownTable(rows) {
   return tableHtml;
 }
 
-// ===== INIT =====
+// ===== INITIALIZATION =====
 async function init() {
-  // Setup theme before charts so first paint uses correct colors
+  // Theme must be established before charts capture their initial colors.
   initTheme();
 
-  // Apply fallback data and render immediately (instant render — no delay)
+  // Render the embedded snapshot immediately while fresh data loads in the background.
   applyData(FALLBACK_DATA);
   state.activeProviders = new Set(ALL_PROVIDERS);
 
@@ -3402,7 +3358,7 @@ async function init() {
   // labels and table scroll hints re-derive for the new width.
   window.matchMedia('(max-width: 640px)').addEventListener('change', () => updateAll());
 
-  // First paint with fallback data; remove skeleton state
+  // Complete first paint before removing skeleton styles.
   updateAll();
   removeSkeletons();
 
@@ -3414,7 +3370,7 @@ async function init() {
     revalidateCompareSet();
   });
 
-  // Fetch fresh data in the background — swap and refresh only if different
+  // Swap in fresh data only when it differs from the embedded snapshot.
   loadData().then(data => {
     const sameModels = JSON.stringify(data.models) === JSON.stringify(FALLBACK_DATA.models);
     const sameProviders = JSON.stringify(data.providers) === JSON.stringify(FALLBACK_DATA.providers);

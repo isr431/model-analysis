@@ -34,7 +34,7 @@
 <body>
   <main class="app">
 
-    <!-- THEME TOGGLE BUTTON -->
+    <!-- Theme toggle -->
     <div class="app-header-controls">
       <button id="themeToggle" class="theme-toggle-btn glass" aria-label="Toggle light/dark theme">
         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +47,7 @@
       </button>
     </div>
 
-    <!-- HEADER -->
+    <!-- Header -->
     <header class="header">
       <h1>LLM Model Analysis</h1>
       <p class="subtitle">Interactive comparison of <span id="modelCountVal">—</span> language models across <span id="providerCountVal">—</span> providers · <span id="lastUpdatedVal">Loading...</span></p>
@@ -58,7 +58,7 @@
       </p>
     </header>
 
-    <!-- SLIM FILTER BAR (sticky) -->
+    <!-- Sticky quick-filter bar -->
     <div class="filters-bar glass" id="filtersBar">
       <span class="window-controls" aria-hidden="true">
         <span class="window-dot red"></span>
@@ -86,7 +86,7 @@
       <button type="button" class="action-link filters-bar-reset" id="filtersBarReset">Reset</button>
     </div>
 
-    <!-- EXPANDABLE FILTER PANEL (in-flow, not sticky) -->
+    <!-- Expandable filter panel -->
     <div class="filters-panel glass" id="filtersPanel" hidden>
       <div class="controls-grid">
         <div class="control-group full-width" id="pSliderGroup">
@@ -132,7 +132,7 @@
       </div>
     </div>
 
-    <!-- TAB NAVIGATION -->
+    <!-- Primary tab navigation -->
     <nav class="tab-nav" id="tabNav">
       <button class="tab-btn active" data-tab="overview">
         <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -166,7 +166,7 @@
       </button>
     </nav>
 
-    <!-- COMPARE TRAY -->
+    <!-- Persistent compare selection -->
     <div class="compare-tray glass hide" id="compareTray">
       <span class="compare-tray-label">compare_set</span>
       <div class="compare-tray-chips" id="compareTrayChips"></div>
@@ -176,7 +176,7 @@
       </div>
     </div>
 
-    <!-- TAB: OVERVIEW -->
+    <!-- Overview -->
     <section class="tab-content active" id="tab-overview">
       <div class="summary-cards" id="summaryCards">
         <div class="summary-card" id="cardBestValue">
@@ -285,7 +285,7 @@
       </div>
     </section>
 
-    <!-- TAB: CHARTS -->
+    <!-- Charts -->
     <section class="tab-content" id="tab-charts">
       <div class="charts-grid">
         <div class="chart-container glass" id="scatterContainer">
@@ -349,7 +349,7 @@
       </div>
     </section>
 
-    <!-- TAB: TABLE -->
+    <!-- Model table -->
     <section class="tab-content" id="tab-table">
       <div class="table-container glass" id="tableContainer">
         <div class="pane-header">
@@ -382,7 +382,7 @@
     </div>
   </section>
 
-    <!-- TAB: COMPARE -->
+    <!-- Compare view -->
     <section class="tab-content" id="tab-compare">
       <div class="compare-container glass">
         <div class="pane-header">
@@ -408,14 +408,14 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- Footer -->
     <footer class="footer">
       <p>© 2026 LLM Model Analysis · Contact: <a href="mailto:hello@modelanalysis.xyz">hello@modelanalysis.xyz</a></p>
     </footer>
 
   </main>
 
-  <!-- MOBILE BOTTOM TAB BAR -->
+  <!-- Mobile tab navigation -->
   <nav class="bottom-nav glass" id="bottomNav" aria-label="Primary">
     <button type="button" class="tab-btn active" data-tab="overview">
       <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -449,7 +449,7 @@
     </button>
   </nav>
 
-  <!-- SCORE FORMULA MODAL -->
+  <!-- Score formula modal -->
   <div class="modal-overlay hide" id="formulaModal" role="dialog" aria-modal="true" aria-labelledby="formulaModalTitle">
     <div class="modal glass" role="document">
       <div class="pane-header">
@@ -486,8 +486,7 @@
     </div>
   </div>
 
-  <!-- CHATBOT INTEGRATION -->
-  <!-- FAB Button -->
+  <!-- Chat assistant -->
   <button id="chatFab" class="chat-fab glass" aria-label="Open AI Chatbot">
     <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -495,9 +494,9 @@
     <span class="chat-fab-badge pulse-badge"></span>
   </button>
 
-  <!-- Chat Drawer -->
+  <!-- Resizable chat drawer -->
   <div id="chatDrawer" class="chat-drawer glass hide" aria-hidden="true" inert>
-    <!-- Custom Resize Handles (Top, Left, Top-Left) -->
+    <!-- Resize handles -->
     <div class="chat-resizer chat-resizer-t" id="chatResizerT"></div>
     <div class="chat-resizer chat-resizer-l" id="chatResizerL"></div>
     <div class="chat-resizer chat-resizer-tl" id="chatResizerTL"></div>
@@ -535,7 +534,7 @@
       </div>
     </div>
 
-    <!-- Chat Settings Overlay -->
+    <!-- Settings overlay -->
     <div id="chatApiKeyView" class="chat-api-key-view hide">
       <div class="api-key-container">
         <h3>Chat Assistant Settings</h3>
@@ -570,7 +569,7 @@
       </div>
     </div>
 
-    <!-- Chat Logs Area -->
+    <!-- Conversation log -->
     <div id="chatLogs" class="chat-logs">
       <div class="chat-message assistant">
         <div class="chat-sender-label">Assistant</div>
@@ -580,7 +579,7 @@
       </div>
     </div>
 
-    <!-- Input Footer -->
+    <!-- Message input -->
     <div class="chat-footer">
       <textarea id="chatInput" class="chat-input" placeholder="Type a message..." rows="1"></textarea>
       <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
