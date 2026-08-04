@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-29",
+  "lastUpdated": "2026-08-04",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -127,6 +127,15 @@
       "open": true
     },
     {
+      "provider": "DeepSeek",
+      "model": "DeepSeek V4 Flash 0731",
+      "inputPrice": 0.14,
+      "outputPrice": 0.28,
+      "livebench": 74.17,
+      "aaScore": 50,
+      "open": true
+    },
+    {
       "provider": "Google",
       "model": "Gemini 3.5 Flash",
       "inputPrice": 1.5,
@@ -151,6 +160,15 @@
       "outputPrice": 4.425,
       "livebench": 73.14,
       "aaScore": 46,
+      "open": false
+    },
+    {
+      "provider": "Alibaba",
+      "model": "Qwen 3.8 Max",
+      "inputPrice": 2,
+      "outputPrice": 6,
+      "livebench": 78.46,
+      "aaScore": 53,
       "open": false
     },
     {
