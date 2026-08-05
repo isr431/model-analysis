@@ -135,7 +135,7 @@ function applyData(data) {
   if (modelCountEl) modelCountEl.textContent = RAW_DATA.length;
   if (providerCountEl) providerCountEl.textContent = ALL_PROVIDERS.length;
   if (lastUpdatedEl && data.lastUpdated) {
-    lastUpdatedEl.textContent = `Data as of ${formatLastUpdated(data.lastUpdated)}`;
+    lastUpdatedEl.textContent = formatLastUpdated(data.lastUpdated);
   }
 }
 

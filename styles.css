@@ -184,16 +184,62 @@ body {
   font-size: var(--font-sm);
   font-weight: 400;
 }
-.header .intro {
-  max-width: 640px;
-  margin: var(--spacing-sm) auto 0;
-  color: var(--text-secondary);
-  font-size: var(--font-sm);
-  line-height: 1.6;
+
+/* Header facts as chips rather than prose, matching the filter/provider pills. */
+.header-meta {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spacing-md);
 }
-.header .intro strong {
-  color: var(--text-primary);
-  font-weight: 600;
+/* Scoped past .info-btn's reset so the modal trigger keeps the chip shape.
+   Each chip tints itself from --chip-accent, which the modifiers below set. */
+.header-meta .meta-chip {
+  --chip-accent: var(--slider-thumb);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--chip-accent) 26%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--chip-accent) 9%, transparent);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.meta-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--chip-accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--chip-accent) 55%, transparent);
+}
+.meta-chip-val {
+  color: var(--chip-accent);
+  font-weight: 700;
+}
+.header-meta .meta-chip-providers { --chip-accent: var(--success); }
+.header-meta .meta-chip-updated { --chip-accent: var(--warning); }
+.header-meta .meta-chip-action {
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+}
+.header-meta .meta-chip-action:hover,
+.header-meta .meta-chip-action:focus-visible {
+  color: var(--chip-accent);
+  background: color-mix(in srgb, var(--chip-accent) 18%, transparent);
+  border-color: var(--chip-accent);
+}
+.meta-chip-glyph {
+  color: var(--chip-accent);
+  font-weight: 700;
 }
 
 .info-btn {
@@ -204,18 +250,6 @@ body {
   padding: 0;
   transition: color 0.15s ease;
   outline: none;
-}
-.info-link {
-  color: var(--slider-thumb);
-  font-size: var(--font-sm);
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(56, 189, 248, 0.5);
-  padding-bottom: 1px;
-}
-.info-link:hover,
-.info-link:focus-visible {
-  color: var(--slider-thumb);
-  border-bottom-color: var(--slider-thumb);
 }
 
 /* ===== STICKY FILTER BAR ===== */
@@ -1431,9 +1465,11 @@ input[type="range"]::-moz-range-thumb:hover {
     /* Reserve space for the fixed bottom navigation. */
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
-  /* Keep the centered title clear of the absolute theme toggle. */
-  .header { padding: 0 48px; }
-  .header h1 { font-size: 1.35rem; }
+  /* Only the title sits level with the absolute theme toggle and must clear it;
+     the subtitle and chips below it get the full width. */
+  .header h1 { padding: 0 48px; font-size: 1.35rem; }
+  .header-meta { gap: 5px; }
+  .header-meta .meta-chip { padding: 4px 8px; }
   .app-header-controls { top: 16px; right: 16px; }
   .theme-toggle-btn { width: 40px; height: 40px; }
   .theme-toggle-btn svg { width: 18px; height: 18px; }

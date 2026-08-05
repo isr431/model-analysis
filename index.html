@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260727-stopbtn2">
+  <link rel="stylesheet" href="styles.css?v=20260805-header">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260727-stopbtn2" defer></script>
+  <script src="app.js?v=20260805-header" defer></script>
 </head>
 <body>
   <main class="app">
@@ -50,12 +50,26 @@
     <!-- Header -->
     <header class="header">
       <h1>LLM Model Analysis</h1>
-      <p class="subtitle">Interactive comparison of <span id="modelCountVal">—</span> language models across <span id="providerCountVal">—</span> providers · <span id="lastUpdatedVal">Loading...</span></p>
-      <p class="intro">
-        Compare LLMs on price versus benchmark performance. Use the filters to narrow the field.
-        The <strong>Value</strong> score balances performance against cost, and you can tune that balance with the P slider.
-        <button type="button" class="info-btn info-link" data-modal="formula">How are scores calculated?</button>
-      </p>
+      <p class="subtitle">Price versus benchmark performance, scored.</p>
+      <ul class="header-meta">
+        <li class="meta-chip meta-chip-models">
+          <span class="meta-chip-dot" aria-hidden="true"></span>
+          <span class="meta-chip-val" id="modelCountVal">—</span> models
+        </li>
+        <li class="meta-chip meta-chip-providers">
+          <span class="meta-chip-dot" aria-hidden="true"></span>
+          <span class="meta-chip-val" id="providerCountVal">—</span> providers
+        </li>
+        <li class="meta-chip meta-chip-updated">
+          <span class="meta-chip-dot" aria-hidden="true"></span>
+          updated <span class="meta-chip-val" id="lastUpdatedVal">—</span>
+        </li>
+        <li>
+          <button type="button" class="meta-chip meta-chip-action info-btn" data-modal="formula">
+            <span class="meta-chip-glyph" aria-hidden="true">?</span> how scores work
+          </button>
+        </li>
+      </ul>
     </header>
 
     <!-- Sticky quick-filter bar -->
