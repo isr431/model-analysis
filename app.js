@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-08-09',
+  lastUpdated: '2026-08-12',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -20,7 +20,7 @@ const FALLBACK_DATA = {
     { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.0,    outputPrice: 12.0,   livebench: 77.94, aaScore: 57, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 0.2,    outputPrice: 1.2,    livebench: 73.56, aaScore: 52, open: false },
     { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 75.77, aaScore: 56, open: false },
-    { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 3.0,    outputPrice: 15.0,   livebench: 76.04, aaScore: 55, open: false },
+    { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 2.0,    outputPrice: 10.0,   livebench: 76.04, aaScore: 55, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325,  outputPrice: 1.95,   livebench: 68.91, aaScore: 40, open: false },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435,  outputPrice: 0.87,   livebench: 71.57, aaScore: 45, open: true },
     { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 73.16, aaScore: 53, open: true },
@@ -34,6 +34,7 @@ const FALLBACK_DATA = {
     { provider: 'Anthropic',   model: 'Claude Fable 5',         inputPrice: 10.0,   outputPrice: 50.0,   livebench: 82.97, aaScore: 62, open: false },
     { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,    outputPrice: 15.0,   livebench: 79.19, aaScore: 60, open: true },
     { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,   outputPrice: 4.25,   livebench: 75.30, aaScore: 53, open: false },
+    { provider: 'Meta',        model: 'Muse Spark 1.2',         inputPrice: 1.25,   outputPrice: 4.25,   livebench: 77.95, aaScore: 57, open: false },
     { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.0,    outputPrice: 4.05,   livebench: 71.92, aaScore: 42, open: true },
     { provider: 'Google',      model: 'Gemini 3.6 Flash',       inputPrice: 1.5,    outputPrice: 7.5,    livebench: 73.59, aaScore: 52, open: false },
     { provider: 'Google',      model: 'Gemini 3.5 Flash-Lite',  inputPrice: 0.3,    outputPrice: 2.5,    livebench: 63.94, aaScore: 37, open: false },
