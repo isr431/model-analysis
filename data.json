@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-12",
+  "lastUpdated": "2026-08-13",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -73,6 +73,15 @@
       "open": false
     },
     {
+      "provider": "xAI",
+      "model": "Grok 4.6",
+      "inputPrice": 2,
+      "outputPrice": 6,
+      "livebench": 77.56,
+      "aaScore": 61,
+      "open": false
+    },
+    {
       "provider": "Anthropic",
       "model": "Claude Sonnet 5",
       "inputPrice": 2,
@@ -97,6 +106,15 @@
       "outputPrice": 0.87,
       "livebench": 71.57,
       "aaScore": 45,
+      "open": true
+    },
+    {
+      "provider": "DeepSeek",
+      "model": "DeepSeek V4 Pro 0813",
+      "inputPrice": 0.435,
+      "outputPrice": 0.87,
+      "livebench": 77.44,
+      "aaScore": 53,
       "open": true
     },
     {

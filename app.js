@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-08-12',
+  lastUpdated: '2026-08-13',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -20,9 +20,11 @@ const FALLBACK_DATA = {
     { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.0,    outputPrice: 12.0,   livebench: 77.94, aaScore: 57, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 0.2,    outputPrice: 1.2,    livebench: 73.56, aaScore: 52, open: false },
     { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 75.77, aaScore: 56, open: false },
+    { provider: "xAI",         model: "Grok 4.6",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 77.56, aaScore: 61, open: false },
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 2.0,    outputPrice: 10.0,   livebench: 76.04, aaScore: 55, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325,  outputPrice: 1.95,   livebench: 68.91, aaScore: 40, open: false },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 0.435,  outputPrice: 0.87,   livebench: 71.57, aaScore: 45, open: true },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro 0813',   inputPrice: 0.435,  outputPrice: 0.87,   livebench: 77.44, aaScore: 53, open: true },
     { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 73.16, aaScore: 53, open: true },
     { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,    outputPrice: 1.2,    livebench: 67.26, aaScore: 45, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.14,   outputPrice: 0.28,   livebench: 65.48, aaScore: 42, open: true },
