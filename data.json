@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-13",
+  "lastUpdated": "2026-08-14",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -102,8 +102,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro",
-      "inputPrice": 0.435,
-      "outputPrice": 0.87,
+      "inputPrice": 1.32,
+      "outputPrice": 3.96,
       "livebench": 71.57,
       "aaScore": 45,
       "open": true
@@ -111,8 +111,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 0.435,
-      "outputPrice": 0.87,
+      "inputPrice": 1.32,
+      "outputPrice": 3.96,
       "livebench": 77.44,
       "aaScore": 53,
       "open": true
@@ -138,8 +138,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash",
-      "inputPrice": 0.14,
-      "outputPrice": 0.28,
+      "inputPrice": 0.44,
+      "outputPrice": 1.32,
       "livebench": 65.48,
       "aaScore": 42,
       "open": true
@@ -147,8 +147,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.14,
-      "outputPrice": 0.28,
+      "inputPrice": 0.44,
+      "outputPrice": 1.32,
       "livebench": 74.17,
       "aaScore": 52,
       "open": true
@@ -241,6 +241,15 @@
       "outputPrice": 7.5,
       "livebench": 73.59,
       "aaScore": 52,
+      "open": false
+    },
+    {
+      "provider": "Google",
+      "model": "Gemini 3.7 Flash",
+      "inputPrice": 0.75,
+      "outputPrice": 3.75,
+      "livebench": 78.83,
+      "aaScore": 56,
       "open": false
     },
     {
