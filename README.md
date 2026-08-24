@@ -27,6 +27,7 @@ $$
 - Filter providers
 - Set price limits
 - Set a minimum performance threshold
+- Restrict to models with both benchmark scores published
 
 ### Themes
 
@@ -76,6 +77,22 @@ Add a model:
 ```
 
 `open` marks whether the model's weights are publicly released (`true`) or closed/proprietary (`false`). It powers the "Open" badge and the Source filter (All / Open / Closed).
+
+If a model is listed on only one of the two leaderboards, set the other score to `null`:
+
+```json
+{
+  "provider": "Z.ai",
+  "model": "GLM 5.3 Air",
+  "inputPrice": 0.6,
+  "outputPrice": 2.2,
+  "livebench": null,
+  "aaScore": 49,
+  "open": true
+}
+```
+
+The missing score is estimated at runtime (see [Partial benchmark coverage](#partial-benchmark-coverage)) and marked `EST` in the dashboard. A model must have at least one of the two scores.
 
 If you're adding a new provider, also add its color to the `providers` object.
 
@@ -129,6 +146,27 @@ w_{\text{LB}} = \frac{\sigma_{\text{AA}}}{\sigma_{\text{LB}} + \sigma_{\text{AA}
 $$
 
 where $\sigma$ is the standard deviation of the normalized scores. On current data this gives roughly $w_{\text{LB}} = 0.66$ and $w_{\text{AA}} = 0.34$, which is what an even contribution actually looks like. The weights are recomputed from the loaded dataset rather than hard-coded, so they stay correct as models are added. The live values are shown in the score formula panel.
+
+### Partial benchmark coverage
+
+Some models are published on only one of the two leaderboards. Rather than drop them or score them on a single benchmark, the missing score is estimated by least-squares regression against the benchmark the model does have, fitted on the models that report both:
+
+$$
+\hat{x}_{\text{missing}} = a + b \cdot x_{\text{present}}
+$$
+
+Scoring a partial model on its available benchmark alone looks simpler but is biased. Doing so implicitly assumes the two normalized scores are equal, and they are not: Artificial Analysis spans roughly twice LiveBench's normalized range, so equating them inflates any model below the top of the scale.
+
+Leave-one-out cross-validation across the dataset — hide one benchmark, predict it, compare the resulting Performance score against the truth — puts the gap at:
+
+| Method | Missing AA | Missing LiveBench |
+|---|---|---|
+| Available score alone | 2.59 mean error (6.64 max) | 5.22 mean error (13.38 max) |
+| Regression estimate | **1.25 mean error (3.95 max)** | **1.31 mean error (3.92 max)** |
+
+The estimate is viable because the two benchmarks correlate closely ($r = 0.91$, $R^2 = 0.83$ on current data). Both the regression and the spread weights above are fitted **only on models that report both scores**, so an estimate can never feed back into the numbers that produced it — which also means adding a partial model leaves every existing model's score untouched.
+
+Estimated models are flagged with an `EST` badge, their estimated cell is shown in muted italics as `~72.93`, they are never awarded a "best" highlight in the comparison view, and the Benchmark Data filter (All / Complete Only) hides them entirely. With fewer than 5 complete models to fit against, the app falls back to the single-benchmark estimate rather than failing.
 
 ### Value
 

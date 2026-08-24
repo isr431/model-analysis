@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260805-header">
+  <link rel="stylesheet" href="styles.css?v=20260824-partial-benchmarks">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260805-header" defer></script>
+  <script src="app.js?v=20260824-partial-benchmarks" defer></script>
 </head>
 <body>
   <main class="app">
@@ -131,6 +131,13 @@
             <button class="source-seg active" data-source="all">All</button>
             <button class="source-seg" data-source="open">Open</button>
             <button class="source-seg" data-source="closed">Closed</button>
+          </div>
+        </div>
+        <div class="control-group full-width" id="dataFilterGroup">
+          <label>Benchmark Data</label>
+          <div class="source-toggle" id="dataToggle" role="group" aria-label="Benchmark data filter">
+            <button class="data-seg active" data-completeness="all">All</button>
+            <button class="data-seg" data-completeness="complete">Complete Only</button>
           </div>
         </div>
         <div class="control-group full-width" id="providerFilters">
@@ -490,6 +497,7 @@
           <div class="formula-label">Performance</div>
           <code><span class="syntax-keyword">const</span> performance = (wLive * (liveBench / maxLiveBench) + wAA * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
           <div class="formula-desc">Each benchmark is normalized against its dataset maximum, then weighted by the inverse of its spread so both contribute equally (currently wLive <span id="formulaWLive">0.658</span>, wAA <span id="formulaWAa">0.342</span>)</div>
+          <div class="formula-desc formula-est-note hide" id="formulaEstNote"></div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
