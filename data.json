@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-14",
+  "lastUpdated": "2026-08-24",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -125,6 +125,15 @@
       "livebench": 73.16,
       "aaScore": 53,
       "open": true
+    },
+    {
+      "provider": "Z.ai",
+      "model": "GLM 5.3",
+      "inputPrice": 1.4,
+      "outputPrice": 4.4,
+      "livebench": null,
+      "aaScore": 60,
+      "open": false
     },
     {
       "provider": "MiniMax",
