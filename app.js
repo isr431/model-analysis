@@ -26,7 +26,7 @@ const FALLBACK_DATA = {
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 1.32,   outputPrice: 3.96,   livebench: 71.57, aaScore: 45, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro 0813',   inputPrice: 1.32,   outputPrice: 3.96,   livebench: 77.44, aaScore: 53, open: true },
     { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 73.16, aaScore: 53, open: true },
-    { provider: 'Z.ai',        model: 'GLM 5.3',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: null,  aaScore: 60, open: false },
+    { provider: 'Z.ai',        model: 'GLM 5.3',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 76.1,  aaScore: 60, open: false },
     { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,    outputPrice: 1.2,    livebench: 67.26, aaScore: 45, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.44,   outputPrice: 1.32,   livebench: 65.48, aaScore: 42, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash 0731', inputPrice: 0.44,   outputPrice: 1.32,   livebench: 74.17, aaScore: 52, open: true },

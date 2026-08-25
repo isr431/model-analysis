@@ -131,7 +131,7 @@
       "model": "GLM 5.3",
       "inputPrice": 1.4,
       "outputPrice": 4.4,
-      "livebench": null,
+      "livebench": 76.1,
       "aaScore": 60,
       "open": false
     },
