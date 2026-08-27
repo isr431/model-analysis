@@ -205,7 +205,7 @@
       "outputPrice": 6,
       "livebench": 78.46,
       "aaScore": 58,
-      "open": false
+      "open": true
     },
     {
       "provider": "Anthropic",
