@@ -250,6 +250,13 @@ function computeBlended(inputPrice, outputPrice) {
   return 0.9573 * inputPrice + 0.0427 * outputPrice;
 }
 
+// Smallest positive blended cost in the dataset, or 1 when nothing costs anything, so the
+// Value anchor is never 0 and never NaN.
+function getMinBlended(models) {
+  const positive = models.map(m => m.blended).filter(c => c > 0);
+  return positive.length > 0 ? Math.min(...positive) : 1;
+}
+
 function stdDev(values) {
   if (values.length < 2) return 0;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
@@ -318,6 +325,12 @@ function isEstimatedFor(m, key) {
 // The formula modal displays the weights actually used for the current dataset.
 let perfWeights = { lb: 0.5, aa: 0.5 };
 
+// Value divides performance by cost, so on a dataset where the cheapest model costs under $1/M
+// the cost term falls below 1 and inflates value past the 100 that performance is capped at.
+// Measuring cost relative to the cheapest model instead makes that model divide by exactly 1 and
+// every other model divide by more, so value <= performance <= 100 holds for any data and any P.
+let costAnchor = 1;
+
 function computeAllMetrics(data, p) {
   const models = data.map(d => ({ ...d, blended: computeBlended(d.inputPrice, d.outputPrice) }));
 
@@ -379,8 +392,12 @@ function computeAllMetrics(data, p) {
     m.performance = (perfWeights.lb * lb + perfWeights.aa * aa) * 100;
   });
 
+  costAnchor = getMinBlended(models);
+
   models.forEach(m => {
-    m.value = m.blended > 0 && p > 0 ? m.performance / Math.pow(m.blended, p) : m.performance;
+    m.value = m.blended > 0 && p > 0
+      ? m.performance / Math.pow(m.blended / costAnchor, p)
+      : m.performance;
   });
 
   return models;
@@ -1183,8 +1200,10 @@ function updateFormulaP() {
   document.getElementById('formulaPVal').textContent = state.p.toFixed(2);
   const lbEl = document.getElementById('formulaWLive');
   const aaEl = document.getElementById('formulaWAa');
+  const anchorEl = document.getElementById('formulaCostAnchor');
   if (lbEl) lbEl.textContent = perfWeights.lb.toFixed(3);
   if (aaEl) aaEl.textContent = perfWeights.aa.toFixed(3);
+  if (anchorEl) anchorEl.textContent = costAnchor.toFixed(3);
   updateFormulaEstNote();
 }
 
@@ -3054,7 +3073,7 @@ Get numbers from your tools rather than memory, since the data and the user's fi
 
 HOW TO ANSWER
 - Answer the actual question first, conversationally. Use a number or two to back up your point, not as the point — you're a guide, not a spreadsheet. One clear recommendation beats an exhaustive rundown.
-- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost weights input price heavily over output price; performance blends the two benchmarks, each scaled so the best model in the dataset sets the bar and weighted so neither benchmark dominates; value = performance / cost^P.)
+- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost weights input price heavily over output price; performance blends the two benchmarks, each scaled so the best model in the dataset sets the bar and weighted so neither benchmark dominates; value = performance / (cost / cheapest model's cost)^P, so the cheapest model in the dataset sets the bar for cost the same way the best scorer sets it for performance.)
 - Near-identical scores are a tie. Don't crown a winner over a decimal point — point to what genuinely separates the models, like price or open weights.
 - If a name could mean several models (like "Opus"), just ask which one they meant.
 

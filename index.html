@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260901-model-revision">
+  <link rel="stylesheet" href="styles.css?v=20260901-value-anchor">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260901-model-revision" defer></script>
+  <script src="app.js?v=20260901-value-anchor" defer></script>
 </head>
 <body>
   <main class="app">
@@ -501,8 +501,8 @@
         </div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
-          <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost, P);</code>
-          <div class="formula-desc">P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
+          <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost / minBlendedCost, P);</code>
+          <div class="formula-desc">Cost is measured against the cheapest model in the dataset (currently $<span id="formulaCostAnchor">0.164</span>/1M), so Value shares Performance's 0&ndash;100 ceiling. P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
         </div>
       </div>
     </div>

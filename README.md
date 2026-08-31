@@ -173,11 +173,13 @@ Estimated models are flagged with an `EST` badge, their estimated cell is shown 
 Value balances performance against cost.
 
 $$
-\text{Value} = \frac{\text{Performance}}{\text{Blended Cost}^P}
+\text{Value} = \frac{\text{Performance}}{\left(\dfrac{\text{Blended Cost}}{\text{Min Blended Cost}}\right)^{P}}
 $$
 
 - **$P = 0$** → rankings are based only on performance.
 - Higher values of **$P$** place more weight on cost.
+
+Cost is measured relative to the cheapest model in the dataset rather than in raw dollars. Dividing by a raw cost is unbounded: below $1/M the denominator drops under 1 and inflates Value past the 100 that Performance is capped at. Anchoring the denominator means the cheapest model divides by exactly 1 and every other model divides by more, so $\text{Value} \le \text{Performance} \le 100$ holds for any dataset and any $P$ — the cheapest model sets the bar for cost the same way the top scorer sets it for each benchmark. The anchor is recomputed from the loaded data, so a new cheapest model simply re-anchors the scale; because it is a constant rescale, it never reorders the rankings.
 
 ### Cost Efficiency (Radar Chart)
 
