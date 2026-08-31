@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-08-27',
+  lastUpdated: '2026-09-01',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -19,31 +19,24 @@ const FALLBACK_DATA = {
     { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,    outputPrice: 30.0,   livebench: 81.05, aaScore: 61, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.0,    outputPrice: 12.0,   livebench: 77.94, aaScore: 57, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 0.2,    outputPrice: 1.2,    livebench: 73.56, aaScore: 52, open: false },
-    { provider: "xAI",         model: "Grok 4.5",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 75.77, aaScore: 56, open: false },
     { provider: "xAI",         model: "Grok 4.6",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 77.56, aaScore: 61, open: false },
     { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 2.0,    outputPrice: 10.0,   livebench: 76.04, aaScore: 55, open: false },
-    { provider: 'Alibaba',     model: 'Qwen 3.6 Plus',          inputPrice: 0.325,  outputPrice: 1.95,   livebench: 68.91, aaScore: 40, open: false },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro',        inputPrice: 1.32,   outputPrice: 3.96,   livebench: 71.57, aaScore: 45, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro 0813',   inputPrice: 1.32,   outputPrice: 3.96,   livebench: 77.44, aaScore: 53, open: true },
-    { provider: 'Z.ai',        model: 'GLM 5.2',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 73.16, aaScore: 53, open: true },
     { provider: 'Z.ai',        model: 'GLM 5.3',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 76.1,  aaScore: 60, open: false },
     { provider: 'Z.ai',        model: 'GLM 5.3 Flash',          inputPrice: 0.15,   outputPrice: 0.5,    livebench: 71.59, aaScore: 57, open: true },
     { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,    outputPrice: 1.2,    livebench: 67.26, aaScore: 45, open: true },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash',      inputPrice: 0.44,   outputPrice: 1.32,   livebench: 65.48, aaScore: 42, open: true },
     { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash 0731', inputPrice: 0.44,   outputPrice: 1.32,   livebench: 74.17, aaScore: 52, open: true },
-    { provider: 'Google',      model: 'Gemini 3.5 Flash',       inputPrice: 1.5,    outputPrice: 9.0,    livebench: 74.64, aaScore: 52, open: false },
     { provider: 'Google',      model: 'Gemini 3.1 Pro',         inputPrice: 2.0,    outputPrice: 12.0,   livebench: 76.95, aaScore: 48, open: false },
-    { provider: 'Alibaba',     model: 'Qwen 3.7 Max',           inputPrice: 1.475,  outputPrice: 4.425,  livebench: 73.14, aaScore: 47, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.8 Max',           inputPrice: 2.0,    outputPrice: 6.0,    livebench: 78.46, aaScore: 58, open: true },
     { provider: 'Anthropic',   model: 'Claude Fable 5',         inputPrice: 10.0,   outputPrice: 50.0,   livebench: 82.97, aaScore: 62, open: false },
     { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,    outputPrice: 15.0,   livebench: 79.19, aaScore: 60, open: true },
-    { provider: 'Meta',        model: 'Muse Spark 1.1',         inputPrice: 1.25,   outputPrice: 4.25,   livebench: 75.30, aaScore: 53, open: false },
     { provider: 'Meta',        model: 'Muse Spark 1.2',         inputPrice: 1.25,   outputPrice: 4.25,   livebench: 77.95, aaScore: 57, open: false },
     { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.0,    outputPrice: 4.05,   livebench: 71.92, aaScore: 42, open: true },
-    { provider: 'Google',      model: 'Gemini 3.6 Flash',       inputPrice: 1.5,    outputPrice: 7.5,    livebench: 73.59, aaScore: 52, open: false },
     { provider: 'Google',      model: 'Gemini 3.7 Flash',       inputPrice: 0.75,   outputPrice: 3.75,   livebench: 78.83, aaScore: 56, open: false },
     { provider: 'Google',      model: 'Gemini 3.5 Flash-Lite',  inputPrice: 0.3,    outputPrice: 2.5,    livebench: 63.94, aaScore: 37, open: false },
     { provider: 'Anthropic',   model: 'Claude Opus 5',          inputPrice: 5.0,    outputPrice: 25.0,   livebench: 80.08, aaScore: 63, open: false },
+    { provider: 'Alibaba',     model: 'Qwen 3.8 Flash Next',    inputPrice: 0.15,   outputPrice: 0.47,   livebench: 76.19, aaScore: 56, open: true },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44, outputPrice: 1.32,   livebench: 76.76, aaScore: 51, open: true },
   ],
 };
 
@@ -2684,7 +2677,7 @@ function buildChatTools() {
               items: { type: 'string' },
               minItems: 1,
               maxItems: 8,
-              description: 'One to eight model names, e.g. ["Claude Opus 5"] or ["DeepSeek V4 Pro", "GLM 5.2"]. Use the fullest name you have.'
+              description: 'One to eight model names, e.g. ["Claude Opus 5"] or ["DeepSeek V4 Pro 0813", "GLM 5.3"]. Use the fullest name you have.'
             }
           },
           required: ['model_names']
