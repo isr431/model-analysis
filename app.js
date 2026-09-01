@@ -613,7 +613,10 @@ function initCharts() {
           pointStyle: 'rect',
           pointRadius: 7,
           pointHoverRadius: 10,
-          borderWidth: 1.5
+          borderWidth: 1.5,
+          // A model scoring exactly 100 sits on the axis ceiling; without this its marker is
+          // clipped in half. Paired with the layout padding below, it draws in full.
+          clip: false
         },
         {
           label: 'Pareto Frontier',
@@ -633,6 +636,7 @@ function initCharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 14 } },
       onClick: (e, elements) => {
         if (elements.length > 0) {
           const datasetIndex = elements[0].datasetIndex;
