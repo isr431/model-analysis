@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-01",
+  "lastUpdated": "2026-09-02",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -224,6 +224,15 @@
       "livebench": 76.76,
       "aaScore": 51,
       "open": true
+    },
+    {
+      "provider": "Anthropic",
+      "model": "Claude Fable 5.1",
+      "inputPrice": 10,
+      "outputPrice": 50,
+      "livebench": 83.4,
+      "aaScore": 66,
+      "open": false
     }
   ]
 }
