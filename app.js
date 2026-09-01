@@ -659,10 +659,11 @@ function initCharts() {
           grid: { color: 'rgba(255,255,255,0.06)' },
         },
         y: {
-          title: { display: true, text: 'Performance Score', color: 'rgba(255,255,255,0.7)', font: { family: 'JetBrains Mono' } },
+          // Performance is normalized to 0-100, so the axis must never imply a score above 100.
+          max: 100,
+          title: { display: true, text: 'Performance Score (0-100)', color: 'rgba(255,255,255,0.7)', font: { family: 'JetBrains Mono' } },
           ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'JetBrains Mono', size: 10 } },
           grid: { color: 'rgba(255,255,255,0.06)' },
-          grace: '5%',
         },
       },
       plugins: {
@@ -940,6 +941,7 @@ function updateScatterChart(filtered) {
       scatterChart.data.datasets[1].data = [];
     }
     scatterChart.options.scales.x.labels = [];
+    scatterChart.options.scales.y.min = 0;
     scatterChart.update();
     return;
   }
@@ -948,6 +950,10 @@ function updateScatterChart(filtered) {
   const labels = [...new Set(uniqueCosts.map(c => '$' + c.toFixed(2)))];
 
   scatterChart.options.scales.x.labels = labels;
+
+  // Headroom only below: the top of the axis stays pinned at the 100-point ceiling.
+  const minPerf = Math.min(...filtered.map(m => m.performance));
+  scatterChart.options.scales.y.min = Math.max(0, Math.floor((minPerf - 3) / 5) * 5);
 
   scatterChart.data.datasets[0].data = filtered.map(m => ({
     x: '$' + m.blended.toFixed(2),
