@@ -1,0 +1,39 @@
+name: Update model prices
+
+# Refreshes prices from OpenRouter and pushes straight to main. The script writes
+# nothing when nothing changed, so a quiet week produces no commit.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Refresh prices from OpenRouter
+        run: node scripts/update-prices.mjs --write
+
+      - name: Commit and push
+        run: |
+          git diff --quiet && { echo "No changes."; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json app.js index.html
+          git commit -m "Refresh model prices from OpenRouter"
+          # Someone may have pushed while the job ran; rebase rather than fail.
+          git pull --rebase origin main
+          git push origin HEAD:main

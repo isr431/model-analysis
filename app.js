@@ -16,28 +16,28 @@ const FALLBACK_DATA = {
     'Thinking Machines': { color: '#78716c' },
   },
   models: [
-    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',            inputPrice: 5.0,    outputPrice: 30.0,   livebench: 81.05, aaScore: 61, open: false },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Terra',          inputPrice: 2.0,    outputPrice: 12.0,   livebench: 77.94, aaScore: 57, open: false },
-    { provider: 'OpenAI',      model: 'GPT-5.6 Luna',           inputPrice: 0.2,    outputPrice: 1.2,    livebench: 73.56, aaScore: 52, open: false },
-    { provider: "xAI",         model: "Grok 4.6",               inputPrice: 2.0,    outputPrice: 6.0,    livebench: 77.56, aaScore: 61, open: false },
-    { provider: "Anthropic",   model: "Claude Sonnet 5",        inputPrice: 2.0,    outputPrice: 10.0,   livebench: 76.04, aaScore: 55, open: false },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Pro 0813',   inputPrice: 1.32,   outputPrice: 3.96,   livebench: 77.44, aaScore: 53, open: true },
-    { provider: 'Z.ai',        model: 'GLM 5.3',                inputPrice: 1.4,    outputPrice: 4.4,    livebench: 76.1,  aaScore: 60, open: false },
-    { provider: 'Z.ai',        model: 'GLM 5.3 Flash',          inputPrice: 0.15,   outputPrice: 0.5,    livebench: 71.59, aaScore: 57, open: true },
-    { provider: 'MiniMax',     model: 'MiniMax M3',             inputPrice: 0.3,    outputPrice: 1.2,    livebench: 67.26, aaScore: 45, open: true },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash 0731', inputPrice: 0.44,   outputPrice: 1.32,   livebench: 74.17, aaScore: 52, open: true },
-    { provider: 'Google',      model: 'Gemini 3.1 Pro',         inputPrice: 2.0,    outputPrice: 12.0,   livebench: 76.95, aaScore: 48, open: false },
-    { provider: 'Alibaba',     model: 'Qwen 3.8 Max',           inputPrice: 2.0,    outputPrice: 6.0,    livebench: 78.46, aaScore: 58, open: true },
-    { provider: 'Anthropic',   model: 'Claude Fable 5',         inputPrice: 10.0,   outputPrice: 50.0,   livebench: 82.97, aaScore: 62, open: false },
-    { provider: 'Moonshot AI', model: 'Kimi K3',                inputPrice: 3.0,    outputPrice: 15.0,   livebench: 79.19, aaScore: 60, open: true },
-    { provider: 'Meta',        model: 'Muse Spark 1.2',         inputPrice: 1.25,   outputPrice: 4.25,   livebench: 77.95, aaScore: 57, open: false },
-    { provider: 'Thinking Machines', model: 'Inkling',          inputPrice: 1.0,    outputPrice: 4.05,   livebench: 71.92, aaScore: 42, open: true },
-    { provider: 'Google',      model: 'Gemini 3.7 Flash',       inputPrice: 0.75,   outputPrice: 3.75,   livebench: 78.83, aaScore: 56, open: false },
-    { provider: 'Google',      model: 'Gemini 3.5 Flash-Lite',  inputPrice: 0.3,    outputPrice: 2.5,    livebench: 63.94, aaScore: 37, open: false },
-    { provider: 'Anthropic',   model: 'Claude Opus 5',          inputPrice: 5.0,    outputPrice: 25.0,   livebench: 80.08, aaScore: 63, open: false },
-    { provider: 'Alibaba',     model: 'Qwen 3.8 Flash Next',    inputPrice: 0.15,   outputPrice: 0.47,   livebench: 76.19, aaScore: 56, open: true },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44, outputPrice: 1.32,   livebench: 76.76, aaScore: 51, open: true },
-    { provider: 'Anthropic',   model: 'Claude Fable 5.1',       inputPrice: 10.0,   outputPrice: 50.0,   livebench: 83.4,  aaScore: 66, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Sol',              inputPrice: 2.0,   outputPrice: 10.0, cachePrice: 0.2,   livebench: 81.05, aaScore: 61, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Terra',            inputPrice: 2.0,   outputPrice: 12.0, cachePrice: 0.2,   livebench: 77.94, aaScore: 57, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Luna',             inputPrice: 0.2,   outputPrice: 1.2,  cachePrice: 0.02,  livebench: 73.56, aaScore: 52, open: false },
+    { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,   outputPrice: 6.0,  cachePrice: 0.5,   livebench: 77.56, aaScore: 61, open: false },
+    { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,   outputPrice: 10.0, cachePrice: 0.2,   livebench: 76.04, aaScore: 55, open: false },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 0.66,  outputPrice: 1.98, cachePrice: 0.022, livebench: 77.44, aaScore: 53, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 1.4,   outputPrice: 4.4,  cachePrice: 0.26,  livebench: 76.1,  aaScore: 60, open: false },
+    { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.075, outputPrice: 0.25, cachePrice: 0.015, livebench: 71.59, aaScore: 57, open: true },
+    { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,   outputPrice: 1.2,  cachePrice: 0.06,  livebench: 67.26, aaScore: 45, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.065, outputPrice: 0.18, cachePrice: 0.016, livebench: 74.17, aaScore: 52, open: true },
+    { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,   outputPrice: 12.0, cachePrice: 0.2,   livebench: 76.95, aaScore: 48, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,   outputPrice: 6.0,  cachePrice: 0.25,  livebench: 78.46, aaScore: 58, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,  outputPrice: 50.0, cachePrice: 1.0,   livebench: 82.97, aaScore: 62, open: false },
+    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 3.0,   outputPrice: 15.0, cachePrice: 0.3,   livebench: 79.19, aaScore: 60, open: true },
+    { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,  outputPrice: 4.25, cachePrice: 0.15,  livebench: 77.95, aaScore: 57, open: false },
+    { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,   outputPrice: 4.05, cachePrice: 0.17,  livebench: 71.92, aaScore: 42, open: true },
+    { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,  outputPrice: 3.75, cachePrice: 0.075, livebench: 78.83, aaScore: 56, open: false },
+    { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,   outputPrice: 2.5,  cachePrice: 0.03,  livebench: 63.94, aaScore: 37, open: false },
+    { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,   outputPrice: 25.0, cachePrice: 0.5,   livebench: 80.08, aaScore: 63, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,  outputPrice: 0.47, cachePrice: 0.016, livebench: 76.19, aaScore: 56, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.22,  outputPrice: 0.66, cachePrice: 0.007, livebench: 76.76, aaScore: 51, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,  outputPrice: 50.0, cachePrice: 0.25,  livebench: 83.4,  aaScore: 66, open: false },
   ],
 };
 
@@ -84,6 +84,17 @@ function deriveProviderList(models) {
 }
 
 // ===== SCHEMA VALIDATION =====
+// scripts/update-prices.mjs reads these from data.json; they are not part of the
+// model schema and must not reach the FALLBACK_DATA snapshot comparison in init().
+const PRICE_HINT_KEYS = ['openrouterId', 'priceLock'];
+
+function stripPriceHints(model) {
+  if (!PRICE_HINT_KEYS.some(k => k in model)) return model;
+  const out = { ...model };
+  for (const k of PRICE_HINT_KEYS) delete out[k];
+  return out;
+}
+
 function validateData(data) {
   if (!data || typeof data !== 'object') return false;
   if (!Array.isArray(data.models) || data.models.length === 0) return false;
@@ -207,7 +218,7 @@ async function loadData() {
       return FALLBACK_DATA;
     }
 
-    return data;
+    return { ...data, models: data.models.map(stripPriceHints) };
   } catch (err) {
     if (window.location.protocol === 'file:') {
       console.warn(
@@ -245,6 +256,23 @@ const state = {
     expensive: 0,
   },
 };
+
+// Cache reads are often priced below a cent, so sub-$0.01 values get four decimals.
+// Null means the provider publishes no cache-read price, which is not the same as free.
+function fmtCachePrice(v) {
+  if (v == null) return '\u2014';
+  return '$' + (v < 0.01 ? v.toFixed(4) : v.toFixed(2));
+}
+
+// Sorts numerically but always parks null (no published price) at the bottom,
+// in both directions — a missing price is not a cheap one.
+function cmpNumericNullLast(va, vb, asc) {
+  if (va == null || vb == null) {
+    if (va == null && vb == null) return 0;
+    return va == null ? 1 : -1;
+  }
+  return asc ? va - vb : vb - va;
+}
 
 // ===== COMPUTATION =====
 function computeBlended(inputPrice, outputPrice) {
@@ -458,6 +486,11 @@ function round1(n) {
 
 function round2(n) {
   return typeof n === 'number' && isFinite(n) ? Math.round(n * 100) / 100 : n;
+}
+
+// Cache prices routinely sit below a cent, where round2 would flatten them to 0.
+function round4(n) {
+  return typeof n === 'number' && isFinite(n) ? Math.round(n * 10000) / 10000 : n;
 }
 
 function clampInt(value, min, max, fallback) {
@@ -1128,7 +1161,7 @@ function updateTable(filtered) {
     if (typeof va === 'string') {
       return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     }
-    return dir === 'asc' ? va - vb : vb - va;
+    return cmpNumericNullLast(va, vb, dir === 'asc');
   });
 
   const perfVals = filtered.map(m => m.performance);
@@ -1141,7 +1174,7 @@ function updateTable(filtered) {
   if (sorted.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="10" class="empty-state">
+        <td colspan="11" class="empty-state">
           <p style="margin-bottom: 8px;">No models match your filters</p>
           <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
         </td>
@@ -1154,6 +1187,7 @@ function updateTable(filtered) {
         <td>${escapeHtml(m.model)}${openBadgeHtml(m)}${estBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
+        <td class="num">${fmtCachePrice(m.cachePrice)}</td>
         <td class="num">$${m.blended.toFixed(2)}</td>
         <td class="num">${benchCellHtml(m, 'livebench')}</td>
         <td class="num">${benchCellHtml(m, 'aaScore')}</td>
@@ -1237,6 +1271,7 @@ const COMPARE_ROWS = [
   { label: 'Provider', key: 'provider' },
   { label: 'Input $/1M', key: 'inputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
   { label: 'Output $/1M', key: 'outputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
+  { label: 'Cache $/1M', key: 'cachePrice', fmt: fmtCachePrice, best: 'min' },
   { label: 'Blended $/1M', key: 'blended', fmt: v => '$' + v.toFixed(2), best: 'min' },
   { label: 'LiveBench', key: 'livebench', fmt: (v, m) => benchCellHtml(m, 'livebench'), best: 'max' },
   { label: 'AA Score', key: 'aaScore', fmt: (v, m) => benchCellHtml(m, 'aaScore'), best: 'max' },
@@ -1297,8 +1332,10 @@ function updateCompareTable(models) {
   const rows = COMPARE_ROWS.map(row => {
     let bestVal = null;
     if (row.best) {
-      // An estimated score must not win the best-cell highlight.
-      const vals = models.filter(m => !isEstimatedFor(m, row.key)).map(m => m[row.key]);
+      // An estimated score must not win the best-cell highlight, and a null price
+      // must not either — it would coerce to 0 and take the 'min' highlight.
+      const vals = models.filter(m => !isEstimatedFor(m, row.key)).map(m => m[row.key])
+        .filter(v => v != null);
       bestVal = vals.length === 0 ? null : (row.best === 'min' ? Math.min(...vals) : Math.max(...vals));
     }
     const cells = models.map(m => {
@@ -2469,7 +2506,7 @@ function setChatLoading(isLoading) {
 // Prevent broad queries from flooding the model context.
 const TOOL_MAX_ROWS = 25;
 
-const TOOL_SORT_KEYS = ['value', 'performance', 'blended', 'inputPrice', 'outputPrice',
+const TOOL_SORT_KEYS = ['value', 'performance', 'blended', 'inputPrice', 'outputPrice', 'cachePrice',
   'livebench', 'aaScore', 'model', 'provider'];
 
 function toolOk(payload) {
@@ -2490,8 +2527,12 @@ function getToolModelSets() {
 function compareByKey(a, b, key, asc) {
   const va = a[key];
   const vb = b[key];
-  let result = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
-  if (!asc) result = -result;
+  let result;
+  if (typeof va === 'string') {
+    result = asc ? va.localeCompare(vb) : vb.localeCompare(va);
+  } else {
+    result = cmpNumericNullLast(va, vb, asc);
+  }
   // Tie-break on name so results are stable regardless of data.json ordering.
   return result !== 0 ? result : a.model.localeCompare(b.model);
 }
@@ -2515,6 +2556,7 @@ function serializeModel(m, detail) {
     ...base,
     inputPrice: round2(m.inputPrice),
     outputPrice: round2(m.outputPrice),
+    cachePrice: m.cachePrice == null ? null : round4(m.cachePrice),
     livebench: round2(m.livebench),
     aaScore: m.aaScore,
   };

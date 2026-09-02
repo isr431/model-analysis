@@ -70,11 +70,14 @@ Add a model:
   "model": "gpt-oss-120b",
   "inputPrice": 0.037,
   "outputPrice": 0.17,
+  "cachePrice": 0.0037,
   "livebench": 46.09,
   "aaScore": 24,
   "open": true
 }
 ```
+
+`cachePrice` is the input cache-read price per 1M tokens. Set it to `null` when the provider publishes no cache-read price — the dashboard shows `—`, and such models sort last on the Cache column in both directions rather than reading as free.
 
 `open` marks whether the model's weights are publicly released (`true`) or closed/proprietary (`false`). It powers the "Open" badge and the Source filter (All / Open / Closed).
 
@@ -86,6 +89,7 @@ If a model is listed on only one of the two leaderboards, set the other score to
   "model": "GLM 5.3 Air",
   "inputPrice": 0.6,
   "outputPrice": 2.2,
+  "cachePrice": null,
   "livebench": null,
   "aaScore": 49,
   "open": true
@@ -95,6 +99,27 @@ If a model is listed on only one of the two leaderboards, set the other score to
 The missing score is estimated at runtime (see [Partial benchmark coverage](#partial-benchmark-coverage)) and marked `EST` in the dashboard. A model must have at least one of the two scores.
 
 If you're adding a new provider, also add its color to the `providers` object.
+
+### After any edit, run the sync script
+
+`data.json` is not the only place the data lives — `app.js` holds a `FALLBACK_DATA` copy so the page renders before `data.json` loads, and `index.html` carries a `?v=` cache-bust token that has to change whenever `app.js` does. One command keeps all three in step:
+
+```bash
+node scripts/update-prices.mjs           # show what would change, write nothing
+node scripts/update-prices.mjs --write   # apply it
+node scripts/update-prices.mjs --sync-only   # skip OpenRouter, just mirror data.json
+```
+
+So the workflow for adding a model is: append the entry to `data.json` **without** prices, run the script, and let it fill them in. It refuses to write a model it couldn't find a price for.
+
+Prices (`inputPrice`, `outputPrice`, `cachePrice`) come from the [OpenRouter models API](https://openrouter.ai/api/v1/models). Benchmark scores stay hand-curated. The script matches models by name; two optional per-model keys in `data.json` override that:
+
+- `"openrouterId": "qwen/qwen3.8-flash"` — pin the OpenRouter entry when the name doesn't match, or matches the wrong variant.
+- `"priceLock": true` — keep hand-set prices for this model. Useful when OpenRouter surfaces a dynamic third-party routed price rather than the provider's list price.
+
+Both are stripped before the data reaches the app, so they never appear in `FALLBACK_DATA`.
+
+`.github/workflows/update-prices.yml` runs the script every Monday and pushes to `main`. It commits nothing when nothing changed.
 
 ## AI Assistant
 

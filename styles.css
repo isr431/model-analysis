@@ -1181,10 +1181,12 @@ input[type="range"]::-moz-range-thumb:hover {
   border-right: 1px solid var(--divider);
 }
 
-/* De-emphasize prices so computed scores remain the visual focus. */
+/* De-emphasize prices so computed scores remain the visual focus.
+   Columns 3-6 are input, output, cache, and blended. */
 #modelTable td:nth-child(3),
 #modelTable td:nth-child(4),
-#modelTable td:nth-child(5) {
+#modelTable td:nth-child(5),
+#modelTable td:nth-child(6) {
   color: var(--text-secondary);
 }
 
