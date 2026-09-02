@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260902-prices">
+  <link rel="stylesheet" href="styles.css?v=20260902-agentic-cost">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260902-prices" defer></script>
+  <script src="app.js?v=20260902-agentic-cost" defer></script>
 </head>
 <body>
   <main class="app">
@@ -111,12 +111,12 @@
           <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
         </div>
         <div class="control-group full-width" id="priceRangeGroup">
-          <label>Price Range: <span class="control-badge">$<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">12.00</span></span></label>
+          <label>Price Range: <span class="control-badge">$<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">3.00</span></span></label>
           <div class="dual-slider">
             <div class="dual-slider-track"></div>
             <div class="dual-slider-range" id="priceRangeHighlight"></div>
-            <input type="range" id="priceMin" min="0" max="12" step="0.1" value="0" style="z-index: 9;" aria-label="Minimum price per million tokens">
-            <input type="range" id="priceMax" min="0" max="12" step="0.1" value="12" style="z-index: 9;" aria-label="Maximum price per million tokens">
+            <input type="range" id="priceMin" min="0" max="3" step="0.01" value="0" style="z-index: 9;" aria-label="Minimum price per million tokens">
+            <input type="range" id="priceMax" min="0" max="3" step="0.01" value="3" style="z-index: 9;" aria-label="Maximum price per million tokens">
           </div>
         </div>
         <div class="control-group full-width" id="perfThresholdGroup">
@@ -491,8 +491,8 @@
       <div class="pane-content modal-body">
         <div class="formula-item">
           <div class="formula-label">Blended Cost</div>
-          <code><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.9573</span> * inputPrice + <span class="syntax-number">0.0427</span> * outputPrice;</code>
-          <div class="formula-desc">Weighted for a 22.4:1 input-to-output token ratio</div>
+          <code><span class="syntax-keyword">const</span> cacheRead = m.cachePrice ?? m.inputPrice;<br><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.8946</span> * cacheRead + <span class="syntax-number">0.0994</span> * inputPrice + <span class="syntax-number">0.0060</span> * outputPrice;</code>
+          <div class="formula-desc">Weighted for an agentic coding workload: 165 context tokens read per output token, 90% of them served from the prompt cache. A model with no published cache price pays full input price to re-read context.</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Performance</div>

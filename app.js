@@ -147,7 +147,7 @@ function applyData(data) {
   }
 
   // Anchor radar cost efficiency to the full dataset so filtering cannot rescale it.
-  const blendedCosts = data.models.map(m => computeBlended(m.inputPrice, m.outputPrice));
+  const blendedCosts = data.models.map(m => computeBlended(m));
   const floorCosts = blendedCosts.map(c => Math.max(c, 0.01));
   GLOBAL_LOG_MIN = Math.log10(Math.min(...floorCosts));
   GLOBAL_LOG_MAX = Math.log10(Math.max(...floorCosts));
@@ -170,10 +170,15 @@ function updateSliderBounds() {
   const priceMinInput = document.getElementById('priceMin');
   const priceMaxInput = document.getElementById('priceMax');
 
-  const oldMax = parseFloat(priceMaxInput.max) || 12;
+  const oldMax = parseFloat(priceMaxInput.max) || DEFAULT_PRICE_MAX;
 
+  // Most of the roster clusters under $0.5 on the cache-aware scale, so a fixed
+  // 0.1 step would make the cheap end of the slider unusable.
+  const step = sliderMax <= 5 ? 0.01 : 0.1;
   priceMinInput.max = sliderMax;
   priceMaxInput.max = sliderMax;
+  priceMinInput.step = step;
+  priceMaxInput.step = step;
 
   if (state.priceMax >= oldMax || state.priceMax >= sliderMax) {
     state.priceMax = sliderMax;
@@ -234,11 +239,15 @@ async function loadData() {
 }
 
 // ===== STATE =====
+// Matches the max/value on the price sliders in index.html; updateSliderBounds()
+// replaces it with the real dataset ceiling once data loads.
+const DEFAULT_PRICE_MAX = 3;
+
 const state = {
   p: 0.07,
   search: '',
   priceMin: 0,
-  priceMax: 12,
+  priceMax: DEFAULT_PRICE_MAX,
   perfThreshold: 0,
   sourceFilter: 'all',
   dataFilter: 'all',
@@ -256,6 +265,13 @@ const state = {
     expensive: 0,
   },
 };
+
+// On the agentic scale most models land under $0.10, so two decimals would print
+// half the roster as the same number. Three decimals below $1 keeps them distinct
+// without cluttering the expensive end.
+function fmtBlended(v) {
+  return '$' + (v < 1 ? v.toFixed(3) : v.toFixed(2));
+}
 
 // Cache reads are often priced below a cent, so sub-$0.01 values get four decimals.
 // Null means the provider publishes no cache-read price, which is not the same as free.
@@ -275,8 +291,31 @@ function cmpNumericNullLast(va, vb, asc) {
 }
 
 // ===== COMPUTATION =====
-function computeBlended(inputPrice, outputPrice) {
-  return 0.9573 * inputPrice + 0.0427 * outputPrice;
+// This dashboard scores models for agentic coding, where the cost driver is context
+// re-read on every turn, not code generated. Dosu measured 198 context tokens read
+// per output token for Claude Code and 134:1 for Codex across 112 real agent
+// sessions; 165:1 sits between them. Nearly all of that context is served from the
+// prompt cache — a well-cached session runs ~90% hits, and cache reads bill at
+// roughly a tenth of the input rate — so charging it at the full input price, as a
+// plain input/output blend does, overstates cost several-fold and hides real
+// differences between models whose cache discounts differ.
+const CONTEXT_TO_OUTPUT = 165; // Context tokens read per output token generated.
+const CACHE_HIT_RATE = 0.90;   // Share of those context tokens served from cache.
+
+// Normalized so the weights sum to 1 and Blended Cost stays readable as dollars per
+// 1M tokens of a representative agentic workload.
+const TOKEN_MIX = (() => {
+  const cache = CONTEXT_TO_OUTPUT * CACHE_HIT_RATE;
+  const input = CONTEXT_TO_OUTPUT * (1 - CACHE_HIT_RATE);
+  const total = cache + input + 1;
+  return { cache: cache / total, input: input / total, output: 1 / total };
+})();
+
+function computeBlended(m) {
+  // No published cache price means no caching discount to have: every re-read of
+  // the context bills at the full input rate.
+  const cacheRead = m.cachePrice ?? m.inputPrice;
+  return TOKEN_MIX.cache * cacheRead + TOKEN_MIX.input * m.inputPrice + TOKEN_MIX.output * m.outputPrice;
 }
 
 // Smallest positive blended cost in the dataset, or 1 when nothing costs anything, so the
@@ -361,7 +400,7 @@ let perfWeights = { lb: 0.5, aa: 0.5 };
 let costAnchor = 1;
 
 function computeAllMetrics(data, p) {
-  const models = data.map(d => ({ ...d, blended: computeBlended(d.inputPrice, d.outputPrice) }));
+  const models = data.map(d => ({ ...d, blended: computeBlended(d) }));
 
   const { lbMax, aaMax } = getBenchmarkMaxes(models);
 
@@ -718,7 +757,7 @@ function initCharts() {
               }
               return [
                 `Provider: ${item.raw.provider}`,
-                `Blended: $${item.raw.blended.toFixed(2)}`,
+                `Blended: ${fmtBlended(item.raw.blended)}`,
                 `Performance: ${item.raw.y.toFixed(1)}`,
                 `Value: ${item.raw.value.toFixed(1)}`,
               ];
@@ -776,7 +815,9 @@ function initCharts() {
             title: items => (state._barLabelsFull && state._barLabelsFull[items[0].dataIndex]) || items[0].label,
             label: item => {
               const metricLabels = { value: 'Value', performance: 'Performance', blended: 'Blended Cost', livebench: 'LiveBench', aaScore: 'AA Score' };
-              return `${metricLabels[state.barMetric]}: ${item.raw.toFixed(2)}`;
+              // Cost needs the finer formatter; the score metrics are all 0-100.
+              const val = state.barMetric === 'blended' ? fmtBlended(item.raw) : item.raw.toFixed(2);
+              return `${metricLabels[state.barMetric]}: ${val}`;
             },
           },
         },
@@ -984,7 +1025,9 @@ function updateScatterChart(filtered) {
   }
 
   const uniqueCosts = [...new Set(filtered.map(m => m.blended))].sort((a, b) => a - b);
-  const labels = [...new Set(uniqueCosts.map(c => '$' + c.toFixed(2)))];
+  // Must use the same formatter as the data points below: this is a category axis
+  // keyed by the formatted string, so any mismatch leaves every point unplaced.
+  const labels = [...new Set(uniqueCosts.map(fmtBlended))];
 
   scatterChart.options.scales.x.labels = labels;
 
@@ -993,7 +1036,7 @@ function updateScatterChart(filtered) {
   scatterChart.options.scales.y.min = Math.max(0, Math.floor((minPerf - 3) / 5) * 5);
 
   scatterChart.data.datasets[0].data = filtered.map(m => ({
-    x: '$' + m.blended.toFixed(2),
+    x: fmtBlended(m.blended),
     y: m.performance,
     model: m.model,
     provider: m.provider,
@@ -1004,7 +1047,7 @@ function updateScatterChart(filtered) {
   if (scatterChart.data.datasets[1]) {
     const paretoFrontier = getParetoFrontier(filtered);
     scatterChart.data.datasets[1].data = paretoFrontier.map(m => ({
-      x: '$' + m.blended.toFixed(2),
+      x: fmtBlended(m.blended),
       y: m.performance
     }));
   }
@@ -1188,7 +1231,7 @@ function updateTable(filtered) {
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num">${fmtCachePrice(m.cachePrice)}</td>
-        <td class="num">$${m.blended.toFixed(2)}</td>
+        <td class="num">${fmtBlended(m.blended)}</td>
         <td class="num">${benchCellHtml(m, 'livebench')}</td>
         <td class="num">${benchCellHtml(m, 'aaScore')}</td>
         <td class="num" style="color:${colorScale(m.performance, perfMin, perfMax)};font-weight:600">${m.performance.toFixed(1)}</td>
@@ -1272,7 +1315,7 @@ const COMPARE_ROWS = [
   { label: 'Input $/1M', key: 'inputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
   { label: 'Output $/1M', key: 'outputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
   { label: 'Cache $/1M', key: 'cachePrice', fmt: fmtCachePrice, best: 'min' },
-  { label: 'Blended $/1M', key: 'blended', fmt: v => '$' + v.toFixed(2), best: 'min' },
+  { label: 'Blended $/1M', key: 'blended', fmt: fmtBlended, best: 'min' },
   { label: 'LiveBench', key: 'livebench', fmt: (v, m) => benchCellHtml(m, 'livebench'), best: 'max' },
   { label: 'AA Score', key: 'aaScore', fmt: (v, m) => benchCellHtml(m, 'aaScore'), best: 'max' },
   { label: 'Performance', key: 'performance', fmt: v => v.toFixed(1), best: 'max' },
@@ -1475,7 +1518,7 @@ function setPillState(pill, p, active) {
 function updatePriceRangeSliderHighlight() {
   const minVal = state.priceMin;
   const maxVal = state.priceMax;
-  const sliderMax = parseFloat(document.getElementById('priceMax').max) || 12;
+  const sliderMax = parseFloat(document.getElementById('priceMax').max) || DEFAULT_PRICE_MAX;
   const minPercent = (minVal / sliderMax) * 100;
   const maxPercent = (maxVal / sliderMax) * 100;
   const highlight = document.getElementById('priceRangeHighlight');
@@ -2007,7 +2050,7 @@ function animateValue(element, start, end, duration = 400, isPrice = false) {
   const existing = _animHandles.get(element);
   if (existing != null) cancelAnimationFrame(existing);
 
-  const format = v => isPrice ? '$' + v.toFixed(2) : v.toFixed(1);
+  const format = v => isPrice ? fmtBlended(v) : v.toFixed(1);
 
   if (start === end || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     element.textContent = format(end);
@@ -2543,7 +2586,7 @@ function serializeModel(m, detail) {
     model: m.model,
     provider: m.provider,
     open: m.open === true,
-    blendedCost: round2(m.blended),
+    blendedCost: round4(m.blended),
     performance: round1(m.performance),
     value: round1(m.value),
   };

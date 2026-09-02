@@ -148,11 +148,21 @@ Your API key is stored locally in your browser and is only sent to OpenRouter.
 
 ### Blended Cost
 
-A weighted cost estimate based on a 22.4:1 input-to-output token ratio.
+A weighted cost estimate for an **agentic coding workload**, where the cost driver is context re-read on every turn rather than code generated.
 
 $$
-\text{Blended Cost} = (0.9573 \times \text{Input Price}) + (0.0427 \times \text{Output Price})
+\text{Blended Cost} = (0.8946 \times \text{Cache Price}) + (0.0994 \times \text{Input Price}) + (0.0060 \times \text{Output Price})
 $$
+
+An agent re-sends its whole conversation on every turn, so the tokens it reads dwarf the tokens it writes. Measuring 112 real agent sessions, [Dosu](https://dosu.dev/blog/agent-budgets-pay-for-context-not-code) found **198 context tokens read per output token** for Claude Code and **134:1** for Codex; the weights above use 165:1, between the two.
+
+Almost all of that context is served from the prompt cache rather than reprocessed. [Claude Code's docs](https://code.claude.com/docs/en/prompt-caching) note that cache reads bill at roughly a tenth of the standard input rate, and a well-cached session runs about a 90% hit rate. Charging every context token at the full input price — as a plain input/output blend does — therefore overstates agentic cost several-fold.
+
+It also erases real differences. Claude Fable 5 and Fable 5.1 have identical input and output prices, so an input/output blend scores them the same; Fable 5.1's cache read is four times cheaper, making it meaningfully cheaper to run an agent on. Grok 4.6 and Qwen 3.8 Max are likewise identical on input and output, but Grok's shallower cache discount makes it ~31% more expensive in practice.
+
+**A model with no published cache price is charged the full input price for cache reads**, not treated as free — no caching discount is exactly what "no cache pricing" means.
+
+The two constants live at the top of `app.js` as `CONTEXT_TO_OUTPUT` and `CACHE_HIT_RATE`. The cost *ranking* is stable across the measured range (134:1 to 198:1 at an 85–90% hit rate); the constants mainly set the absolute scale.
 
 ### Performance
 
