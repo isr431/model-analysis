@@ -12,6 +12,5 @@ Thumbs.db
 # Python server artifacts
 __pycache__/
 
-# Project planning and guidelines
-AGENTS.md
+# Local design notes (AGENTS.md is committed; this is not)
 DESIGN.md
