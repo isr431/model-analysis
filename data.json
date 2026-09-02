@@ -72,7 +72,7 @@
       "inputPrice": 2,
       "outputPrice": 6,
       "cachePrice": 0.5,
-      "livebench": 77.56,
+      "livebench": 78.04,
       "aaScore": 61,
       "open": false
     },
@@ -102,9 +102,9 @@
       "inputPrice": 1.4,
       "outputPrice": 4.4,
       "cachePrice": 0.26,
-      "livebench": 76.1,
+      "livebench": 76.14,
       "aaScore": 60,
-      "open": false
+      "open": true
     },
     {
       "provider": "Z.ai",
@@ -253,7 +253,7 @@
       "inputPrice": 10,
       "outputPrice": 50,
       "cachePrice": 0.25,
-      "livebench": 83.4,
+      "livebench": 83.41,
       "aaScore": 66,
       "open": false
     },
@@ -263,7 +263,7 @@
       "inputPrice": 0.425,
       "outputPrice": 2.55,
       "cachePrice": 0.085,
-      "livebench": 75.3,
+      "livebench": 75.27,
       "aaScore": 52,
       "open": true
     },
@@ -273,7 +273,7 @@
       "inputPrice": 0.75,
       "outputPrice": 3.75,
       "cachePrice": 0.075,
-      "livebench": 75.8,
+      "livebench": 75.83,
       "aaScore": 59,
       "open": false
     }
