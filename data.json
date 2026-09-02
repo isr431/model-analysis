@@ -89,9 +89,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 0.66,
-      "outputPrice": 1.98,
-      "cachePrice": 0.022,
+      "inputPrice": 1.1154,
+      "outputPrice": 3.3462,
+      "cachePrice": 0.03718,
       "livebench": 77.44,
       "aaScore": 53,
       "open": true
@@ -240,9 +240,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash Vision",
-      "inputPrice": 0.22,
-      "outputPrice": 0.66,
-      "cachePrice": 0.007,
+      "inputPrice": 0.44,
+      "outputPrice": 1.32,
+      "cachePrice": 0.014,
       "livebench": 76.76,
       "aaScore": 51,
       "open": true
@@ -256,6 +256,16 @@
       "livebench": 83.4,
       "aaScore": 66,
       "open": false
+    },
+    {
+      "provider": "Alibaba",
+      "model": "Qwen 3.8 27B",
+      "inputPrice": 0.425,
+      "outputPrice": 2.55,
+      "cachePrice": 0.085,
+      "livebench": 75.3,
+      "aaScore": 52,
+      "open": true
     }
   ]
 }
