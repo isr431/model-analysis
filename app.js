@@ -36,7 +36,7 @@ const FALLBACK_DATA = {
     { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,    outputPrice: 2.5,    cachePrice: 0.03,    livebench: 63.94, aaScore: 37, open: false },
     { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,    outputPrice: 25.0,   cachePrice: 0.5,     livebench: 80.08, aaScore: 63, open: false },
     { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,   outputPrice: 0.47,   cachePrice: 0.016,   livebench: 76.19, aaScore: 56, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,   outputPrice: 1.32,   cachePrice: 0.014,   livebench: 76.76, aaScore: 51, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.22,   outputPrice: 0.66,   cachePrice: 0.007,   livebench: 76.76, aaScore: 51, open: true },
     { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 0.25,    livebench: 83.4,  aaScore: 66, open: false },
     { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.425,  outputPrice: 2.55,   cachePrice: 0.085,   livebench: 75.3,  aaScore: 52, open: true },
   ],
