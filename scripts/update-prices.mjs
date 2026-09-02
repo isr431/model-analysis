@@ -215,7 +215,7 @@ if (!write) { console.log('\nDry run. Re-run with --write to apply.'); process.e
 
 // ===== WRITE =====
 // lastUpdated moves only when something actually changed, so a no-op run leaves
-// the tree clean and the weekly job produces no commit.
+// the tree clean and the daily job produces no commit.
 const now = new Date();
 const stamp = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
   .map((n, i) => String(n).padStart(i ? 2 : 4, '0')).join('-');

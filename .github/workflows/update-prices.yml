@@ -1,11 +1,11 @@
 name: Update model prices
 
 # Refreshes prices from OpenRouter and pushes straight to main. The script writes
-# nothing when nothing changed, so a quiet week produces no commit.
+# nothing when nothing changed, so a day with no price movement produces no commit.
 
 on:
   schedule:
-    - cron: '0 6 * * 1' # Mondays, 06:00 UTC
+    - cron: '0 6 * * *' # Daily, 06:00 UTC
   workflow_dispatch:
 
 permissions:
