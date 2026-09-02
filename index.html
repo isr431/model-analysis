@@ -133,13 +133,6 @@
             <button class="source-seg" data-source="closed">Closed</button>
           </div>
         </div>
-        <div class="control-group full-width" id="dataFilterGroup">
-          <label>Benchmark Data</label>
-          <div class="source-toggle" id="dataToggle" role="group" aria-label="Benchmark data filter">
-            <button class="data-seg active" data-completeness="all">All</button>
-            <button class="data-seg" data-completeness="complete">Complete Only</button>
-          </div>
-        </div>
         <div class="control-group full-width" id="providerFilters">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs);">
             <label style="margin-bottom: 0;">Providers</label>
@@ -498,7 +491,6 @@
           <div class="formula-label">Performance</div>
           <code><span class="syntax-keyword">const</span> performance = (wLive * (liveBench / maxLiveBench) + wAA * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
           <div class="formula-desc">Each benchmark is normalized against its dataset maximum, then weighted by the inverse of its spread so both contribute equally (currently wLive <span id="formulaWLive">0.658</span>, wAA <span id="formulaWAa">0.342</span>)</div>
-          <div class="formula-desc formula-est-note hide" id="formulaEstNote"></div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Value</div>

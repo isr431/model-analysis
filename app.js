@@ -74,12 +74,6 @@ function buildProviderColors(providers) {
   return colors;
 }
 
-// A model published on only one leaderboard carries null (or omits the key) for the
-// other benchmark, so every read of a raw score has to check before trusting it.
-function hasScore(m, key) {
-  return typeof m[key] === 'number' && isFinite(m[key]);
-}
-
 function deriveProviderList(models) {
   return [...new Set(models.map(d => d.provider))];
 }
@@ -111,12 +105,11 @@ function validateData(data) {
     for (const field of numericFields) {
       if (typeof model[field] !== 'number' || isNaN(model[field])) return false;
     }
-    // Either benchmark may be null or absent and get estimated at runtime, but a
-    // model missing both has nothing to rank on.
+    // Every model must report both benchmark scores; there is nothing to rank on
+    // otherwise.
     for (const field of ['livebench', 'aaScore']) {
-      if (model[field] != null && !hasScore(model, field)) return false;
+      if (typeof model[field] !== 'number' || !isFinite(model[field])) return false;
     }
-    if (!hasScore(model, 'livebench') && !hasScore(model, 'aaScore')) return false;
   }
   return true;
 }
@@ -251,7 +244,6 @@ const state = {
   priceMax: DEFAULT_PRICE_MAX,
   perfThreshold: 0,
   sourceFilter: 'all',
-  dataFilter: 'all',
   activeProviders: new Set(),
   sortColumn: 'value',
   sortDirection: 'desc',
@@ -344,51 +336,14 @@ function equalContributionWeights(lbNorm, aaNorm) {
   return { lb: aaSd / (lbSd + aaSd), aa: lbSd / (lbSd + aaSd) };
 }
 
-// ===== BENCHMARK ESTIMATION =====
-// A model listed on only one leaderboard still needs both normalized scores to get a
-// composite, so the missing one is predicted by least squares from the score it does
-// have, fitted on the models that report both. Reusing the present score in place of
-// the missing one would be simpler but wrong: AA's normalized spread runs about twice
-// LiveBench's, so equating them inflates every partial model below the top of the
-// scale (mean error 2.6-5.2 performance points against 1.3 for the fit).
-const MIN_FIT_MODELS = 5;
-
-// Least-squares fit of ys on xs, or null when the sample is too small or carries no
-// spread to regress against.
-function fitLinear(xs, ys) {
-  const n = xs.length;
-  if (n < MIN_FIT_MODELS) return null;
-  const mx = xs.reduce((a, b) => a + b, 0) / n;
-  const my = ys.reduce((a, b) => a + b, 0) / n;
-  let sxy = 0, sxx = 0;
-  for (let i = 0; i < n; i++) {
-    sxy += (xs[i] - mx) * (ys[i] - my);
-    sxx += (xs[i] - mx) ** 2;
-  }
-  if (!(sxx > 0)) return null;
-  const b = sxy / sxx;
-  return { a: my - b * mx, b };
-}
-
-// With nothing to fit against, fall back to the predictor's own normalized score.
-// That is the biased estimate the fit exists to avoid, but it keeps a thin dataset
-// rendering instead of throwing, and it is flagged as 'weak'.
-function predictNorm(fit, x) {
-  return Math.min(1, Math.max(0, fit ? fit.a + fit.b * x : x));
-}
-
-// Partial models still set the ceiling on whichever benchmark they do report.
+// The top score on each leaderboard sets the ceiling that normalizes it.
 function getBenchmarkMaxes(models) {
-  const lb = models.filter(m => hasScore(m, 'livebench')).map(m => m.livebench);
-  const aa = models.filter(m => hasScore(m, 'aaScore')).map(m => m.aaScore);
+  const lb = models.map(m => m.livebench);
+  const aa = models.map(m => m.aaScore);
   return {
     lbMax: lb.length > 0 ? Math.max(...lb) : 0,
     aaMax: aa.length > 0 ? Math.max(...aa) : 0,
   };
-}
-
-function isEstimatedFor(m, key) {
-  return m.estimated === key || m.estimated === 'both';
 }
 
 // The formula modal displays the weights actually used for the current dataset.
@@ -405,60 +360,13 @@ function computeAllMetrics(data, p) {
 
   const { lbMax, aaMax } = getBenchmarkMaxes(models);
 
-  // Missing scores stay null here so they cannot contaminate the fit or the weights.
-  const lbNorm = models.map(m => (hasScore(m, 'livebench') && lbMax > 0) ? m.livebench / lbMax : null);
-  const aaNorm = models.map(m => (hasScore(m, 'aaScore') && aaMax > 0) ? m.aaScore / aaMax : null);
+  const lbNorm = models.map(m => lbMax > 0 ? m.livebench / lbMax : 0);
+  const aaNorm = models.map(m => aaMax > 0 ? m.aaScore / aaMax : 0);
 
-  // Both the regression and the spread weights are derived only from models that
-  // report both benchmarks, so an estimate never feeds the numbers that produced it.
-  const completeLb = [];
-  const completeAa = [];
-  models.forEach((m, i) => {
-    if (lbNorm[i] !== null && aaNorm[i] !== null) {
-      completeLb.push(lbNorm[i]);
-      completeAa.push(aaNorm[i]);
-    }
-  });
-
-  // Regressing y on x is not the inverse of regressing x on y, so each direction
-  // needs its own fit.
-  const aaFromLb = fitLinear(completeLb, completeAa);
-  const lbFromAa = fitLinear(completeAa, completeLb);
-
-  perfWeights = equalContributionWeights(completeLb, completeAa);
+  perfWeights = equalContributionWeights(lbNorm, aaNorm);
 
   models.forEach((m, i) => {
-    let lb = lbNorm[i];
-    let aa = aaNorm[i];
-
-    // Keep what each leaderboard actually published, so display and the chat tools
-    // can tell a reported score from an inferred one.
-    m.livebenchReported = hasScore(m, 'livebench') ? m.livebench : null;
-    m.aaScoreReported = hasScore(m, 'aaScore') ? m.aaScore : null;
-    m.estimated = null;
-    m.estimateQuality = null;
-
-    if (lb === null && aa !== null) {
-      lb = predictNorm(lbFromAa, aa);
-      m.estimated = 'livebench';
-      m.estimateQuality = lbFromAa ? 'fit' : 'weak';
-      m.livebench = round2(lb * lbMax);
-    } else if (aa === null && lb !== null) {
-      aa = predictNorm(aaFromLb, lb);
-      m.estimated = 'aaScore';
-      m.estimateQuality = aaFromLb ? 'fit' : 'weak';
-      m.aaScore = Math.round(aa * aaMax);
-    } else if (lb === null && aa === null) {
-      // validateData rejects these, but a hand-edited FALLBACK_DATA must not render NaN.
-      lb = 0;
-      aa = 0;
-      m.estimated = 'both';
-      m.estimateQuality = 'weak';
-      m.livebench = 0;
-      m.aaScore = 0;
-    }
-
-    m.performance = (perfWeights.lb * lb + perfWeights.aa * aa) * 100;
+    m.performance = (perfWeights.lb * lbNorm[i] + perfWeights.aa * aaNorm[i]) * 100;
   });
 
   costAnchor = getMinBlended(models);
@@ -500,7 +408,6 @@ function getFilteredModels(allModels) {
     (state.sourceFilter === 'all' ||
      (state.sourceFilter === 'open' && m.open === true) ||
      (state.sourceFilter === 'closed' && m.open !== true)) &&
-    (state.dataFilter === 'all' || m.estimated === null) &&
     (state.search === '' ||
      m.model.toLowerCase().includes(state.search.toLowerCase()) ||
      m.provider.toLowerCase().includes(state.search.toLowerCase()))
@@ -622,27 +529,8 @@ function openBadgeHtml(m) {
   return m.open === true ? '<span class="open-badge" title="Open model">OPEN</span>' : '';
 }
 
-// Names which benchmark was inferred so an estimate is never mistaken for a
-// published score.
-function estBadgeHtml(m) {
-  if (!m.estimated) return '';
-  const title = m.estimated === 'both'
-    ? 'No published benchmark scores for this model'
-    : m.estimated === 'livebench'
-      ? 'LiveBench score is estimated from the Artificial Analysis score — this model is not on the LiveBench leaderboard'
-      : 'Artificial Analysis score is estimated from the LiveBench score — this model is not on the Artificial Analysis leaderboard';
-  return `<span class="est-badge" title="${escapeHtml(title)}">EST</span>`;
-}
-
-// Estimated scores read as a muted "~74.10" so the column stays sortable and
-// numerically comparable while still looking different from a reported score.
 function benchCellHtml(m, key) {
-  const text = key === 'livebench' ? m.livebench.toFixed(2) : String(m.aaScore);
-  if (!isEstimatedFor(m, key)) return text;
-  const title = m.estimated === 'both'
-    ? 'No published score'
-    : `Estimated from ${key === 'livebench' ? 'the Artificial Analysis score' : 'the LiveBench score'}`;
-  return `<span class="est-value" title="${escapeHtml(title)}">~${text}</span>`;
+  return key === 'livebench' ? m.livebench.toFixed(2) : String(m.aaScore);
 }
 
 // ===== CHARTS =====
@@ -995,7 +883,7 @@ function updateLeaderboard(filtered) {
   list.innerHTML = display.map((m, i) => `
     <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-name" title="${escapeHtml(m.model)} — ${escapeHtml(m.provider)}"><span class="leaderboard-model">${escapeHtml(m.model)}</span><span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}${estBadgeHtml(m)}</span>
+      <span class="leaderboard-name" title="${escapeHtml(m.model)} — ${escapeHtml(m.provider)}"><span class="leaderboard-model">${escapeHtml(m.model)}</span><span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
@@ -1228,7 +1116,7 @@ function updateTable(filtered) {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${escapeHtml(modelKey(m))}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
-        <td>${escapeHtml(m.model)}${openBadgeHtml(m)}${estBadgeHtml(m)}</td>
+        <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num">${fmtCachePrice(m.cachePrice)}</td>
@@ -1293,21 +1181,6 @@ function updateFormulaP() {
   if (lbEl) lbEl.textContent = perfWeights.lb.toFixed(3);
   if (aaEl) aaEl.textContent = perfWeights.aa.toFixed(3);
   if (anchorEl) anchorEl.textContent = costAnchor.toFixed(3);
-  updateFormulaEstNote();
-}
-
-// Only shown once the dataset actually contains a partial model, so the modal stays
-// short for the common case.
-function updateFormulaEstNote() {
-  const el = document.getElementById('formulaEstNote');
-  if (!el) return;
-  const n = computeAllMetrics(RAW_DATA, state.p).filter(m => m.estimated !== null).length;
-  el.classList.toggle('hide', n === 0);
-  if (n === 0) return;
-  el.textContent = `${n} model${n === 1 ? ' is' : 's are'} listed on only one leaderboard. ` +
-    'The missing score is estimated by least-squares regression on the models that ' +
-    'report both, and is marked EST in the table. The fit and the weights above use ' +
-    'only complete models.';
 }
 
 // ===== COMPARE VIEW =====
@@ -1368,7 +1241,7 @@ function updateCompareTable(models) {
   const header = models.map(m => `
     <th>
       <span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span>
-      <span class="compare-table-model">${escapeHtml(m.model)}${estBadgeHtml(m)}</span>
+      <span class="compare-table-model">${escapeHtml(m.model)}</span>
       <button class="compare-col-remove" data-key="${escapeHtml(modelKey(m))}" aria-label="Remove ${escapeHtml(m.model)} from comparison">×</button>
     </th>
   `).join('');
@@ -1376,15 +1249,14 @@ function updateCompareTable(models) {
   const rows = COMPARE_ROWS.map(row => {
     let bestVal = null;
     if (row.best) {
-      // An estimated score must not win the best-cell highlight, and a null price
-      // must not either — it would coerce to 0 and take the 'min' highlight.
-      const vals = models.filter(m => !isEstimatedFor(m, row.key)).map(m => m[row.key])
-        .filter(v => v != null);
+      // A null price must not win the highlight — it would coerce to 0 and take
+      // the 'min' cell.
+      const vals = models.map(m => m[row.key]).filter(v => v != null);
       bestVal = vals.length === 0 ? null : (row.best === 'min' ? Math.min(...vals) : Math.max(...vals));
     }
     const cells = models.map(m => {
       const v = m[row.key];
-      const isBest = bestVal !== null && v === bestVal && !isEstimatedFor(m, row.key);
+      const isBest = bestVal !== null && v === bestVal;
       const text = row.fmt ? row.fmt(v, m) : escapeHtml(String(v));
       return `<td class="${isBest ? 'best-cell' : ''}">${text}</td>`;
     }).join('');
@@ -1540,7 +1412,6 @@ function resetFilters() {
   state.priceMax = sliderMax;
   state.perfThreshold = 0;
   state.sourceFilter = 'all';
-  state.dataFilter = 'all';
   state.activeProviders = new Set(ALL_PROVIDERS);
 
   document.getElementById('pSlider').value = 0.07;
@@ -1555,10 +1426,6 @@ function resetFilters() {
 
   document.querySelectorAll('.source-seg').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.source === 'all');
-  });
-
-  document.querySelectorAll('.data-seg').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.completeness === 'all');
   });
 
   document.querySelectorAll('.provider-pill').forEach(pill => {
@@ -1587,13 +1454,6 @@ function setDashboardFilters(patch) {
     state.sourceFilter = patch.sourceFilter;
     document.querySelectorAll('.source-seg').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.source === state.sourceFilter);
-    });
-  }
-
-  if (patch.dataFilter) {
-    state.dataFilter = patch.dataFilter;
-    document.querySelectorAll('.data-seg').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.completeness === state.dataFilter);
     });
   }
 
@@ -1654,7 +1514,6 @@ function countActiveFilters() {
   if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
   if (state.perfThreshold > 0) n++;
   if (state.sourceFilter !== 'all') n++;
-  if (state.dataFilter !== 'all') n++;
   if (state.activeProviders.size !== ALL_PROVIDERS.length) n++;
   return n;
 }
@@ -1790,16 +1649,6 @@ function initEventListeners() {
     btn.addEventListener('click', () => {
       state.sourceFilter = btn.dataset.source;
       document.querySelectorAll('.source-seg').forEach(b => {
-        b.classList.toggle('active', b === btn);
-      });
-      updateAll();
-    });
-  });
-
-  document.querySelectorAll('.data-seg').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.dataFilter = btn.dataset.completeness;
-      document.querySelectorAll('.data-seg').forEach(b => {
         b.classList.toggle('active', b === btn);
       });
       updateAll();
@@ -2591,12 +2440,9 @@ function serializeModel(m, detail) {
     performance: round1(m.performance),
     value: round1(m.value),
   };
-  // Surface the estimate even in the short form: it changes how confidently the
-  // assistant should recommend the model.
-  if (m.estimated) base.estimatedBenchmark = m.estimated;
   if (detail !== 'full') return base;
 
-  const full = {
+  return {
     ...base,
     inputPrice: round2(m.inputPrice),
     outputPrice: round2(m.outputPrice),
@@ -2604,16 +2450,6 @@ function serializeModel(m, detail) {
     livebench: round2(m.livebench),
     aaScore: m.aaScore,
   };
-  if (m.estimated) {
-    full.livebenchReported = m.livebenchReported === null ? null : round2(m.livebenchReported);
-    full.aaScoreReported = m.aaScoreReported;
-    full.note = m.estimated === 'both'
-      ? 'Neither benchmark is published for this model; its scores are placeholders.'
-      : `This model is not listed on the ${m.estimated === 'livebench' ? 'LiveBench' : 'Artificial Analysis'} leaderboard. ` +
-        `Its ${m.estimated === 'livebench' ? 'LiveBench' : 'AA'} score above is estimated by regression from the ` +
-        `${m.estimated === 'livebench' ? 'Artificial Analysis' : 'LiveBench'} score, so its performance and value are approximate. Say so if you recommend it.`;
-  }
-  return full;
 }
 
 // Resolve names by exact, prefix, substring, then all-token matches. Keep only the
@@ -2664,7 +2500,6 @@ function buildDashboardContext() {
     totalModels: all.length,
     totalProviders: ALL_PROVIDERS.length,
     matchedModels: filtered.length,
-    estimatedModels: all.filter(m => m.estimated !== null).length,
     filtersActive: countActiveFilters() > 0,
     settings: {
       costSensitivityP: state.p,
@@ -2674,7 +2509,6 @@ function buildDashboardContext() {
       priceSliderMax: round2(sliderMax),
       minPerformance: state.perfThreshold,
       weightsFilter: state.sourceFilter,
-      benchmarkDataFilter: state.dataFilter,
       activeProviders: active,
       inactiveProviders: ALL_PROVIDERS.filter(p => !state.activeProviders.has(p)),
       tableSort: { column: state.sortColumn, direction: state.sortDirection },
@@ -2737,12 +2571,6 @@ function buildChatTools() {
               default: 'any',
               description: 'Filter by weight availability: "open" = open-weights models only, "closed" = proprietary only, "any" = both.'
             },
-            data_completeness: {
-              type: 'string',
-              enum: ['any', 'complete'],
-              default: 'any',
-              description: 'Use "complete" to return only models with both benchmark scores published, excluding any whose missing score was estimated. Use when the user asks for measured or confirmed numbers only.'
-            },
             max_blended_cost: {
               type: 'number',
               minimum: 0,
@@ -2783,7 +2611,7 @@ function buildChatTools() {
       type: 'function',
       function: {
         name: 'get_model_details',
-        description: 'Look up full details for one or more specific models by name: input price, output price, blended cost, LiveBench score, AA score, normalized performance, value score, whether the weights are open, and — for models listed on only one leaderboard — which benchmark score was estimated rather than published. Matching is exact-first, then prefix, then substring, across both model and provider names. If a name is ambiguous (e.g. "Opus" or "Claude") this tool does not guess — it returns the candidates so you can ask the user or re-query with a precise name. Read-only, and it ignores the user\'s dashboard filters, so it can find models currently filtered out of their view.',
+        description: 'Look up full details for one or more specific models by name: input price, output price, blended cost, LiveBench score, AA score, normalized performance, value score, and whether the weights are open. Matching is exact-first, then prefix, then substring, across both model and provider names. If a name is ambiguous (e.g. "Opus" or "Claude") this tool does not guess — it returns the candidates so you can ask the user or re-query with a precise name. Read-only, and it ignores the user\'s dashboard filters, so it can find models currently filtered out of their view.',
         parameters: {
           type: 'object',
           additionalProperties: false,
@@ -2804,7 +2632,7 @@ function buildChatTools() {
       type: 'function',
       function: {
         name: 'get_dashboard_context',
-        description: 'Read the user\'s current dashboard state: every active filter (cost-sensitivity P, search box, price range, minimum performance, open/closed weights filter, benchmark-data completeness filter, selected providers, table sort), how many models pass those filters out of the full dataset, and the four highlight cards shown on screen (best value, best performance, cheapest, most expensive). Call this before answering anything about "my dashboard", "my current view", or "what am I looking at", and whenever you need to explain why a model is missing from a result.',
+        description: 'Read the user\'s current dashboard state: every active filter (cost-sensitivity P, search box, price range, minimum performance, open/closed weights filter, selected providers, table sort), how many models pass those filters out of the full dataset, and the four highlight cards shown on screen (best value, best performance, cheapest, most expensive). Call this before answering anything about "my dashboard", "my current view", or "what am I looking at", and whenever you need to explain why a model is missing from a result.',
         parameters: {
           type: 'object',
           additionalProperties: false,
@@ -2837,14 +2665,14 @@ function buildChatTools() {
       type: 'function',
       function: {
         name: 'apply_dashboard_filters',
-        description: 'Change the user\'s dashboard filters for them — providers, price range, minimum performance, open/closed weights, benchmark-data completeness, search box, or cost-sensitivity P. This CHANGES what the user sees on screen, so only call it when the user asks to filter, narrow, widen, or reset their view ("show me only open models under $1", "reset the filters"). Do not call it just to answer a question — use query_models with scope="dataset" for that. Only the fields you provide are changed; everything else is left alone. Returns the resulting filter state and how many models now match.',
+        description: 'Change the user\'s dashboard filters for them — providers, price range, minimum performance, open/closed weights, search box, or cost-sensitivity P. This CHANGES what the user sees on screen, so only call it when the user asks to filter, narrow, widen, or reset their view ("show me only open models under $1", "reset the filters"). Do not call it just to answer a question — use query_models with scope="dataset" for that. Only the fields you provide are changed; everything else is left alone. Returns the resulting filter state and how many models now match.',
         parameters: {
           type: 'object',
           additionalProperties: false,
           properties: {
             reset: {
               type: 'boolean',
-              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, benchmark data=any, empty search, P=0.07) before applying any other field in this call.'
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07) before applying any other field in this call.'
             },
             providers: {
               type: 'array',
@@ -2855,11 +2683,6 @@ function buildChatTools() {
               type: 'string',
               enum: ['any', 'open', 'closed'],
               description: 'Set the Open/Closed segmented control.'
-            },
-            data_completeness: {
-              type: 'string',
-              enum: ['any', 'complete'],
-              description: 'Set the Benchmark Data segmented control. "complete" hides models whose missing benchmark score was estimated.'
             },
             price_min: {
               type: 'number',
@@ -2931,11 +2754,6 @@ function executeQueryModels(args) {
     const wantOpen = args.weights === 'open';
     rows = rows.filter(m => (m.open === true) === wantOpen);
     applied.weights = args.weights;
-  }
-
-  if (args.data_completeness === 'complete') {
-    rows = rows.filter(m => m.estimated === null);
-    applied.dataCompleteness = 'complete';
   }
 
   if (typeof args.max_blended_cost === 'number') {
@@ -3089,10 +2907,6 @@ function executeApplyDashboardFilters(args) {
     if (unknown.length > 0) patch.unknownProviders = unknown;
   }
 
-  if (args.data_completeness === 'any' || args.data_completeness === 'complete') {
-    patch.dataFilter = args.data_completeness === 'any' ? 'all' : 'complete';
-  }
-
   if (args.weights === 'any' || args.weights === 'open' || args.weights === 'closed') {
     patch.sourceFilter = args.weights === 'any' ? 'all' : args.weights;
   }
@@ -3163,8 +2977,6 @@ function buildSystemPrompt() {
 
 THE DATA
 The dashboard tracks ${RAW_DATA.length} models from ${ALL_PROVIDERS.length} providers (updated ${DATA_LAST_UPDATED}): prices, two benchmark scores, and whether a model's weights are open. It doesn't track anything else — context length, speed, release dates — so if asked about those, say the dashboard doesn't cover them rather than answering from memory.
-
-A few models are published on only one of the two leaderboards. For those, the missing benchmark is estimated by regression from the one that exists, and tools flag it with estimatedBenchmark. Treat those performance and value numbers as approximate and say so when you recommend such a model — don't present an estimate as a measured score.
 
 Get numbers from your tools rather than memory, since the data and the user's filters can change between turns. The user's filters hide models from their screen but not from your tools — when a model seems to be missing, that's usually why.
 

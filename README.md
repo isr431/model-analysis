@@ -9,7 +9,7 @@ Dashboard: [https://modelanalysis.xyz](https://modelanalysis.xyz)
 - **Value rankings** with a cost-sensitivity slider (**$P$**) — watch the order change as price matters more or less
 - **Charts** — a cost-vs-performance scatter with a Pareto frontier, and a radar chart for side-by-side comparison
 - **Sortable table** by value, performance, cost, LiveBench, or Artificial Analysis score
-- **Filters** — search, provider pills, price range, minimum performance, open vs. closed weights, and complete vs. estimated benchmarks
+- **Filters** — search, provider pills, price range, minimum performance, and open vs. closed weights
 - **AI assistant** that reads the live dashboard and can apply filters for you
 - **Dark and light themes**, following your system preference
 
@@ -51,7 +51,7 @@ node scripts/update-prices.mjs           # show the diff
 node scripts/update-prices.mjs --write   # apply it
 ```
 
-Set `cachePrice` or a benchmark to `null` when it isn't published; a model needs at least one of the two benchmark scores. [AGENTS.md](AGENTS.md) has the full workflow.
+Set `cachePrice` to `null` when it isn't published; every model needs both benchmark scores (`livebench` and `aaScore`). [AGENTS.md](AGENTS.md) has the full workflow.
 
 ## AI assistant
 
@@ -78,12 +78,6 @@ $$
 $$
 
 Normalizing by each benchmark's maximum pins both ceilings to 1 but leaves their *spreads* alone — and spread, not the ceiling, decides how much a benchmark moves the composite. Each weight therefore scales inversely to its benchmark's standard deviation, $w_{\text{LB}} = \sigma_{\text{AA}} / (\sigma_{\text{LB}} + \sigma_{\text{AA}})$, which comes out near 0.66/0.34 on current data. The weights are recomputed from the loaded dataset and shown in the score formula panel.
-
-### Partial benchmark coverage
-
-A model listed on only one leaderboard has its missing score estimated by least-squares regression against the score it does have, fitted on the models that report both ($r = 0.91$). Leave-one-out cross-validation puts that at about 1.3 mean Performance error, against 2.6–5.2 for scoring on the available benchmark alone.
-
-Both the regression and the spread weights are fitted on complete models only, so an estimate never feeds the numbers that produced it. Estimated models carry an `EST` badge and a muted `~72.93` cell, never win a "best" highlight, and can be hidden with the Benchmark Data filter.
 
 ### Value
 
