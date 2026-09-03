@@ -89,9 +89,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 0.66,
-      "outputPrice": 1.98,
-      "cachePrice": 0.022,
+      "inputPrice": 1.1154,
+      "outputPrice": 3.3462,
+      "cachePrice": 0.03718,
       "livebench": 77.44,
       "aaScore": 53,
       "open": true
@@ -101,7 +101,7 @@
       "model": "GLM 5.3",
       "inputPrice": 1.4,
       "outputPrice": 4.4,
-      "cachePrice": 0.26,
+      "cachePrice": 0.14,
       "livebench": 76.14,
       "aaScore": 60,
       "open": true
@@ -240,9 +240,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash Vision",
-      "inputPrice": 0.22,
-      "outputPrice": 0.66,
-      "cachePrice": 0.007,
+      "inputPrice": 0.44,
+      "outputPrice": 1.32,
+      "cachePrice": 0.014,
       "livebench": 76.76,
       "aaScore": 51,
       "open": true
@@ -275,6 +275,16 @@
       "cachePrice": 0.075,
       "livebench": 75.83,
       "aaScore": 59,
+      "open": false
+    },
+    {
+      "provider": "Meta",
+      "model": "Muse Spark 1.3",
+      "inputPrice": 1.25,
+      "outputPrice": 4.25,
+      "cachePrice": 0.15,
+      "livebench": 81.59,
+      "aaScore": 62,
       "open": false
     }
   ]
