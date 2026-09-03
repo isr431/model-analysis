@@ -59,8 +59,31 @@ function matchByName(target, entries) {
   return best ? best[1] : null;
 }
 
-// ===== FORMATTING =====
+// ===== PRICING =====
 const usd = v => (Number.isFinite(v) ? Number((v * PER_M).toFixed(6)) : null);
+
+// OpenRouter's top-level `pricing` is whatever is in effect at the moment of the call.
+// A model on a time-of-day schedule carries `overrides` keyed by utc_days/utc_start/
+// utc_end — and those bounds are minutes since UTC midnight, not HHMM — so the field
+// swings with the clock. Reading it straight made the daily job flip a model between
+// its peak and off-peak rate and commit the churn (DeepSeek V4 Flash Vision did this
+// on five consecutive runs). Take the peak across the base and every scheduled tier:
+// it is the undiscounted list price, and it is the same answer whatever time it runs.
+//
+// `min_prompt_tokens` overrides are a different mechanism — a long-context surcharge
+// above some prompt size, and the bulk of the overrides in the catalogue. Blended cost
+// models an ordinary agentic workload, not a 272k-token prompt, so they are ignored;
+// folding them in would quietly reprice most of the frontier models at their long-
+// context tier.
+const isScheduled = o => 'utc_days' in o || 'utc_start' in o || 'utc_end' in o;
+
+function listPrice(pricing, key) {
+  const tiers = [pricing[key], ...(pricing.overrides ?? []).filter(isScheduled).map(o => o[key])];
+  const vals = tiers.map(v => parseFloat(v)).filter(Number.isFinite);
+  return vals.length ? usd(Math.max(...vals)) : null;
+}
+
+// ===== FORMATTING =====
 const money = v => (v == null ? '—' : '$' + (v < 0.01 ? v.toFixed(4) : v.toFixed(2)));
 
 // FALLBACK_DATA is hand-aligned JS, not JSON. Integer prices carry a trailing .0
@@ -132,9 +155,9 @@ if (!syncOnly) {
 
     const p = api.pricing ?? {};
     const next = {
-      inputPrice: usd(parseFloat(p.prompt)),
-      outputPrice: usd(parseFloat(p.completion)),
-      cachePrice: usd(parseFloat(p.input_cache_read)),
+      inputPrice: listPrice(p, 'prompt'),
+      outputPrice: listPrice(p, 'completion'),
+      cachePrice: listPrice(p, 'input_cache_read'),
     };
     // A model with no input/output pricing is almost certainly a bad match; keep what we have.
     if (next.inputPrice == null || next.outputPrice == null) {
