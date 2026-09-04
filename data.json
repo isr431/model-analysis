@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-03",
+  "lastUpdated": "2026-09-04",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -260,8 +260,8 @@
     {
       "provider": "Alibaba",
       "model": "Qwen 3.8 27B",
-      "inputPrice": 0.425,
-      "outputPrice": 2.55,
+      "inputPrice": 0.42,
+      "outputPrice": 3,
       "cachePrice": 0.085,
       "livebench": 75.27,
       "aaScore": 52,

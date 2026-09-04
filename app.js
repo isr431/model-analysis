@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-09-03',
+  lastUpdated: '2026-09-04',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -38,7 +38,7 @@ const FALLBACK_DATA = {
     { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,   outputPrice: 0.47,   cachePrice: 0.016,   livebench: 76.19, aaScore: 56, open: true },
     { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,   outputPrice: 1.32,   cachePrice: 0.014,   livebench: 76.76, aaScore: 51, open: true },
     { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 0.25,    livebench: 83.41, aaScore: 66, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.425,  outputPrice: 2.55,   cachePrice: 0.085,   livebench: 75.27, aaScore: 52, open: true },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.42,   outputPrice: 3.0,    cachePrice: 0.085,   livebench: 75.27, aaScore: 52, open: true },
     { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   livebench: 75.83, aaScore: 59, open: false },
     { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    livebench: 81.59, aaScore: 62, open: false },
   ],
