@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-09-04',
+  lastUpdated: '2026-09-05',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -16,31 +16,32 @@ const FALLBACK_DATA = {
     'Thinking Machines': { color: '#78716c' },
   },
   models: [
-    { provider: 'OpenAI',            model: 'GPT-5.6 Sol',              inputPrice: 2.0,    outputPrice: 10.0,   cachePrice: 0.2,     livebench: 81.05, aaScore: 61, open: false },
-    { provider: 'OpenAI',            model: 'GPT-5.6 Terra',            inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,     livebench: 77.94, aaScore: 57, open: false },
-    { provider: 'OpenAI',            model: 'GPT-5.6 Luna',             inputPrice: 0.2,    outputPrice: 1.2,    cachePrice: 0.02,    livebench: 73.56, aaScore: 52, open: false },
-    { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.5,     livebench: 78.04, aaScore: 61, open: false },
-    { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,    outputPrice: 10.0,   cachePrice: 0.2,     livebench: 76.04, aaScore: 55, open: false },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 1.1154, outputPrice: 3.3462, cachePrice: 0.03718, livebench: 77.44, aaScore: 53, open: true },
-    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 1.4,    outputPrice: 4.4,    cachePrice: 0.14,    livebench: 76.14, aaScore: 60, open: true },
-    { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.075,  outputPrice: 0.25,   cachePrice: 0.015,   livebench: 71.59, aaScore: 57, open: true },
-    { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,    outputPrice: 1.2,    cachePrice: 0.06,    livebench: 67.26, aaScore: 45, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.065,  outputPrice: 0.18,   cachePrice: 0.016,   livebench: 74.17, aaScore: 52, open: true },
-    { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,     livebench: 76.95, aaScore: 48, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.25,    livebench: 78.46, aaScore: 58, open: true },
-    { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,     livebench: 82.97, aaScore: 62, open: false },
-    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 3.0,    outputPrice: 15.0,   cachePrice: 0.3,     livebench: 79.19, aaScore: 60, open: true },
-    { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    livebench: 77.95, aaScore: 57, open: false },
-    { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,    outputPrice: 4.05,   cachePrice: 0.17,    livebench: 71.92, aaScore: 42, open: true },
-    { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   livebench: 78.83, aaScore: 56, open: false },
-    { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,    outputPrice: 2.5,    cachePrice: 0.03,    livebench: 63.94, aaScore: 37, open: false },
-    { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,    outputPrice: 25.0,   cachePrice: 0.5,     livebench: 80.08, aaScore: 63, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,   outputPrice: 0.47,   cachePrice: 0.016,   livebench: 76.19, aaScore: 56, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,   outputPrice: 1.32,   cachePrice: 0.014,   livebench: 76.76, aaScore: 51, open: true },
-    { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 0.25,    livebench: 83.41, aaScore: 66, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.42,   outputPrice: 3.0,    cachePrice: 0.085,   livebench: 75.27, aaScore: 52, open: true },
-    { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   livebench: 75.83, aaScore: 59, open: false },
-    { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    livebench: 81.59, aaScore: 62, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Sol',              inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      livebench: 81.05, aaScore: 51, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Terra',            inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      livebench: 77.94, aaScore: 47, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Luna',             inputPrice: 0.2,     outputPrice: 1.2,     cachePrice: 0.02,     livebench: 73.56, aaScore: 43, open: false },
+    { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.5,      livebench: 78.04, aaScore: 51, open: false },
+    { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      livebench: 76.04, aaScore: 45, open: false },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 1.12068, outputPrice: 3.36204, cachePrice: 0.037356, livebench: 77.44, aaScore: 42, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 1.4,     outputPrice: 4.4,     cachePrice: 0.14,     livebench: 76.14, aaScore: 49, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.075,   outputPrice: 0.25,    cachePrice: 0.015,    livebench: 71.59, aaScore: 46, open: true },
+    { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,     outputPrice: 1.2,     cachePrice: 0.06,     livebench: 67.26, aaScore: 36, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.065,   outputPrice: 0.18,    cachePrice: 0.016,    livebench: 74.17, aaScore: 41, open: true },
+    { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      livebench: 76.95, aaScore: 37, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.25,     livebench: 78.46, aaScore: 47, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      livebench: 82.97, aaScore: 53, open: false },
+    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 3.0,     outputPrice: 15.0,    cachePrice: 0.3,      livebench: 79.19, aaScore: 50, open: true },
+    { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     livebench: 77.95, aaScore: 47, open: false },
+    { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,     outputPrice: 4.05,    cachePrice: 0.17,     livebench: 71.92, aaScore: 32, open: true },
+    { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    livebench: 78.83, aaScore: 45, open: false },
+    { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,     outputPrice: 2.5,     cachePrice: 0.03,     livebench: 63.94, aaScore: 28, open: false },
+    { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,     outputPrice: 25.0,    cachePrice: 0.5,      livebench: 80.08, aaScore: 54, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,    outputPrice: 0.47,    cachePrice: 0.016,    livebench: 76.19, aaScore: 46, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,    outputPrice: 1.32,    cachePrice: 0.014,    livebench: 76.76, aaScore: 42, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 0.25,     livebench: 83.41, aaScore: 57, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.42,    outputPrice: 3.0,     cachePrice: 0.085,    livebench: 75.27, aaScore: 42, open: true },
+    { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    livebench: 75.83, aaScore: 47, open: false },
+    { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     livebench: 81.59, aaScore: 53, open: false },
+    { provider: 'OpenAI',            model: 'GPT-6 Astra',              inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      livebench: 82.16, aaScore: 55, open: false },
   ],
 };
 
@@ -327,8 +328,8 @@ function stdDev(values) {
 }
 
 // Max-normalization aligns benchmark ceilings but not their spreads, and spread is what
-// decides how much a benchmark moves the composite: AA's spread runs ~1.9x LiveBench's,
-// so a nominal 50/50 split really lands nearer 34/66 in AA's favour. Inverse-spread
+// decides how much a benchmark moves the composite: AA's spread runs ~2.3x LiveBench's,
+// so a nominal 50/50 split really lands nearer 31/69 in AA's favour. Inverse-spread
 // weighting cancels that out, and deriving the weights from the loaded data keeps them
 // correct as models are added and the two spreads drift apart.
 function equalContributionWeights(lbNorm, aaNorm) {

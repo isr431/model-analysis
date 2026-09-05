@@ -77,7 +77,7 @@ $$
 \text{Performance} = \left( w_{\text{LB}} \cdot \frac{\text{LiveBench}}{\max(\text{LiveBench})} + w_{\text{AA}} \cdot \frac{\text{AA Score}}{\max(\text{AA Score})} \right) \times 100
 $$
 
-Normalizing by each benchmark's maximum pins both ceilings to 1 but leaves their *spreads* alone — and spread, not the ceiling, decides how much a benchmark moves the composite. Each weight therefore scales inversely to its benchmark's standard deviation, $w_{\text{LB}} = \sigma_{\text{AA}} / (\sigma_{\text{LB}} + \sigma_{\text{AA}})$, which comes out near 0.66/0.34 on current data. The weights are recomputed from the loaded dataset and shown in the score formula panel.
+Normalizing by each benchmark's maximum pins both ceilings to 1 but leaves their *spreads* alone — and spread, not the ceiling, decides how much a benchmark moves the composite. Each weight therefore scales inversely to its benchmark's standard deviation, $w_{\text{LB}} = \sigma_{\text{AA}} / (\sigma_{\text{LB}} + \sigma_{\text{AA}})$, which comes out near 0.69/0.31 on current data. The weights are recomputed from the loaded dataset and shown in the score formula panel.
 
 ### Value
 

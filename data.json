@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-04",
+  "lastUpdated": "2026-09-05",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -43,7 +43,7 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "livebench": 81.05,
-      "aaScore": 61,
+      "aaScore": 51,
       "open": false
     },
     {
@@ -53,7 +53,7 @@
       "outputPrice": 12,
       "cachePrice": 0.2,
       "livebench": 77.94,
-      "aaScore": 57,
+      "aaScore": 47,
       "open": false
     },
     {
@@ -63,7 +63,7 @@
       "outputPrice": 1.2,
       "cachePrice": 0.02,
       "livebench": 73.56,
-      "aaScore": 52,
+      "aaScore": 43,
       "open": false
     },
     {
@@ -73,7 +73,7 @@
       "outputPrice": 6,
       "cachePrice": 0.5,
       "livebench": 78.04,
-      "aaScore": 61,
+      "aaScore": 51,
       "open": false
     },
     {
@@ -83,17 +83,17 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "livebench": 76.04,
-      "aaScore": 55,
+      "aaScore": 45,
       "open": false
     },
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 1.1154,
-      "outputPrice": 3.3462,
-      "cachePrice": 0.03718,
+      "inputPrice": 1.12068,
+      "outputPrice": 3.36204,
+      "cachePrice": 0.037356,
       "livebench": 77.44,
-      "aaScore": 53,
+      "aaScore": 42,
       "open": true
     },
     {
@@ -103,7 +103,7 @@
       "outputPrice": 4.4,
       "cachePrice": 0.14,
       "livebench": 76.14,
-      "aaScore": 60,
+      "aaScore": 49,
       "open": true
     },
     {
@@ -113,7 +113,7 @@
       "outputPrice": 0.25,
       "cachePrice": 0.015,
       "livebench": 71.59,
-      "aaScore": 57,
+      "aaScore": 46,
       "open": true
     },
     {
@@ -123,7 +123,7 @@
       "outputPrice": 1.2,
       "cachePrice": 0.06,
       "livebench": 67.26,
-      "aaScore": 45,
+      "aaScore": 36,
       "open": true
     },
     {
@@ -133,7 +133,7 @@
       "outputPrice": 0.18,
       "cachePrice": 0.016,
       "livebench": 74.17,
-      "aaScore": 52,
+      "aaScore": 41,
       "open": true
     },
     {
@@ -143,7 +143,7 @@
       "outputPrice": 12,
       "cachePrice": 0.2,
       "livebench": 76.95,
-      "aaScore": 48,
+      "aaScore": 37,
       "open": false
     },
     {
@@ -153,7 +153,7 @@
       "outputPrice": 6,
       "cachePrice": 0.25,
       "livebench": 78.46,
-      "aaScore": 58,
+      "aaScore": 47,
       "open": true
     },
     {
@@ -163,7 +163,7 @@
       "outputPrice": 50,
       "cachePrice": 1,
       "livebench": 82.97,
-      "aaScore": 62,
+      "aaScore": 53,
       "open": false
     },
     {
@@ -173,7 +173,7 @@
       "outputPrice": 15,
       "cachePrice": 0.3,
       "livebench": 79.19,
-      "aaScore": 60,
+      "aaScore": 50,
       "open": true
     },
     {
@@ -183,7 +183,7 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "livebench": 77.95,
-      "aaScore": 57,
+      "aaScore": 47,
       "open": false
     },
     {
@@ -193,7 +193,7 @@
       "outputPrice": 4.05,
       "cachePrice": 0.17,
       "livebench": 71.92,
-      "aaScore": 42,
+      "aaScore": 32,
       "open": true
     },
     {
@@ -203,7 +203,7 @@
       "outputPrice": 3.75,
       "cachePrice": 0.075,
       "livebench": 78.83,
-      "aaScore": 56,
+      "aaScore": 45,
       "open": false
     },
     {
@@ -213,7 +213,7 @@
       "outputPrice": 2.5,
       "cachePrice": 0.03,
       "livebench": 63.94,
-      "aaScore": 37,
+      "aaScore": 28,
       "open": false
     },
     {
@@ -223,7 +223,7 @@
       "outputPrice": 25,
       "cachePrice": 0.5,
       "livebench": 80.08,
-      "aaScore": 63,
+      "aaScore": 54,
       "open": false
     },
     {
@@ -233,7 +233,7 @@
       "outputPrice": 0.47,
       "cachePrice": 0.016,
       "livebench": 76.19,
-      "aaScore": 56,
+      "aaScore": 46,
       "open": true,
       "openrouterId": "qwen/qwen3.8-flash"
     },
@@ -244,7 +244,7 @@
       "outputPrice": 1.32,
       "cachePrice": 0.014,
       "livebench": 76.76,
-      "aaScore": 51,
+      "aaScore": 42,
       "open": true
     },
     {
@@ -254,7 +254,7 @@
       "outputPrice": 50,
       "cachePrice": 0.25,
       "livebench": 83.41,
-      "aaScore": 66,
+      "aaScore": 57,
       "open": false
     },
     {
@@ -264,7 +264,7 @@
       "outputPrice": 3,
       "cachePrice": 0.085,
       "livebench": 75.27,
-      "aaScore": 52,
+      "aaScore": 42,
       "open": true
     },
     {
@@ -274,7 +274,7 @@
       "outputPrice": 3.75,
       "cachePrice": 0.075,
       "livebench": 75.83,
-      "aaScore": 59,
+      "aaScore": 47,
       "open": false
     },
     {
@@ -284,7 +284,17 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "livebench": 81.59,
-      "aaScore": 62,
+      "aaScore": 53,
+      "open": false
+    },
+    {
+      "provider": "OpenAI",
+      "model": "GPT-6 Astra",
+      "inputPrice": 10,
+      "outputPrice": 50,
+      "cachePrice": 1,
+      "livebench": 82.16,
+      "aaScore": 55,
       "open": false
     }
   ]
