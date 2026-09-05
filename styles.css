@@ -331,13 +331,6 @@ body {
 .filters-bar-reset { white-space: nowrap; height: 34px; }
 .filters-bar .search-input { height: 34px; }
 
-/* Keep the assumptions visible even when the filter controls are collapsed. */
-.workload-summary {
-  margin: 8px 2px 12px;
-  color: var(--text-secondary);
-  font-size: var(--font-xs);
-  line-height: 1.6;
-}
 #workloadGroup {
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);

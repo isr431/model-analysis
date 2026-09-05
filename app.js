@@ -1447,8 +1447,6 @@ function updateWorkloadControls() {
   document.getElementById('cacheHitRateVal').textContent = Math.round(state.cacheHitRate * 100) + '%';
   document.getElementById('contextRatio').value = state.contextRatio;
   document.getElementById('contextRatioVal').textContent = state.contextRatio + ':1';
-  document.getElementById('workloadSummary').textContent =
-    `Estimated $/1M combined tokens · ${state.contextRatio}:1 input/output · ${Math.round(state.cacheHitRate * 100)}% cache hits`;
 }
 
 // Round numeric patches to the controls' steps so state and slider thumbs cannot drift.
