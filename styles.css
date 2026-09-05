@@ -331,6 +331,22 @@ body {
 .filters-bar-reset { white-space: nowrap; height: 34px; }
 .filters-bar .search-input { height: 34px; }
 
+/* Keep the assumptions visible even when the filter controls are collapsed. */
+.workload-summary {
+  margin: 8px 2px 12px;
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  line-height: 1.6;
+}
+#workloadGroup {
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  padding: 12px 0;
+}
+#workloadGroup .control-hint { color: var(--text-secondary); }
+#workloadGroup label { height: auto; min-height: 20px; flex-wrap: wrap; }
+#workloadGroup label[for="contextRatio"] { margin-top: 8px; }
+
 /* ===== EXPANDABLE FILTER PANEL ===== */
 .filters-panel {
   margin-bottom: var(--spacing-lg);
@@ -1042,8 +1058,10 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 .formula-desc {
   font-size: var(--font-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
+.formula-desc + .formula-desc { margin-top: 8px; }
 
 /* Formula syntax highlighting */
 .syntax-keyword { color: #c678dd; font-weight: bold; }

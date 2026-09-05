@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260905-6e426e">
+  <link rel="stylesheet" href="styles.css?v=20260905-e5f485">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260905-6e426e" defer></script>
+  <script src="app.js?v=20260905-e5f485" defer></script>
 </head>
 <body>
   <main class="app">
@@ -100,6 +100,8 @@
       <button type="button" class="action-link filters-bar-reset" id="filtersBarReset">Reset</button>
     </div>
 
+    <p class="workload-summary" id="workloadSummary">Estimated $/1M combined tokens · 165:1 input/output · 90% cache hits</p>
+
     <!-- Expandable filter panel -->
     <div class="filters-panel glass" id="filtersPanel" hidden>
       <div class="controls-grid">
@@ -109,6 +111,18 @@
             <input type="range" id="pSlider" min="0" max="1" step="0.01" value="0.07" aria-label="Cost sensitivity">
           </div>
           <div class="control-hint">Lower = cost matters less · Higher = cost matters more</div>
+        </div>
+        <div class="control-group full-width" id="workloadGroup">
+          <label for="cacheHitRate">Cache hits: <span id="cacheHitRateVal" class="control-badge">90%</span></label>
+          <div class="control-input-wrap">
+            <input type="range" id="cacheHitRate" min="0" max="100" step="1" value="90" aria-describedby="cacheHint">
+          </div>
+          <div class="control-hint" id="cacheHint">Share of input read from cache. New context uses cache-write pricing where published. See “how scores work” for assumptions.</div>
+          <label for="contextRatio">Input per output token: <span id="contextRatioVal" class="control-badge">165:1</span></label>
+          <div class="control-input-wrap">
+            <input type="range" id="contextRatio" min="1" max="300" step="1" value="165" aria-describedby="ratioHint">
+          </div>
+          <div class="control-hint" id="ratioHint">Repeated context reads count as input; reasoning counts as output. These are workload assumptions, not measured cost per task.</div>
         </div>
         <div class="control-group full-width" id="priceRangeGroup">
           <label>Price Range: <span class="control-badge">$<span id="priceMinVal">0.00</span> — $<span id="priceMaxVal">3.00</span></span></label>
@@ -383,10 +397,10 @@
               <th data-sort="inputPrice" class="num">Input $/1M</th>
               <th data-sort="outputPrice" class="num">Output $/1M</th>
               <th data-sort="cachePrice" class="num" title="Input cache read price per 1M tokens">Cache $/1M</th>
-              <th data-sort="blended" class="num">Blended $/1M</th>
+              <th data-sort="blended" class="num" title="Estimated price per million combined tokens under the selected workload; includes cache creation where priced">Blended $/1M</th>
               <th data-sort="livebench" class="num">LiveBench</th>
               <th data-sort="aaScore" class="num">AA Score</th>
-              <th data-sort="performance" class="num">Performance</th>
+              <th data-sort="performance" class="num" title="Relative overall benchmark index, not a task success rate. Small differences may not be meaningful.">Performance</th>
               <th data-sort="value" class="num">Value</th>
               <th class="compare-col">Compare</th>
             </tr>
@@ -484,14 +498,16 @@
       <div class="pane-content modal-body">
         <div class="formula-item">
           <div class="formula-label">Blended Cost</div>
-          <code><span class="syntax-keyword">const</span> cacheRead = m.cachePrice ?? m.inputPrice;<br><span class="syntax-keyword">const</span> blendedCost = <span class="syntax-number">0.8946</span> * cacheRead + <span class="syntax-number">0.0994</span> * inputPrice + <span class="syntax-number">0.0060</span> * outputPrice;</code>
-          <div class="formula-desc">Weighted for an agentic coding workload: 165 context tokens read per output token, 90% of them served from the prompt cache. A model with no published cache price pays full input price to re-read context.</div>
+          <code>blendedCost = (R * (h * cacheRead + (1 - h) * cacheWrite) + outputPrice) / (R + 1);</code>
+          <div class="formula-desc">Current scenario: R = <span id="formulaRatio">165</span> input tokens per output token, h = <span id="formulaCacheHit">90%</span> cache hits. Output includes billable reasoning. New input is assumed to be written to the short-duration cache; cacheWrite is the full creation price, not an extra charge on top of input. Unknown write pricing uses regular input. Without cache-read pricing, all input uses regular input price.</div>
+          <div class="formula-desc">An estimate per million combined tokens, not per completed task. Adjust the workload in Filters. Gemini writes include input plus five-minute explicit-cache storage; implicit caching can avoid that storage charge. Actual usage, longer storage, long-context surcharges and tool fees can change the bill.</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Performance</div>
           <code><span class="syntax-keyword">const</span> performance = (wLive * (liveBench / maxLiveBench) + wAA * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
-          <div class="formula-desc">Each benchmark is normalized against its dataset maximum, then weighted by the inverse of its spread so both contribute equally (currently wLive <span id="formulaWLive">0.694</span>, wAA <span id="formulaWAa">0.306</span>)</div>
+          <div class="formula-desc">Weighting is calibrated to the 26-model snapshot of September 5, 2026. A one-standard-deviation improvement on either benchmark has equal influence. Current normalized weights: wLive <span id="formulaWLive">0.694</span>, wAA <span id="formulaWAa">0.306</span>. Adding models can rescale scores through new maxima, but cannot reverse existing performance rankings.</div>
         </div>
+        <div class="formula-desc">Performance is an overall benchmark index, not a coding success rate. Treat small differences as near-ties. Equal influence does not establish equal reliability.</div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
           <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost / minBlendedCost, P);</code>

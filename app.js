@@ -16,32 +16,32 @@ const FALLBACK_DATA = {
     'Thinking Machines': { color: '#78716c' },
   },
   models: [
-    { provider: 'OpenAI',            model: 'GPT-5.6 Sol',              inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      livebench: 81.05, aaScore: 51, open: false },
-    { provider: 'OpenAI',            model: 'GPT-5.6 Terra',            inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      livebench: 77.94, aaScore: 47, open: false },
-    { provider: 'OpenAI',            model: 'GPT-5.6 Luna',             inputPrice: 0.2,     outputPrice: 1.2,     cachePrice: 0.02,     livebench: 73.56, aaScore: 43, open: false },
-    { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.5,      livebench: 78.04, aaScore: 51, open: false },
-    { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      livebench: 76.04, aaScore: 45, open: false },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 1.12068, outputPrice: 3.36204, cachePrice: 0.037356, livebench: 77.44, aaScore: 42, open: true },
-    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 1.4,     outputPrice: 4.4,     cachePrice: 0.14,     livebench: 76.14, aaScore: 49, open: true },
-    { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.075,   outputPrice: 0.25,    cachePrice: 0.015,    livebench: 71.59, aaScore: 46, open: true },
-    { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,     outputPrice: 1.2,     cachePrice: 0.06,     livebench: 67.26, aaScore: 36, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.065,   outputPrice: 0.18,    cachePrice: 0.016,    livebench: 74.17, aaScore: 41, open: true },
-    { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      livebench: 76.95, aaScore: 37, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.25,     livebench: 78.46, aaScore: 47, open: true },
-    { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      livebench: 82.97, aaScore: 53, open: false },
-    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 3.0,     outputPrice: 15.0,    cachePrice: 0.3,      livebench: 79.19, aaScore: 50, open: true },
-    { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     livebench: 77.95, aaScore: 47, open: false },
-    { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,     outputPrice: 4.05,    cachePrice: 0.17,     livebench: 71.92, aaScore: 32, open: true },
-    { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    livebench: 78.83, aaScore: 45, open: false },
-    { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,     outputPrice: 2.5,     cachePrice: 0.03,     livebench: 63.94, aaScore: 28, open: false },
-    { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,     outputPrice: 25.0,    cachePrice: 0.5,      livebench: 80.08, aaScore: 54, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,    outputPrice: 0.47,    cachePrice: 0.016,    livebench: 76.19, aaScore: 46, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,    outputPrice: 1.32,    cachePrice: 0.014,    livebench: 76.76, aaScore: 42, open: true },
-    { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 0.25,     livebench: 83.41, aaScore: 57, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.42,    outputPrice: 3.0,     cachePrice: 0.085,    livebench: 75.27, aaScore: 42, open: true },
-    { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    livebench: 75.83, aaScore: 47, open: false },
-    { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     livebench: 81.59, aaScore: 53, open: false },
-    { provider: 'OpenAI',            model: 'GPT-6 Astra',              inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      livebench: 82.16, aaScore: 55, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Sol',              inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      cacheWritePrice: 2.5,      livebench: 81.05, aaScore: 51, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Terra',            inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      cacheWritePrice: 2.5,      livebench: 77.94, aaScore: 47, open: false },
+    { provider: 'OpenAI',            model: 'GPT-5.6 Luna',             inputPrice: 0.2,     outputPrice: 1.2,     cachePrice: 0.02,     cacheWritePrice: 0.25,     livebench: 73.56, aaScore: 43, open: false },
+    { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.5,      cacheWritePrice: null,     livebench: 78.04, aaScore: 51, open: false },
+    { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,     outputPrice: 10.0,    cachePrice: 0.2,      cacheWritePrice: 2.5,      livebench: 76.04, aaScore: 45, open: false },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 1.12068, outputPrice: 3.36204, cachePrice: 0.037356, cacheWritePrice: null,     livebench: 77.44, aaScore: 42, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 1.4,     outputPrice: 4.4,     cachePrice: 0.14,     cacheWritePrice: null,     livebench: 76.14, aaScore: 49, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.075,   outputPrice: 0.25,    cachePrice: 0.015,    cacheWritePrice: null,     livebench: 71.59, aaScore: 46, open: true },
+    { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,     outputPrice: 1.2,     cachePrice: 0.06,     cacheWritePrice: null,     livebench: 67.26, aaScore: 36, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.065,   outputPrice: 0.18,    cachePrice: 0.016,    cacheWritePrice: null,     livebench: 74.17, aaScore: 41, open: true },
+    { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,     outputPrice: 12.0,    cachePrice: 0.2,      cacheWritePrice: 2.375,    livebench: 76.95, aaScore: 37, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,     outputPrice: 6.0,     cachePrice: 0.25,     cacheWritePrice: 2.5,      livebench: 78.46, aaScore: 47, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      cacheWritePrice: 12.5,     livebench: 82.97, aaScore: 53, open: false },
+    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 3.0,     outputPrice: 15.0,    cachePrice: 0.3,      cacheWritePrice: null,     livebench: 79.19, aaScore: 50, open: true },
+    { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     cacheWritePrice: null,     livebench: 77.95, aaScore: 47, open: false },
+    { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,     outputPrice: 4.05,    cachePrice: 0.17,     cacheWritePrice: null,     livebench: 71.92, aaScore: 32, open: true },
+    { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    cacheWritePrice: 0.791667, livebench: 78.83, aaScore: 45, open: false },
+    { provider: 'Google',            model: 'Gemini 3.5 Flash-Lite',    inputPrice: 0.3,     outputPrice: 2.5,     cachePrice: 0.03,     cacheWritePrice: 0.383333, livebench: 63.94, aaScore: 28, open: false },
+    { provider: 'Anthropic',         model: 'Claude Opus 5',            inputPrice: 5.0,     outputPrice: 25.0,    cachePrice: 0.5,      cacheWritePrice: 6.25,     livebench: 80.08, aaScore: 54, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,    outputPrice: 0.47,    cachePrice: 0.016,    cacheWritePrice: 0.2,      livebench: 76.19, aaScore: 46, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.44,    outputPrice: 1.32,    cachePrice: 0.014,    cacheWritePrice: null,     livebench: 76.76, aaScore: 42, open: true },
+    { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 0.25,     cacheWritePrice: 12.5,     livebench: 83.41, aaScore: 57, open: false },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.42,    outputPrice: 3.0,     cachePrice: 0.085,    cacheWritePrice: null,     livebench: 75.27, aaScore: 42, open: true },
+    { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,    outputPrice: 3.75,    cachePrice: 0.075,    cacheWritePrice: 0.791667, livebench: 75.83, aaScore: 47, open: false },
+    { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,    outputPrice: 4.25,    cachePrice: 0.15,     cacheWritePrice: null,     livebench: 81.59, aaScore: 53, open: false },
+    { provider: 'OpenAI',            model: 'GPT-6 Astra',              inputPrice: 10.0,    outputPrice: 50.0,    cachePrice: 1.0,      cacheWritePrice: 12.5,     livebench: 82.16, aaScore: 55, open: false },
   ],
 };
 
@@ -106,12 +106,15 @@ function validateData(data) {
       if (!(field in model)) return false;
     }
     for (const field of numericFields) {
-      if (typeof model[field] !== 'number' || isNaN(model[field])) return false;
+      if (!Number.isFinite(model[field]) || model[field] < 0) return false;
+    }
+    for (const field of ['cachePrice', 'cacheWritePrice']) {
+      if (model[field] != null && (!Number.isFinite(model[field]) || model[field] < 0)) return false;
     }
     // Every model must report both benchmark scores; there is nothing to rank on
     // otherwise.
     for (const field of ['livebench', 'aaScore']) {
-      if (typeof model[field] !== 'number' || !isFinite(model[field])) return false;
+      if (!Number.isFinite(model[field]) || model[field] < 0) return false;
     }
   }
   return true;
@@ -144,10 +147,7 @@ function applyData(data) {
   }
 
   // Anchor radar cost efficiency to the full dataset so filtering cannot rescale it.
-  const blendedCosts = data.models.map(m => computeBlended(m));
-  const floorCosts = blendedCosts.map(c => Math.max(c, 0.01));
-  GLOBAL_LOG_MIN = Math.log10(Math.min(...floorCosts));
-  GLOBAL_LOG_MAX = Math.log10(Math.max(...floorCosts));
+  updateCostScale();
 
   const modelCountEl = document.getElementById('modelCountVal');
   const providerCountEl = document.getElementById('providerCountVal');
@@ -160,29 +160,25 @@ function applyData(data) {
 }
 
 function updateSliderBounds() {
-  const allModels = computeAllMetrics(RAW_DATA, 0);
-  const maxBlended = Math.max(...allModels.map(m => m.blended));
-  const sliderMax = Math.ceil(maxBlended);
-
+  const maxBlended = Math.max(0, ...RAW_DATA.map(computeBlended));
+  const sliderMax = Math.max(1, Math.ceil(maxBlended));
   const priceMinInput = document.getElementById('priceMin');
   const priceMaxInput = document.getElementById('priceMax');
-
   const oldMax = parseFloat(priceMaxInput.max) || DEFAULT_PRICE_MAX;
 
-  // Most of the roster clusters under $0.5 on the cache-aware scale, so a fixed
-  // 0.1 step would make the cheap end of the slider unusable.
-  const step = sliderMax <= 5 ? 0.01 : 0.1;
-  priceMinInput.max = sliderMax;
-  priceMaxInput.max = sliderMax;
-  priceMinInput.step = step;
-  priceMaxInput.step = step;
-
-  if (state.priceMax >= oldMax || state.priceMax >= sliderMax) {
-    state.priceMax = sliderMax;
-    priceMaxInput.value = sliderMax;
-    document.getElementById('priceMaxVal').textContent = sliderMax.toFixed(2);
+  // Keep cent precision even when a cold-cache workload expands the range.
+  // Preserve a chosen dollar cap; an unrestricted range follows the new ceiling.
+  const unrestricted = state.priceMax >= oldMax;
+  state.priceMax = unrestricted ? sliderMax : Math.min(state.priceMax, sliderMax);
+  state.priceMin = Math.min(state.priceMin, state.priceMax);
+  for (const input of [priceMinInput, priceMaxInput]) {
+    input.max = sliderMax;
+    input.step = 0.01;
   }
-
+  priceMinInput.value = state.priceMin;
+  priceMaxInput.value = state.priceMax;
+  document.getElementById('priceMinVal').textContent = state.priceMin.toFixed(2);
+  document.getElementById('priceMaxVal').textContent = state.priceMax.toFixed(2);
   updatePriceRangeSliderHighlight();
 }
 
@@ -242,6 +238,8 @@ const DEFAULT_PRICE_MAX = 3;
 
 const state = {
   p: 0.07,
+  cacheHitRate: 0.90,
+  contextRatio: 165,
   search: '',
   priceMin: 0,
   priceMax: DEFAULT_PRICE_MAX,
@@ -287,31 +285,37 @@ function cmpNumericNullLast(va, vb, asc) {
 }
 
 // ===== COMPUTATION =====
-// This dashboard scores models for agentic coding, where the cost driver is context
-// re-read on every turn, not code generated. Dosu measured 198 context tokens read
-// per output token for Claude Code and 134:1 for Codex across 112 real agent
-// sessions; 165:1 sits between them. Nearly all of that context is served from the
-// prompt cache — a well-cached session runs ~90% hits, and cache reads bill at
-// roughly a tenth of the input rate — so charging it at the full input price, as a
-// plain input/output blend does, overstates cost several-fold and hides real
-// differences between models whose cache discounts differ.
-const CONTEXT_TO_OUTPUT = 165; // Context tokens read per output token generated.
-const CACHE_HIT_RATE = 0.90;   // Share of those context tokens served from cache.
+// A standardized coding workload, not a measured cost per completed task.
+// The 165:1 default is informed by Dosu's two-agent study; 90% cache hits is
+// an adjustable assumption. Output includes billable reasoning tokens.
+const CONTEXT_TO_OUTPUT = 165;
+const CACHE_HIT_RATE = 0.90;
 
-// Normalized so the weights sum to 1 and Blended Cost stays readable as dollars per
-// 1M tokens of a representative agentic workload.
-const TOKEN_MIX = (() => {
-  const cache = CONTEXT_TO_OUTPUT * CACHE_HIT_RATE;
-  const input = CONTEXT_TO_OUTPUT * (1 - CACHE_HIT_RATE);
-  const total = cache + input + 1;
-  return { cache: cache / total, input: input / total, output: 1 / total };
-})();
+// Raw-score spreads from the 26-model data.json snapshot on 2026-09-05.
+// Freeze calibration independently of the display roster: adding/removing a
+// model must not change the tradeoff between the two benchmarks. Recalibrate
+// deliberately when benchmark methodology changes, and document the new baseline.
+const PERFORMANCE_CALIBRATION = Object.freeze({
+  reference: '2026-09-05 (26 models)',
+  lbSd: 4.510893907658862,
+  aaSd: 6.997581999959261,
+});
 
 function computeBlended(m) {
-  // No published cache price means no caching discount to have: every re-read of
-  // the context bills at the full input rate.
+  const ratio = state.contextRatio;
+  const hitRate = m.cachePrice == null ? 0 : state.cacheHitRate;
   const cacheRead = m.cachePrice ?? m.inputPrice;
-  return TOKEN_MIX.cache * cacheRead + TOKEN_MIX.input * m.inputPrice + TOKEN_MIX.output * m.outputPrice;
+  // Assume new context is written to the short-duration cache when caching is
+  // supported. The stored field is a full write rate, so do not add inputPrice.
+  // Unknown write pricing falls back to regular input, not free writes.
+  const cacheWrite = m.cachePrice == null ? m.inputPrice : (m.cacheWritePrice ?? m.inputPrice);
+  return (ratio * (hitRate * cacheRead + (1 - hitRate) * cacheWrite) + m.outputPrice) / (ratio + 1);
+}
+
+function updateCostScale() {
+  const costs = RAW_DATA.map(m => Math.max(computeBlended(m), 0.01));
+  GLOBAL_LOG_MIN = costs.length ? Math.log10(Math.min(...costs)) : 0;
+  GLOBAL_LOG_MAX = costs.length ? Math.log10(Math.max(...costs)) : 0;
 }
 
 // Smallest positive blended cost in the dataset, or 1 when nothing costs anything, so the
@@ -321,22 +325,13 @@ function getMinBlended(models) {
   return positive.length > 0 ? Math.min(...positive) : 1;
 }
 
-function stdDev(values) {
-  if (values.length < 2) return 0;
-  const mean = values.reduce((a, b) => a + b, 0) / values.length;
-  return Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / (values.length - 1));
-}
-
-// Max-normalization aligns benchmark ceilings but not their spreads, and spread is what
-// decides how much a benchmark moves the composite: AA's spread runs ~2.3x LiveBench's,
-// so a nominal 50/50 split really lands nearer 31/69 in AA's favour. Inverse-spread
-// weighting cancels that out, and deriving the weights from the loaded data keeps them
-// correct as models are added and the two spreads drift apart.
-function equalContributionWeights(lbNorm, aaNorm) {
-  const lbSd = stdDev(lbNorm);
-  const aaSd = stdDev(aaNorm);
-  if (!(lbSd > 0) || !(aaSd > 0)) return { lb: 0.5, aa: 0.5 };
-  return { lb: aaSd / (lbSd + aaSd), aa: lbSd / (lbSd + aaSd) };
+// Express the frozen raw-score coefficients as weights of max-normalized
+// scores. New maxima can rescale every score equally, preserving pairwise ranks.
+function equalContributionWeights(lbMax, aaMax) {
+  const lb = lbMax / PERFORMANCE_CALIBRATION.lbSd;
+  const aa = aaMax / PERFORMANCE_CALIBRATION.aaSd;
+  const total = lb + aa;
+  return total > 0 ? { lb: lb / total, aa: aa / total } : { lb: 0.5, aa: 0.5 };
 }
 
 // The top score on each leaderboard sets the ceiling that normalizes it.
@@ -366,7 +361,7 @@ function computeAllMetrics(data, p) {
   const lbNorm = models.map(m => lbMax > 0 ? m.livebench / lbMax : 0);
   const aaNorm = models.map(m => aaMax > 0 ? m.aaScore / aaMax : 0);
 
-  perfWeights = equalContributionWeights(lbNorm, aaNorm);
+  perfWeights = equalContributionWeights(lbMax, aaMax);
 
   models.forEach((m, i) => {
     m.performance = (perfWeights.lb * lbNorm[i] + perfWeights.aa * aaNorm[i]) * 100;
@@ -1122,7 +1117,7 @@ function updateTable(filtered) {
         <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
-        <td class="num">${fmtCachePrice(m.cachePrice)}</td>
+        <td class="num" title="Cache write: ${fmtCachePrice(m.cacheWritePrice)} /1M; unknown write rates use regular input in the estimate">${fmtCachePrice(m.cachePrice)}</td>
         <td class="num">${fmtBlended(m.blended)}</td>
         <td class="num">${benchCellHtml(m, 'livebench')}</td>
         <td class="num">${benchCellHtml(m, 'aaScore')}</td>
@@ -1184,6 +1179,8 @@ function updateFormulaP() {
   if (lbEl) lbEl.textContent = perfWeights.lb.toFixed(3);
   if (aaEl) aaEl.textContent = perfWeights.aa.toFixed(3);
   if (anchorEl) anchorEl.textContent = costAnchor.toFixed(3);
+  document.getElementById('formulaRatio').textContent = state.contextRatio;
+  document.getElementById('formulaCacheHit').textContent = Math.round(state.cacheHitRate * 100) + '%';
 }
 
 // ===== COMPARE VIEW =====
@@ -1191,7 +1188,8 @@ const COMPARE_ROWS = [
   { label: 'Provider', key: 'provider' },
   { label: 'Input $/1M', key: 'inputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
   { label: 'Output $/1M', key: 'outputPrice', fmt: v => '$' + v.toFixed(2), best: 'min' },
-  { label: 'Cache $/1M', key: 'cachePrice', fmt: fmtCachePrice, best: 'min' },
+  { label: 'Cache read $/1M', key: 'cachePrice', fmt: fmtCachePrice, best: 'min' },
+  { label: 'Cache write $/1M', key: 'cacheWritePrice', fmt: fmtCachePrice, best: 'min' },
   { label: 'Blended $/1M', key: 'blended', fmt: fmtBlended, best: 'min' },
   { label: 'LiveBench', key: 'livebench', fmt: (v, m) => benchCellHtml(m, 'livebench'), best: 'max' },
   { label: 'AA Score', key: 'aaScore', fmt: (v, m) => benchCellHtml(m, 'aaScore'), best: 'max' },
@@ -1372,6 +1370,7 @@ function updateAll() {
   updateRadarChart(filtered);
   updateTable(filtered);
   updateFormulaP();
+  updateWorkloadControls();
   updateFilterSummary();
   updateCompareTab();
 }
@@ -1405,9 +1404,11 @@ function updatePriceRangeSliderHighlight() {
 }
 
 function resetFilters() {
+  state.cacheHitRate = CACHE_HIT_RATE;
+  state.contextRatio = CONTEXT_TO_OUTPUT;
   const allModels = computeAllMetrics(RAW_DATA, 0);
   const maxBlended = Math.max(...allModels.map(m => m.blended));
-  const sliderMax = Math.ceil(maxBlended);
+  const sliderMax = Math.max(1, Math.ceil(maxBlended));
 
   state.p = 0.07;
   state.search = '';
@@ -1435,13 +1436,32 @@ function resetFilters() {
     setPillState(pill, pill.dataset.provider, true);
   });
 
-  updatePriceRangeSliderHighlight();
+  updateWorkloadControls();
+  updateSliderBounds();
+  updateCostScale();
   updateAll();
+}
+
+function updateWorkloadControls() {
+  document.getElementById('cacheHitRate').value = Math.round(state.cacheHitRate * 100);
+  document.getElementById('cacheHitRateVal').textContent = Math.round(state.cacheHitRate * 100) + '%';
+  document.getElementById('contextRatio').value = state.contextRatio;
+  document.getElementById('contextRatioVal').textContent = state.contextRatio + ':1';
+  document.getElementById('workloadSummary').textContent =
+    `Estimated $/1M combined tokens · ${state.contextRatio}:1 input/output · ${Math.round(state.cacheHitRate * 100)}% cache hits`;
 }
 
 // Round numeric patches to the controls' steps so state and slider thumbs cannot drift.
 function setDashboardFilters(patch) {
   if (patch.reset) resetFilters();
+
+  if (Number.isFinite(patch.cacheHitRate) || Number.isFinite(patch.contextRatio)) {
+    if (Number.isFinite(patch.cacheHitRate)) state.cacheHitRate = Math.round(Math.max(0, Math.min(1, patch.cacheHitRate)) * 100) / 100;
+    if (Number.isFinite(patch.contextRatio)) state.contextRatio = Math.round(Math.max(1, Math.min(300, patch.contextRatio)));
+    updateWorkloadControls();
+    updateCostScale();
+    updateSliderBounds();
+  }
 
   const priceMaxEl = document.getElementById('priceMax');
   const sliderMax = (priceMaxEl && parseFloat(priceMaxEl.max)) || state.priceMax;
@@ -1463,8 +1483,8 @@ function setDashboardFilters(patch) {
   if (typeof patch.priceMin === 'number' || typeof patch.priceMax === 'number') {
     let lo = typeof patch.priceMin === 'number' ? patch.priceMin : state.priceMin;
     let hi = typeof patch.priceMax === 'number' ? patch.priceMax : state.priceMax;
-    lo = Math.round(Math.min(Math.max(lo, 0), sliderMax) * 10) / 10;
-    hi = Math.round(Math.min(Math.max(hi, 0), sliderMax) * 10) / 10;
+    lo = Math.round(Math.min(Math.max(lo, 0), sliderMax) * 100) / 100;
+    hi = Math.round(Math.min(Math.max(hi, 0), sliderMax) * 100) / 100;
     if (lo > hi) { const t = lo; lo = hi; hi = t; }
 
     state.priceMin = lo;
@@ -1512,6 +1532,7 @@ function countActiveFilters() {
   let n = 0;
   if (state.search.trim() !== '') n++;
   if (state.p !== 0.07) n++;
+  if (state.cacheHitRate !== CACHE_HIT_RATE || state.contextRatio !== CONTEXT_TO_OUTPUT) n++;
   const priceMaxEl = document.getElementById('priceMax');
   const sliderMax = priceMaxEl ? (parseFloat(priceMaxEl.max) || 12) : 12;
   if (state.priceMin > 0 || state.priceMax < sliderMax) n++;
@@ -1610,6 +1631,12 @@ function initProviderPills() {
 
 // ===== EVENT LISTENERS =====
 function initEventListeners() {
+  document.getElementById('cacheHitRate').addEventListener('input', e => {
+    setDashboardFilters({ cacheHitRate: Number(e.target.value) / 100 });
+  });
+  document.getElementById('contextRatio').addEventListener('input', e => {
+    setDashboardFilters({ contextRatio: Number(e.target.value) });
+  });
   document.getElementById('pSlider').addEventListener('input', e => {
     state.p = parseFloat(e.target.value);
     document.getElementById('pValue').textContent = state.p.toFixed(2);
@@ -2450,6 +2477,7 @@ function serializeModel(m, detail) {
     inputPrice: round2(m.inputPrice),
     outputPrice: round2(m.outputPrice),
     cachePrice: m.cachePrice == null ? null : round4(m.cachePrice),
+    cacheWritePrice: m.cacheWritePrice == null ? null : round4(m.cacheWritePrice),
     livebench: round2(m.livebench),
     aaScore: m.aaScore,
   };
@@ -2506,6 +2534,10 @@ function buildDashboardContext() {
     filtersActive: countActiveFilters() > 0,
     settings: {
       costSensitivityP: state.p,
+      cacheHitRate: state.cacheHitRate,
+      contextToOutput: state.contextRatio,
+      costAssumptions: 'USD per 1M combined tokens; output includes reasoning. New input uses the short-duration cache-write rate when published, otherwise regular input. No cache-read rate means all input uses regular input price. Not cost per task.',
+      performanceCalibration: PERFORMANCE_CALIBRATION.reference,
       searchQuery: state.search,
       priceMin: round2(state.priceMin),
       priceMax: round2(state.priceMax),
@@ -2668,14 +2700,14 @@ function buildChatTools() {
       type: 'function',
       function: {
         name: 'apply_dashboard_filters',
-        description: 'Change the user\'s dashboard filters for them — providers, price range, minimum performance, open/closed weights, search box, or cost-sensitivity P. This CHANGES what the user sees on screen, so only call it when the user asks to filter, narrow, widen, or reset their view ("show me only open models under $1", "reset the filters"). Do not call it just to answer a question — use query_models with scope="dataset" for that. Only the fields you provide are changed; everything else is left alone. Returns the resulting filter state and how many models now match.',
+        description: 'Change the user\'s dashboard filters for them — providers, price range, minimum performance, open/closed weights, search box, cost-sensitivity P, or workload assumptions. This CHANGES what the user sees on screen, so only call it when the user asks to filter, narrow, widen, or reset their view ("show me only open models under $1", "reset the filters"). Do not call it just to answer a question — use query_models with scope="dataset" for that. Only the fields you provide are changed; everything else is left alone. Returns the resulting filter state and how many models now match.',
         parameters: {
           type: 'object',
           additionalProperties: false,
           properties: {
             reset: {
               type: 'boolean',
-              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07) before applying any other field in this call.'
+              description: 'When true, restore every filter to its default (all providers, full price range, no performance floor, weights=any, empty search, P=0.07, cache_hit_rate=0.9, context_to_output=165) before applying any other field in this call.'
             },
             providers: {
               type: 'array',
@@ -2706,6 +2738,14 @@ function buildChatTools() {
             search: {
               type: 'string',
               description: 'Text for the dashboard search box; matches model or provider name. Pass an empty string to clear it.'
+            },
+            cache_hit_rate: {
+              type: 'number', minimum: 0, maximum: 1,
+              description: 'Assumed fraction of input tokens read from cache (0-1, default 0.9). Changes blended costs and value scores. Zero means no hits, with cache creation still charged where published.'
+            },
+            context_to_output: {
+              type: 'integer', minimum: 1, maximum: 300,
+              description: 'Input tokens per billable output token, including reasoning (1-300, default 165). Changes blended costs and value scores.'
             },
             cost_sensitivity: {
               type: 'number',
@@ -2918,6 +2958,8 @@ function executeApplyDashboardFilters(args) {
   if (typeof args.min_performance === 'number') patch.perfThreshold = args.min_performance;
   if (typeof args.search === 'string') patch.search = args.search;
   if (typeof args.cost_sensitivity === 'number') patch.p = args.cost_sensitivity;
+  if (Number.isFinite(args.cache_hit_rate)) patch.cacheHitRate = args.cache_hit_rate;
+  if (Number.isFinite(args.context_to_output)) patch.contextRatio = args.context_to_output;
 
   const keys = Object.keys(patch).filter(k => k !== 'unknownProviders');
   if (keys.length === 0) {
@@ -2985,7 +3027,7 @@ Get numbers from your tools rather than memory, since the data and the user's fi
 
 HOW TO ANSWER
 - Answer the actual question first, conversationally. Use a number or two to back up your point, not as the point — you're a guide, not a spreadsheet. One clear recommendation beats an exhaustive rundown.
-- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost weights input price heavily over output price; performance blends the two benchmarks, each scaled so the best model in the dataset sets the bar and weighted so neither benchmark dominates; value = performance / (cost / cheapest model's cost)^P, so the cheapest model in the dataset sets the bar for cost the same way the best scorer sets it for performance.)
+- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost estimates dollars per million combined input/output tokens for the selected workload: ${state.contextRatio} input tokens per output token and ${Math.round(state.cacheHitRate * 100)}% cache hits. It includes short-duration cache creation where priced, assumes new context is written to cache, and includes reasoning in output. Unknown cache-write pricing falls back to regular input; without a cache-read price all input pays regular input. This is not a measured cost per task. Performance combines general benchmark scores using fixed spread calibration from 2026-09-05, with maxima setting a relative 0–100 scale. Equal spread influence does not establish unbiased coding ability or task success probability; value = performance / (cost / cheapest model's cost)^P, so the cheapest model in the dataset sets the bar for cost the same way the best scorer sets it for performance.)
 - Near-identical scores are a tie. Don't crown a winner over a decimal point — point to what genuinely separates the models, like price or open weights.
 - If a name could mean several models (like "Opus"), just ask which one they meant.
 
@@ -2996,6 +3038,10 @@ Two of your tools change the user's screen: one opens the Compare tab, one edits
 async function streamResponse(userPrompt) {
   const logs = document.getElementById('chatLogs');
   if (!logs) return;
+
+  // Clear replaces the history array. Keep this request attached to its original
+  // conversation so a late abort cannot restore text into a cleared/new chat.
+  const history = CHAT_STATE.messages;
 
   let currentMessageDiv = null;
   let currentBubbleDiv = null;
@@ -3015,7 +3061,7 @@ async function streamResponse(userPrompt) {
   while (true) {
     const messagesToSend = [
       { role: 'system', content: systemPrompt },
-      ...CHAT_STATE.messages
+      ...history
     ];
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -3188,7 +3234,7 @@ async function streamResponse(userPrompt) {
         addToolStatusMessage(`Running tool: ${tc.name}...`);
       });
 
-      CHAT_STATE.messages.push({
+      history.push({
         role: 'assistant',
         content: contentText || null,
         tool_calls: activeToolCalls.map(tc => ({
@@ -3203,7 +3249,7 @@ async function streamResponse(userPrompt) {
 
       for (const tc of activeToolCalls) {
         const result = await executeTool(tc.name, tc.arguments);
-        CHAT_STATE.messages.push({
+        history.push({
           role: 'tool',
           tool_call_id: tc.id,
           name: tc.name,
@@ -3220,7 +3266,7 @@ async function streamResponse(userPrompt) {
         if (!currentMessageDiv) createAssistantMessageNodes();
         currentBubbleDiv.textContent = 'No response generated.';
       } else if (contentText.trim().length > 0) {
-        CHAT_STATE.messages.push({ role: 'assistant', content: contentText });
+        history.push({ role: 'assistant', content: contentText });
       }
       break;
     }
@@ -3229,12 +3275,13 @@ async function streamResponse(userPrompt) {
     // A stopped reply is already rendered on screen, so keep it in history too —
     // otherwise the model has no record of what the user can plainly see it said.
     if (err && err.name === 'AbortError' && partialContent.trim().length > 0) {
-      CHAT_STATE.messages.push({ role: 'assistant', content: partialContent });
+      history.push({ role: 'assistant', content: partialContent });
     }
     throw err;
   } finally {
     if (CHAT_STATE.abortController === controller) CHAT_STATE.abortController = null;
-    setChatLoading(false);
+    // A cleared conversation may already have started a newer request.
+    if (!CHAT_STATE.abortController) setChatLoading(false);
   }
 }
 

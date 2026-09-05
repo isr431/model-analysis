@@ -42,6 +42,7 @@
       "inputPrice": 2,
       "outputPrice": 10,
       "cachePrice": 0.2,
+      "cacheWritePrice": 2.5,
       "livebench": 81.05,
       "aaScore": 51,
       "open": false
@@ -52,6 +53,7 @@
       "inputPrice": 2,
       "outputPrice": 12,
       "cachePrice": 0.2,
+      "cacheWritePrice": 2.5,
       "livebench": 77.94,
       "aaScore": 47,
       "open": false
@@ -62,6 +64,7 @@
       "inputPrice": 0.2,
       "outputPrice": 1.2,
       "cachePrice": 0.02,
+      "cacheWritePrice": 0.25,
       "livebench": 73.56,
       "aaScore": 43,
       "open": false
@@ -72,6 +75,7 @@
       "inputPrice": 2,
       "outputPrice": 6,
       "cachePrice": 0.5,
+      "cacheWritePrice": null,
       "livebench": 78.04,
       "aaScore": 51,
       "open": false
@@ -82,6 +86,7 @@
       "inputPrice": 2,
       "outputPrice": 10,
       "cachePrice": 0.2,
+      "cacheWritePrice": 2.5,
       "livebench": 76.04,
       "aaScore": 45,
       "open": false
@@ -92,6 +97,7 @@
       "inputPrice": 1.12068,
       "outputPrice": 3.36204,
       "cachePrice": 0.037356,
+      "cacheWritePrice": null,
       "livebench": 77.44,
       "aaScore": 42,
       "open": true
@@ -102,6 +108,7 @@
       "inputPrice": 1.4,
       "outputPrice": 4.4,
       "cachePrice": 0.14,
+      "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 49,
       "open": true
@@ -112,6 +119,7 @@
       "inputPrice": 0.075,
       "outputPrice": 0.25,
       "cachePrice": 0.015,
+      "cacheWritePrice": null,
       "livebench": 71.59,
       "aaScore": 46,
       "open": true
@@ -122,6 +130,7 @@
       "inputPrice": 0.3,
       "outputPrice": 1.2,
       "cachePrice": 0.06,
+      "cacheWritePrice": null,
       "livebench": 67.26,
       "aaScore": 36,
       "open": true
@@ -132,6 +141,7 @@
       "inputPrice": 0.065,
       "outputPrice": 0.18,
       "cachePrice": 0.016,
+      "cacheWritePrice": null,
       "livebench": 74.17,
       "aaScore": 41,
       "open": true
@@ -142,6 +152,7 @@
       "inputPrice": 2,
       "outputPrice": 12,
       "cachePrice": 0.2,
+      "cacheWritePrice": 2.375,
       "livebench": 76.95,
       "aaScore": 37,
       "open": false
@@ -152,6 +163,7 @@
       "inputPrice": 2,
       "outputPrice": 6,
       "cachePrice": 0.25,
+      "cacheWritePrice": 2.5,
       "livebench": 78.46,
       "aaScore": 47,
       "open": true
@@ -162,6 +174,7 @@
       "inputPrice": 10,
       "outputPrice": 50,
       "cachePrice": 1,
+      "cacheWritePrice": 12.5,
       "livebench": 82.97,
       "aaScore": 53,
       "open": false
@@ -172,6 +185,7 @@
       "inputPrice": 3,
       "outputPrice": 15,
       "cachePrice": 0.3,
+      "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 50,
       "open": true
@@ -182,6 +196,7 @@
       "inputPrice": 1.25,
       "outputPrice": 4.25,
       "cachePrice": 0.15,
+      "cacheWritePrice": null,
       "livebench": 77.95,
       "aaScore": 47,
       "open": false
@@ -192,6 +207,7 @@
       "inputPrice": 1,
       "outputPrice": 4.05,
       "cachePrice": 0.17,
+      "cacheWritePrice": null,
       "livebench": 71.92,
       "aaScore": 32,
       "open": true
@@ -202,6 +218,7 @@
       "inputPrice": 0.75,
       "outputPrice": 3.75,
       "cachePrice": 0.075,
+      "cacheWritePrice": 0.791667,
       "livebench": 78.83,
       "aaScore": 45,
       "open": false
@@ -212,6 +229,7 @@
       "inputPrice": 0.3,
       "outputPrice": 2.5,
       "cachePrice": 0.03,
+      "cacheWritePrice": 0.383333,
       "livebench": 63.94,
       "aaScore": 28,
       "open": false
@@ -222,6 +240,7 @@
       "inputPrice": 5,
       "outputPrice": 25,
       "cachePrice": 0.5,
+      "cacheWritePrice": 6.25,
       "livebench": 80.08,
       "aaScore": 54,
       "open": false
@@ -232,6 +251,7 @@
       "inputPrice": 0.15,
       "outputPrice": 0.47,
       "cachePrice": 0.016,
+      "cacheWritePrice": 0.2,
       "livebench": 76.19,
       "aaScore": 46,
       "open": true,
@@ -243,6 +263,7 @@
       "inputPrice": 0.44,
       "outputPrice": 1.32,
       "cachePrice": 0.014,
+      "cacheWritePrice": null,
       "livebench": 76.76,
       "aaScore": 42,
       "open": true
@@ -253,6 +274,7 @@
       "inputPrice": 10,
       "outputPrice": 50,
       "cachePrice": 0.25,
+      "cacheWritePrice": 12.5,
       "livebench": 83.41,
       "aaScore": 57,
       "open": false
@@ -263,6 +285,7 @@
       "inputPrice": 0.42,
       "outputPrice": 3,
       "cachePrice": 0.085,
+      "cacheWritePrice": null,
       "livebench": 75.27,
       "aaScore": 42,
       "open": true
@@ -273,6 +296,7 @@
       "inputPrice": 0.75,
       "outputPrice": 3.75,
       "cachePrice": 0.075,
+      "cacheWritePrice": 0.791667,
       "livebench": 75.83,
       "aaScore": 47,
       "open": false
@@ -283,6 +307,7 @@
       "inputPrice": 1.25,
       "outputPrice": 4.25,
       "cachePrice": 0.15,
+      "cacheWritePrice": null,
       "livebench": 81.59,
       "aaScore": 53,
       "open": false
@@ -293,6 +318,7 @@
       "inputPrice": 10,
       "outputPrice": 50,
       "cachePrice": 1,
+      "cacheWritePrice": 12.5,
       "livebench": 82.16,
       "aaScore": 55,
       "open": false

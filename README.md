@@ -38,13 +38,14 @@ Models live in `data.json`. A stored entry looks like:
   "inputPrice": 0.037,
   "outputPrice": 0.17,
   "cachePrice": 0.0037,
+  "cacheWritePrice": null,
   "livebench": 46.09,
   "aaScore": 24,
   "open": true
 }
 ```
 
-Prices come from the [OpenRouter models API](https://openrouter.ai/api/v1/models); benchmark scores are hand-curated. So when adding a model, leave the three price fields out and let the sync script fill them in. It also updates the two other places the data is mirrored:
+Prices come from the [OpenRouter models API](https://openrouter.ai/api/v1/models); benchmark scores are hand-curated. So when adding a model, leave the four price fields out and let the sync script fill them in. It also updates the two other places the data is mirrored:
 
 ```bash
 node scripts/update-prices.mjs           # show the diff
@@ -63,21 +64,38 @@ Open the chat panel, click **Settings**, and enter your OpenRouter API key. The 
 
 ### Blended cost
 
+The dashboard compares prices under a shared, adjustable workload:
+
 $$
-\text{Blended Cost} = (0.8946 \times \text{Cache Price}) + (0.0994 \times \text{Input Price}) + (0.0060 \times \text{Output Price})
+\text{Blended Cost} = \frac{R \left(h \times \text{Cache Read Price} + (1-h) \times \text{Cache Write Price}\right) + \text{Output Price}}{R+1}
 $$
 
-Weighted for **agentic coding**, where an agent re-sends its whole conversation every turn, so the tokens it reads dwarf the tokens it writes and nearly all of them hit the prompt cache. [Dosu](https://dosu.dev/blog/agent-budgets-pay-for-context-not-code) measured 198 context tokens read per output token for Claude Code and 134:1 for Codex across 112 sessions; these weights use 165:1 at a 90% cache-hit rate, with [cache reads billing at roughly a tenth of the input rate](https://code.claude.com/docs/en/prompt-caching).
+- **R** is input tokens per billable output token, including reasoning. Default: **165:1**.
+- **h** is the fraction of input tokens served from cache. Default: **90%**.
+- New context is assumed to be written to the short-duration cache. The write rate is the full price, not a surcharge added to input. Missing write pricing falls back to regular input pricing. A model without published cache-read pricing uses regular input pricing for all input.
+- A 0% hit rate models no cache hits, with cache creation still charged where published; it does not switch caching off.
 
-A model with no published cache price pays full input price for re-reads rather than being treated as free.
+Both controls live in Filters, count together as one changed workload group, and reset with Reset Filters. Costs, value scores, price bounds, charts and assistant tools all use the selected workload.
+
+The result is **estimated dollars per million combined tokens**, including repeated context reads, not measured cost per task. It includes the published short-duration write charge (for Gemini explicit caching, input plus five-minute storage), but excludes longer storage, long-context surcharges and tool fees. Gemini implicit caching can avoid that storage charge. Compare shows published read and write rates separately; an em dash means unavailable, not free.
+
+The input/output default is informed by [Dosu's study](https://dosu.dev/blog/agent-budgets-pay-for-context-not-code): 112 sessions across two agent/model combinations on one repository, with input/output ratios of 198:1 and 134:1. The 90% hit rate is a scenario assumption, not a universal measured average. Vary these settings to see how dependent a comparison is on caching and token usage. Cache creation accounting follows the [OpenRouter pricing catalogue](https://openrouter.ai/api/v1/models) and [cache documentation](https://openrouter.ai/docs/guides/best-practices/prompt-caching).
 
 ### Performance
 
+The relative benchmark index uses fixed raw-score spread calibration:
+
 $$
-\text{Performance} = \left( w_{\text{LB}} \cdot \frac{\text{LiveBench}}{\max(\text{LiveBench})} + w_{\text{AA}} \cdot \frac{\text{AA Score}}{\max(\text{AA Score})} \right) \times 100
+\text{Performance} = 100 \times \frac{\text{LiveBench}/s_{LB} + \text{AA Score}/s_{AA}}{\max(\text{LiveBench})/s_{LB} + \max(\text{AA Score})/s_{AA}}
 $$
 
-Normalizing by each benchmark's maximum pins both ceilings to 1 but leaves their *spreads* alone — and spread, not the ceiling, decides how much a benchmark moves the composite. Each weight therefore scales inversely to its benchmark's standard deviation, $w_{\text{LB}} = \sigma_{\text{AA}} / (\sigma_{\text{LB}} + \sigma_{\text{AA}})$, which comes out near 0.69/0.31 on current data. The weights are recomputed from the loaded dataset and shown in the score formula panel.
+The reference is the **26-model repository snapshot of September 5, 2026**, with sample standard deviations `sLB = 4.510893907658862` and `sAA = 6.997581999959261`. These constants live in `PERFORMANCE_CALIBRATION` in `app.js`. This is a dashboard calibration baseline, not a claimed benchmark release identifier.
+
+A one-reference-standard-deviation improvement on either benchmark contributes equally. On the initial roster this exactly preserves the previous inverse-spread scores. Adding or removing models no longer refits the tradeoff between benchmarks. New maxima can rescale all scores equally to keep the 0–100 ceiling, but cannot reverse existing performance rankings. Filters do not alter calibration or maxima.
+
+The modal expresses this same formula using max-normalized weights: `wLB = (lbMax/sLB) / (lbMax/sLB + aaMax/sAA)`, with the corresponding AA weight. Recalibrate deliberately when benchmark methodologies change; record the reference population and new spreads here and in the modal. Do not recalibrate on every roster edit.
+
+This is an **overall benchmark index**, not a coding task success rate. Equal spread influence does not establish equal reliability or independence. Treat small score differences as near-ties. Benchmark values remain curated; their release and reasoning configuration should be verified together before updating them.
 
 ### Value
 

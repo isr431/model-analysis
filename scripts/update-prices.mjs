@@ -29,10 +29,10 @@ const STYLES_PATH = new URL('styles.css', ROOT);
 const INDEX_PATH = new URL('index.html', ROOT);
 
 const PER_M = 1e6; // The API prices per token; data.json stores per 1M tokens.
-const PRICE_KEYS = ['inputPrice', 'outputPrice', 'cachePrice'];
+const PRICE_KEYS = ['inputPrice', 'outputPrice', 'cachePrice', 'cacheWritePrice'];
 // data.json key order is load-bearing: init() compares JSON.stringify(data.models)
 // against FALLBACK_DATA.models, so a field in a different slot reads as a change.
-const KEY_ORDER = ['provider', 'model', 'inputPrice', 'outputPrice', 'cachePrice',
+const KEY_ORDER = ['provider', 'model', 'inputPrice', 'outputPrice', 'cachePrice', 'cacheWritePrice',
   'livebench', 'aaScore', 'open'];
 // Script-only hints. They never reach FALLBACK_DATA, and app.js strips them on load.
 const LOCAL_KEYS = ['openrouterId', 'priceLock'];
@@ -83,6 +83,20 @@ function listPrice(pricing, key) {
   return vals.length ? usd(Math.max(...vals)) : null;
 }
 
+// Store one consistent unit: the full price per 1M tokens written to a cache.
+// Gemini's catalogue field is only the additional five-minute storage charge;
+// its explicit write also bills input. Other providers publish the full rate.
+// https://openrouter.ai/docs/guides/best-practices/prompt-caching#google-gemini
+function fullCacheWritePrice(pricing, modelId) {
+  const writePrice = listPrice(pricing, 'input_cache_write');
+  if (writePrice == null) return null;
+  if (modelId.startsWith('google/gemini-')) {
+    const inputPrice = listPrice(pricing, 'prompt');
+    return inputPrice == null ? null : Number((inputPrice + writePrice).toFixed(6));
+  }
+  return writePrice;
+}
+
 // ===== FORMATTING =====
 const money = v => (v == null ? '—' : '$' + (v < 0.01 ? v.toFixed(4) : v.toFixed(2)));
 
@@ -99,6 +113,7 @@ function renderFallbackModels(models) {
     inputPrice: `inputPrice: ${price(m.inputPrice)},`,
     outputPrice: `outputPrice: ${price(m.outputPrice)},`,
     cachePrice: `cachePrice: ${price(m.cachePrice)},`,
+    cacheWritePrice: `cacheWritePrice: ${price(m.cacheWritePrice)},`,
     livebench: `livebench: ${bench(m.livebench)},`,
     aaScore: `aaScore: ${bench(m.aaScore)},`,
     open: `open: ${m.open === true},`,
@@ -130,6 +145,7 @@ const modelNames = block => [...block.matchAll(/model: '((?:[^'\\]|\\.)*)'/g)].m
 const data = JSON.parse(await readFile(DATA_PATH, 'utf8'));
 for (const m of data.models) {
   if (!('cachePrice' in m)) m.cachePrice = null; // Uniform schema; null = no cache pricing published.
+  if (!('cacheWritePrice' in m)) m.cacheWritePrice = null;
 }
 
 // ===== JOB 1: PRICES =====
@@ -158,6 +174,8 @@ if (!syncOnly) {
       inputPrice: listPrice(p, 'prompt'),
       outputPrice: listPrice(p, 'completion'),
       cachePrice: listPrice(p, 'input_cache_read'),
+      // Full cache-creation rate, not a surcharge. Use the default short TTL.
+      cacheWritePrice: fullCacheWritePrice(p, api.id),
     };
     // A model with no input/output pricing is almost certainly a bad match; keep what we have.
     if (next.inputPrice == null || next.outputPrice == null) {
