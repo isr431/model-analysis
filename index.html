@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="description" content="Interactive dashboard for comparing LLM pricing, benchmark scores, and cost-performance trade-offs.">
 
   <!-- Open Graph / Facebook -->
@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260906-486e01">
+  <link rel="stylesheet" href="styles.css?v=20260906-0ab460">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260906-486e01" defer></script>
+  <script src="app.js?v=20260906-0ab460" defer></script>
 </head>
 <body>
   <main class="app">
@@ -85,7 +85,7 @@
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search models or providers...">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search models…" aria-label="Search models or providers" enterkeyhint="search" autocomplete="off">
       </div>
       <button type="button" class="filters-toggle" id="filtersToggle" aria-expanded="false" aria-controls="filtersPanel">
         <svg class="filters-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -155,12 +155,15 @@
           </div>
           <div class="pill-container" id="providerPills"></div>
         </div>
+        <div class="mobile-only filter-panel-footer full-width">
+          <button type="button" class="reset-btn" id="filtersDone">Show models</button>
+        </div>
       </div>
     </div>
 
     <!-- Primary tab navigation -->
-    <nav class="tab-nav" id="tabNav">
-      <button class="tab-btn active" data-tab="overview">
+    <nav class="tab-nav" id="tabNav" aria-label="Primary">
+      <button class="tab-btn active" data-tab="overview" aria-current="page">
         <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="9" y1="3" x2="9" y2="21"></line>
@@ -212,7 +215,7 @@
               <span class="window-dot yellow"></span>
               <span class="window-dot green"></span>
             </span>
-            best_value
+            <span class="desktop-label">best_value</span><span class="mobile-only">best value</span>
           </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Best Value</div>
@@ -227,7 +230,7 @@
               <span class="window-dot yellow"></span>
               <span class="window-dot green"></span>
             </span>
-            best_performance
+            <span class="desktop-label">best_performance</span><span class="mobile-only">top score</span>
           </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Best Performance</div>
@@ -242,7 +245,7 @@
               <span class="window-dot yellow"></span>
               <span class="window-dot green"></span>
             </span>
-            cheapest
+            <span class="desktop-label">cheapest</span><span class="mobile-only">lowest cost</span>
           </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Cheapest</div>
@@ -257,7 +260,7 @@
               <span class="window-dot yellow"></span>
               <span class="window-dot green"></span>
             </span>
-            most_expensive
+            <span class="desktop-label">most_expensive</span><span class="mobile-only">highest cost</span>
           </div>
           <div class="pane-content">
             <div class="card-label skeleton-element pulse">Most Expensive</div>
@@ -313,6 +316,7 @@
 
     <!-- Charts -->
     <section class="tab-content" id="tab-charts">
+      <div class="empty-state glass hide" id="chartsEmptyState"><p>No models match your filters</p><button class="reset-btn" onclick="resetFilters()">Reset Filters</button></div>
       <div class="charts-grid">
         <div class="chart-container glass" id="scatterContainer">
           <div class="pane-header">
@@ -337,7 +341,7 @@
               <span class="window-dot green"></span>
             </span>
             model_rankings_bar
-            <select id="barMetricSelect" class="metric-select">
+            <select id="barMetricSelect" class="metric-select" aria-label="Ranking metric">
               <option value="value" selected>Value Score</option>
               <option value="performance">Performance</option>
               <option value="blended">Blended Cost</option>
@@ -386,7 +390,9 @@
           </span>
           model_comparison_dataset
         </div>
-        <div class="table-wrapper">
+        <p class="mobile-only table-scroll-hint">Swipe for metrics · Tap + to compare</p>
+        <div class="empty-state hide" id="tableEmptyState"><p>No models match your filters</p><button class="reset-btn" onclick="resetFilters()">Reset Filters</button></div>
+        <div class="table-wrapper" tabindex="0" role="region" aria-label="Model metrics, horizontally scrollable">
         <table id="modelTable">
           <thead>
             <tr>
@@ -426,7 +432,8 @@
             <button class="reset-btn" id="compareEmptyBrowse">Browse the table</button>
           </div>
           <div id="compareContent" class="hide">
-            <div class="compare-table-wrap" id="compareTableWrap"></div>
+            <p class="mobile-only table-scroll-hint">Swipe to see each selected model</p>
+            <div class="compare-table-wrap" id="compareTableWrap" tabindex="0" role="region" aria-label="Selected model comparison, horizontally scrollable"></div>
             <div class="chart-canvas-wrap">
               <canvas id="compareRadarChart"></canvas>
             </div>
@@ -444,7 +451,7 @@
 
   <!-- Mobile tab navigation -->
   <nav class="bottom-nav glass" id="bottomNav" aria-label="Primary">
-    <button type="button" class="tab-btn active" data-tab="overview">
+    <button type="button" class="tab-btn active" data-tab="overview" aria-current="page">
       <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
         <line x1="9" y1="3" x2="9" y2="21"></line>
@@ -524,7 +531,7 @@
   </button>
 
   <!-- Resizable chat drawer -->
-  <div id="chatDrawer" class="chat-drawer glass hide" aria-hidden="true" inert>
+  <div id="chatDrawer" class="chat-drawer glass hide" role="dialog" aria-label="AI Assistant" aria-hidden="true" inert>
     <!-- Resize handles -->
     <div class="chat-resizer chat-resizer-t" id="chatResizerT"></div>
     <div class="chat-resizer chat-resizer-l" id="chatResizerL"></div>
@@ -569,8 +576,8 @@
         <h3>Chat Assistant Settings</h3>
         
         <div class="settings-group">
-          <label class="settings-label">OpenRouter API Key</label>
-          <input type="password" id="chatApiKeyInput" class="chat-key-input" placeholder="sk-or-v1-...">
+          <label class="settings-label" for="chatApiKeyInput">OpenRouter API Key</label>
+          <input type="password" id="chatApiKeyInput" class="chat-key-input" placeholder="sk-or-v1-..." autocomplete="off" autocapitalize="none" spellcheck="false">
           <div class="api-key-actions">
             <button id="saveApiKeyBtn" class="chat-btn primary-btn">Save Key</button>
             <button id="clearApiKeyBtn" class="chat-btn secondary-btn hide">Clear Key</button>
@@ -611,7 +618,7 @@
 
     <!-- Message input -->
     <div class="chat-footer">
-      <textarea id="chatInput" class="chat-input" placeholder="Type a message..." rows="1"></textarea>
+      <textarea id="chatInput" class="chat-input" placeholder="Type a message..." aria-label="Message to AI Assistant" rows="1"></textarea>
       <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
         <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="19" x2="12" y2="5"></line>

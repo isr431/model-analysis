@@ -1467,6 +1467,24 @@ input[type="range"]::-moz-range-thumb:hover {
 .leaderboard-row.skeleton-row { pointer-events: none; }
 
 
+/* Shared layout and keyboard affordances. */
+.mobile-only { display: none; }
+.chart-container, .summary-card, .compare-container, .pane-content { min-width: 0; }
+.window-controls, .window-dot { flex-shrink: 0; }
+button, input, select, textarea { touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--slider-thumb); outline-offset: 3px; }
+.table-model-cell { display: flex; align-items: center; gap: 8px; }
+.table-model-name { min-width: 0; }
+.table-scroll-hint { color: var(--text-secondary); font-size: 11px; padding: 10px 12px; }
+.modal .pane-header, .chat-header, .chat-footer { flex-shrink: 0; }
+.modal-body, .chat-logs { min-height: 0; overscroll-behavior-y: contain; }
+.formula-item code { overflow-wrap: anywhere; }
+body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
+.chat-api-key-view { overflow-y: auto; overscroll-behavior-y: contain; }
+.api-key-container { margin-block: auto; flex-shrink: 0; }
+.chat-api-key-view { align-items: flex-start; }
+.chat-input { min-width: 0; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .charts-grid { grid-template-columns: 1fr; }
@@ -1476,24 +1494,91 @@ input[type="range"]::-moz-range-thumb:hover {
 @media (max-width: 640px) {
   .app {
     padding: var(--spacing-md);
-    padding-top: var(--spacing-lg);
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
     /* Reserve space for the fixed bottom navigation. */
-    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+    padding-bottom: calc(136px + env(safe-area-inset-bottom));
   }
   /* Only the title sits level with the absolute theme toggle and must clear it;
      the subtitle and chips below it get the full width. */
-  .header h1 { padding: 0 48px; font-size: 1.35rem; }
-  .header-meta { gap: 5px; }
+  .header h1 { padding: 0 48px 0 0; font-size: clamp(17px, 4.9vw, 24px); text-align: left; }
+  .header { margin-bottom: 20px; }
+  .header .subtitle { text-align: left; margin-top: 8px; }
+  .header-meta { gap: 6px; justify-content: flex-start; }
   .header-meta .meta-chip { padding: 4px 8px; }
-  .app-header-controls { top: 16px; right: 16px; }
-  .theme-toggle-btn { width: 40px; height: 40px; }
+  .app-header-controls { top: max(16px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
+  .theme-toggle-btn { width: 44px; height: 44px; }
   .theme-toggle-btn svg { width: 18px; height: 18px; }
   .controls-grid { padding: var(--spacing-sm) var(--spacing-md); grid-template-columns: 1fr; }
-  .summary-cards { grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
-  .card-stat { font-size: var(--font-base); }
+  .summary-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .card-stat { font-size: 18px; }
   /* The pane header already names each summary card. */
   .summary-card .card-label { display: none; }
   .compare-tray-actions { margin-left: 0; width: 100%; }
+
+  .mobile-only { display: block; }
+  .desktop-label { display: none; }
+  .header-meta .meta-chip-action { min-height: 44px; }
+  .filters-bar { top: env(safe-area-inset-top); padding: 6px; gap: 6px; background: var(--table-sticky-bg); }
+  .filters-bar-title, .filters-bar .window-controls,
+  .filters-toggle-icon, .filters-toggle-arrow,
+  .filters-bar .filters-reset-idle { display: none; }
+  .filters-toggle { padding: 6px 10px; }
+  .filters-bar-search { max-width: none; }
+  .filters-bar .search-input { padding-left: 30px; }
+  .filters-bar .search-icon { left: 9px; width: 15px; }
+  .filter-panel-footer { grid-column: 1 / -1; }
+  .filter-panel-footer .reset-btn { width: 100%; min-height: 44px; }
+  .control-input-wrap, .dual-slider { min-height: 44px; }
+  .control-hint { font-size: 12px; }
+  .source-toggle { display: flex; }
+  .source-seg { flex: 1; }
+  .summary-card .pane-header { padding: 0 8px; gap: 6px; height: 32px; font-size: 10px; }
+  .summary-card .window-controls { gap: 3px; }
+  .summary-card .window-dot { width: 5px; height: 5px; }
+  .summary-card .pane-content { padding: 10px; flex: 1; gap: 8px; }
+  .card-model { white-space: normal; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }
+  .summary-card .card-stat { margin-top: auto; }
+  .pane-header { min-height: 44px; height: auto; padding: 10px 12px; font-size: 11px; overflow-wrap: anywhere; }
+  .pane-content { padding: 12px; }
+  .overview-leaderboard > .pane-content { padding: 4px; }
+  .leaderboard-expand { min-height: 44px; }
+  .leaderboard-name { flex-wrap: wrap; gap: 2px 6px; }
+  .leaderboard-model { flex-basis: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .leaderboard-provider { white-space: normal; }
+  .chart-container .pane-header:has(.metric-select) { flex-wrap: wrap; }
+  .pane-header .metric-select { width: 100%; margin-left: 0; }
+  .chart-container .pane-content { padding: 12px 6px; }
+  .table-model-cell { align-items: flex-start; gap: 4px; }
+  .table-model-name { flex: 1; }
+  .table-model-provider { color: var(--text-secondary); font-size: 10px; margin-top: 4px; }
+  #modelTable .compare-col { display: none; }
+  #modelTable td:nth-child(2) { padding: 10px 6px; }
+  #modelTable th { height: 44px; }
+  #modelTable .compare-toggle { width: 44px; height: 44px; flex-shrink: 0; }
+  .compare-tray { gap: 8px; padding: 10px; }
+  .compare-tray-label { display: none; }
+  .compare-tray-chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; }
+  .compare-chip { flex-shrink: 0; padding: 0 4px 0 8px; }
+  .compare-tray-actions { gap: 8px; }
+  .action-link { color: var(--text-secondary); }
+  .compare-tray-actions button:first-child { flex: 1; }
+  .compare-container > .pane-content { padding: 0; }
+  .compare-table { table-layout: fixed; width: max-content; min-width: 100%; white-space: normal; }
+  .compare-table th, .compare-table td { width: 156px; padding: 10px 8px; overflow-wrap: anywhere; }
+  .compare-table th:first-child { width: 104px; font-size: 10px; }
+  .compare-table-model { display: block; margin: 6px 0 0; }
+  .compare-table .provider-badge { max-width: 100%; }
+  .compare-table-wrap { overscroll-behavior-x: contain; }
+  .modal-overlay { padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
+  .modal { max-height: 100%; }
+  .modal .pane-header { padding: 4px 8px; }
+  #formulaModalTitle { min-width: 0; overflow-wrap: anywhere; }
+  .modal-close { flex-shrink: 0; }
+  .formula-desc, .formula-item code { font-size: 12px; }
+  .footer { overflow-wrap: anywhere; margin-top: 24px; }
+  .bottom-nav { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 
   /* A two-line grid prevents horizontal clipping; the compare toggle spans both rows. */
   .leaderboard-row {
@@ -1516,8 +1601,8 @@ input[type="range"]::-moz-range-thumb:hover {
     grid-area: toggle;
     justify-self: end;
     align-self: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     margin-left: 0;
     font-size: var(--font-lg);
   }
@@ -1525,10 +1610,10 @@ input[type="range"]::-moz-range-thumb:hover {
   /* Roomier touch targets in the expanded filter panel. */
   .action-link,
   .source-seg,
-  .provider-pill { min-height: 34px; }
+  .provider-pill { min-height: 44px; }
   /* Keep slim-bar controls aligned to the 40px mobile search input. */
   .filters-toggle,
-  .filters-bar .filters-bar-reset { min-height: 40px; }
+  .filters-bar .filters-bar-reset { min-height: 44px; }
 
   /* Shorter charts fit phone viewports; the ranked bar chart remains data-driven. */
   .chart-canvas-wrap-scatter { height: 300px; }
@@ -1545,33 +1630,35 @@ input[type="range"]::-moz-range-thumb:hover {
     font-size: 16px;
   }
   .search-input,
-  .filters-bar .search-input { height: 40px; }
-  .pane-header .metric-select { height: 32px; }
+  .filters-bar .search-input { height: 44px; }
+  .pane-header .metric-select { height: 44px; }
 
   /* Larger touch targets for compare and drawer controls. */
   .compare-toggle {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     font-size: var(--font-lg);
   }
   .compare-chip-remove,
   .compare-col-remove {
-    min-width: 32px;
-    min-height: 32px;
+    min-width: 44px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
   /* Ancestor-qualified to beat the base rules that follow in source order */
   .chat-drawer .chat-icon-btn,
-  .modal .chat-icon-btn { width: 32px; height: 32px; }
+  .modal .chat-icon-btn { width: 44px; height: 44px; }
   .chat-drawer .chat-send-btn { width: 44px; height: 44px; }
 
   /* Sticky header/model column plus horizontal-scroll affordances. */
   .table-container { position: relative; }
   .table-wrapper {
     overflow: auto;
-    max-height: calc(100dvh - 220px);
+    max-height: min(680px, calc(100dvh - 180px - env(safe-area-inset-bottom)));
+    min-height: 180px;
+    overscroll-behavior-x: contain;
   }
   #modelTable thead th {
     position: sticky;
@@ -1588,9 +1675,11 @@ input[type="range"]::-moz-range-thumb:hover {
     position: sticky;
     left: 0;
     z-index: 1;
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: clamp(144px, 44vw, 200px);
+    min-width: clamp(144px, 44vw, 200px);
+    max-width: 200px;
+    white-space: normal;
+    overflow-wrap: anywhere;
     background: var(--table-sticky-bg);
   }
   /* Header/model intersection sits above both sticky axes */
@@ -1598,7 +1687,7 @@ input[type="range"]::-moz-range-thumb:hover {
   #modelTable tbody tr:hover td:nth-child(2) { background: var(--table-sticky-hover-bg); }
   /* Highlighted row: keep the sticky cell opaque under the translucent glow */
   #modelTable tbody tr.highlighted td:nth-child(2) {
-    background: linear-gradient(var(--accent-glow), var(--accent-glow)), var(--table-sticky-bg);
+    background: linear-gradient(var(--accent-glow), var(--accent-glow)), var(--table-sticky-bg) !important;
   }
   #modelTable th.num,
   #modelTable td.num { min-width: 72px; padding: 10px 8px; font-size: var(--font-xs); }
@@ -1631,6 +1720,7 @@ input[type="range"]::-moz-range-thumb:hover {
     right: 0;
     bottom: 0;
     z-index: 115;
+    background: var(--table-sticky-bg);
     height: calc(60px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
     border-radius: 0;
@@ -1680,10 +1770,10 @@ input[type="range"]::-moz-range-thumb:hover {
   }
 
   /* Lift the floating chat controls above the bottom nav */
-  .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); right: max(12px, env(safe-area-inset-right)); }
 }
 @media (max-width: 480px) {
-  .summary-cards { grid-template-columns: 1fr !important; }
+
   .filters-bar-title { display: none; }
   .filters-bar .window-controls { display: none; }
   .dual-slider input[type="range"]::-webkit-slider-thumb {
@@ -2368,13 +2458,15 @@ details[open] .thinking-title::before {
   100% { opacity: 0.7; }
 }
 
-/* Full-screen chat drawer on phones */
-@media (max-width: 480px) {
+/* Full-screen chat also covers phone landscape and touch tablets. */
+@media (max-width: 640px), (max-width: 1024px) and (pointer: coarse) {
   .chat-drawer {
-    bottom: 0 !important;
+    background: var(--table-sticky-bg);
+    top: var(--chat-viewport-top, 0px) !important;
+    bottom: auto !important;
     right: 0 !important;
     width: 100vw !important;
-    height: 100dvh !important;
+    height: var(--chat-viewport-height, 100dvh) !important;
     /* Base rule's min/max clamps would otherwise cap this to ~360x690 */
     min-width: 0 !important;
     min-height: 0 !important;
@@ -2385,7 +2477,29 @@ details[open] .thinking-title::before {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+  .chat-header { min-height: 56px; height: 56px; padding: 0 max(8px, env(safe-area-inset-right)) 0 max(8px, env(safe-area-inset-left)); gap: 4px; }
+  .chat-header-title { min-width: 0; gap: 4px; }
+  .chat-header-title .window-controls { display: none; }
+  .chat-header-controls { gap: 0; }
+  .chat-drawer .chat-icon-btn { width: 44px; height: 44px; }
+  .chat-drawer .chat-input, .chat-drawer .chat-key-input, .chat-drawer .chat-model-select { font-size: 16px; min-height: 44px; }
+  .chat-drawer .chat-send-btn { width: 44px; height: 44px; }
+  .chat-drawer .chat-btn { min-height: 44px; }
+  .chat-drawer .chat-model-select {
+    height: 44px;
+    appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%239b9ba6' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+  }
+  .chat-api-key-view { background: var(--table-sticky-bg); top: calc(56px + env(safe-area-inset-top)); padding: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .api-key-container { max-width: 420px; padding: 16px; }
+  .chat-footer { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .message-bubble { font-size: 13px; }
   .chat-drawer.hide {
+    visibility: hidden;
     transform: translateY(100%);
     opacity: 0;
   }
@@ -2418,4 +2532,31 @@ details[open] .thinking-title::before {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+/* Touch tablets retain the desktop layout with usable control sizes. */
+@media (pointer: coarse) {
+  .theme-toggle-btn, .compare-toggle, .compare-col-remove, .compare-chip-remove,
+  .chat-icon-btn { min-width: 44px; min-height: 44px; }
+  .action-link, .provider-pill, .source-seg, .reset-btn, .leaderboard-expand,
+  .filters-toggle, .tab-btn { min-height: 44px; }
+  .search-input, .filters-bar .search-input, .metric-select,
+  .pane-header .metric-select { font-size: 16px; height: 44px; }
+  .pane-header:has(.metric-select) { height: auto; min-height: 54px; }
+}
+
+/* The range input owns a finger-sized hit area; only its track is thin. */
+@media (max-width: 640px), (pointer: coarse) {
+  .control-input-wrap input[type="range"] { height: 44px; background: transparent; }
+  .control-input-wrap input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--slider-track);
+    border-radius: var(--radius-sm);
+  }
+  .control-input-wrap input[type="range"]::-webkit-slider-thumb { margin-top: -10px; }
+  .control-input-wrap input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: var(--slider-track);
+    border-radius: var(--radius-sm);
+  }
 }

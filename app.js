@@ -715,7 +715,7 @@ function initCharts() {
   radarChart = new Chart(document.getElementById('radarChart'), {
     type: 'radar',
     data: {
-      labels: ['Value Score', 'Performance', 'Cost Efficiency', 'LiveBench (Norm)', 'AA Score (Norm)'],
+      labels: ['Value Score', 'Performance', ['Cost', 'Efficiency'], ['LiveBench', '(Norm)'], ['AA Score', '(Norm)']],
       datasets: [
         {
           label: 'Filtered Average',
@@ -774,7 +774,7 @@ function initCharts() {
   compareRadarChart = new Chart(document.getElementById('compareRadarChart'), {
     type: 'radar',
     data: {
-      labels: ['Value Score', 'Performance', 'Cost Efficiency', 'LiveBench (Norm)', 'AA Score (Norm)'],
+      labels: ['Value Score', 'Performance', ['Cost', 'Efficiency'], ['LiveBench', '(Norm)'], ['AA Score', '(Norm)']],
       datasets: []
     },
     options: {
@@ -917,6 +917,9 @@ function updateScatterChart(filtered) {
   const labels = [...new Set(uniqueCosts.map(fmtBlended))];
 
   scatterChart.options.scales.x.labels = labels;
+  const narrow = window.matchMedia('(max-width: 640px)').matches;
+  scatterChart.options.scales.x.ticks.maxTicksLimit = narrow ? 5 : 20;
+  scatterChart.options.scales.x.ticks.maxRotation = narrow ? 0 : 50;
 
   // Headroom only below: the top of the axis stays pinned at the 100-point ceiling.
   const minPerf = Math.min(...filtered.map(m => m.performance));
@@ -1101,20 +1104,15 @@ function updateTable(filtered) {
   const valMin = valVals.length > 0 ? Math.min(...valVals) : 0;
   const valMax = valVals.length > 0 ? Math.max(...valVals) : 100;
 
+  document.getElementById('tableEmptyState').classList.toggle('hide', sorted.length > 0);
+  document.querySelector('.table-wrapper').classList.toggle('hide', sorted.length === 0);
   if (sorted.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="11" class="empty-state">
-          <p style="margin-bottom: 8px;">No models match your filters</p>
-          <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
-        </td>
-      </tr>
-    `;
+    tbody.innerHTML = '';
   } else {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${escapeHtml(modelKey(m))}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
-        <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
+        <td><div class="table-model-cell"><span class="table-model-name">${escapeHtml(m.model)}${openBadgeHtml(m)}<span class="mobile-only table-model-provider">${escapeHtml(m.provider)}</span></span><span class="mobile-only">${compareToggleHtml(m)}</span></div></td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num" title="Cache write: ${fmtCachePrice(m.cacheWritePrice)} /1M; unknown write rates use regular input in the estimate">${fmtCachePrice(m.cachePrice)}</td>
@@ -1130,6 +1128,7 @@ function updateTable(filtered) {
 
   document.querySelectorAll('#modelTable th').forEach(th => {
     th.classList.remove('sort-asc', 'sort-desc');
+    if (th.dataset.sort) th.setAttribute('aria-sort', th.dataset.sort === col ? (dir === 'asc' ? 'ascending' : 'descending') : 'none');
     if (th.dataset.sort === col) {
       th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
     }
@@ -1363,6 +1362,9 @@ function revalidateCompareSet() {
 function updateAll() {
   const allModels = computeAllMetrics(RAW_DATA, state.p);
   const filtered = getFilteredModels(allModels);
+  document.getElementById('filtersDone').textContent = `Show ${filtered.length} model${filtered.length === 1 ? '' : 's'}`;
+  document.getElementById('chartsEmptyState').classList.toggle('hide', filtered.length > 0);
+  document.querySelector('.charts-grid').classList.toggle('hide', filtered.length === 0);
   updateSummaryCards(filtered);
   updateLeaderboard(filtered);
   updateScatterChart(filtered);
@@ -1546,6 +1548,7 @@ function updateFilterSummary() {
   const n = countActiveFilters();
   badge.textContent = n;
   badge.classList.toggle('hide', n === 0);
+  document.getElementById('filtersBarReset').classList.toggle('filters-reset-idle', n === 0);
 }
 
 function initFilterPanel() {
@@ -1557,8 +1560,78 @@ function initFilterPanel() {
     panel.toggleAttribute('hidden', !willOpen);
     toggle.setAttribute('aria-expanded', String(willOpen));
   });
+  document.getElementById('filtersDone').addEventListener('click', () => {
+    panel.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.focus({ preventScroll: true });
+    document.getElementById('filtersBar').scrollIntoView({ block: 'start' });
+  });
   const barReset = document.getElementById('filtersBarReset');
   if (barReset) barReset.addEventListener('click', resetFilters);
+}
+
+// Keep fullscreen overlays above the software keyboard and preserve page position.
+const MOBILE_CHAT_QUERY = '(max-width: 640px), (max-width: 1024px) and (pointer: coarse)';
+let overlayScrollY = 0;
+
+function updateOverlayState() {
+  const formulaOpen = !document.getElementById('formulaModal').classList.contains('hide');
+  const drawer = document.getElementById('chatDrawer');
+  const mobileChatOpen = !drawer.classList.contains('hide') && window.matchMedia(MOBILE_CHAT_QUERY).matches;
+  const locked = formulaOpen || mobileChatOpen;
+  const wasLocked = document.body.classList.contains('overlay-open');
+  if (locked && !wasLocked) {
+    overlayScrollY = window.scrollY;
+    document.body.style.top = -overlayScrollY + 'px';
+  }
+  document.body.classList.toggle('overlay-open', locked);
+  document.querySelector('main').inert = locked;
+  document.getElementById('bottomNav').inert = locked;
+  document.getElementById('chatFab').inert = locked;
+  drawer.inert = formulaOpen || drawer.classList.contains('hide');
+  drawer.toggleAttribute('aria-modal', mobileChatOpen);
+  if (mobileChatOpen) drawer.setAttribute('aria-modal', 'true');
+  if (!locked && wasLocked) {
+    document.body.style.top = '';
+    window.scrollTo(0, overlayScrollY);
+  }
+}
+
+function updateChatViewport() {
+  const viewport = window.visualViewport;
+  // Preserve native pinch zoom; keyboard resizing happens at scale 1.
+  if (viewport && viewport.scale === 1) {
+    document.documentElement.style.setProperty('--chat-viewport-height', viewport.height + 'px');
+    document.documentElement.style.setProperty('--chat-viewport-top', viewport.offsetTop + 'px');
+  }
+}
+
+function initMobileOverlays() {
+  window.visualViewport?.addEventListener('resize', updateChatViewport, { passive: true });
+  window.visualViewport?.addEventListener('scroll', updateChatViewport, { passive: true });
+  window.matchMedia(MOBILE_CHAT_QUERY).addEventListener('change', updateOverlayState);
+  updateChatViewport();
+  document.addEventListener('keydown', e => {
+    const formula = document.getElementById('formulaModal');
+    const drawer = document.getElementById('chatDrawer');
+    const activeOverlay = !formula.classList.contains('hide') ? formula
+      : (!drawer.classList.contains('hide') && window.matchMedia(MOBILE_CHAT_QUERY).matches ? drawer : null);
+    if (e.key === 'Escape' && !drawer.classList.contains('hide') && formula.classList.contains('hide')) {
+      document.getElementById('chatCloseBtn').click();
+      return;
+    }
+    if (e.key !== 'Tab' || !activeOverlay) return;
+    const focusable = [...activeOverlay.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')]
+      .filter(el => !el.disabled && el.getClientRects().length && !el.closest('[inert]'));
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !activeOverlay.contains(document.activeElement))) {
+      e.preventDefault();
+      last?.focus();
+    } else if (!e.shiftKey && (document.activeElement === last || !activeOverlay.contains(document.activeElement))) {
+      e.preventDefault();
+      first?.focus();
+    }
+  });
 }
 
 // ===== SCORE FORMULA MODAL =====
@@ -1568,6 +1641,7 @@ function openFormulaModal() {
   if (!modal) return;
   formulaModalLastFocus = document.activeElement;
   modal.classList.remove('hide');
+  updateOverlayState();
   const closeBtn = document.getElementById('formulaModalClose');
   if (closeBtn) closeBtn.focus();
 }
@@ -1575,8 +1649,9 @@ function closeFormulaModal() {
   const modal = document.getElementById('formulaModal');
   if (!modal || modal.classList.contains('hide')) return;
   modal.classList.add('hide');
+  updateOverlayState();
   if (formulaModalLastFocus && typeof formulaModalLastFocus.focus === 'function') {
-    formulaModalLastFocus.focus();
+    formulaModalLastFocus.focus({ preventScroll: true });
   }
   formulaModalLastFocus = null;
 }
@@ -1710,6 +1785,10 @@ function initEventListeners() {
   });
 
   document.querySelectorAll('#modelTable th[data-sort]').forEach(th => {
+    th.tabIndex = 0;
+    th.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); th.click(); }
+    });
     th.addEventListener('click', () => {
       const key = th.dataset.sort;
       if (state.sortColumn === key) {
@@ -1791,7 +1870,10 @@ function switchTab(tabName) {
   // On phones the bottom nav can be tapped from anywhere in a long tab, so
   // reset scroll to the top of the newly shown tab. Desktop scroll is untouched.
   if (window.matchMedia('(max-width: 640px)').matches) {
-    window.scrollTo(0, 0);
+    document.getElementById('filtersPanel').hidden = true;
+    document.getElementById('filtersToggle').setAttribute('aria-expanded', 'false');
+    if (document.body.classList.contains('overlay-open')) overlayScrollY = 0;
+    else window.scrollTo(0, 0);
   }
 
   if (tabName === 'charts') {
@@ -1801,6 +1883,7 @@ function switchTab(tabName) {
       if (radarChart) radarChart.resize();
     }, 50);
   }
+  if (tabName === 'table') requestAnimationFrame(updateTableScrollHints);
   if (tabName === 'compare') {
     setTimeout(() => {
       if (compareRadarChart) compareRadarChart.resize();
@@ -2179,9 +2262,10 @@ function setChatDrawerOpen(drawer, isOpen) {
   drawer.classList.toggle('hide', !isOpen);
   drawer.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   drawer.inert = !isOpen;
+  updateOverlayState();
 
   if (!isOpen && drawer.contains(document.activeElement)) {
-    document.getElementById('chatFab')?.focus();
+    document.getElementById('chatFab')?.focus({ preventScroll: true });
   }
 }
 
@@ -2195,6 +2279,13 @@ function restoreSelectValue(select, saved, storageKey) {
   }
   select.value = value;
   return value;
+}
+
+function updateChatSettingsState() {
+  const settingsOpen = !document.getElementById('chatApiKeyView').classList.contains('hide');
+  document.getElementById('chatLogs').inert = settingsOpen;
+  document.querySelector('.chat-footer').inert = settingsOpen;
+  document.getElementById('chatSettingsBtn').setAttribute('aria-pressed', String(settingsOpen));
 }
 
 function initChatbot() {
@@ -2224,6 +2315,7 @@ function initChatbot() {
     clearKeyBtn.classList.remove('hide');
   } else {
     apiKeyView.classList.remove('hide');
+    updateChatSettingsState();
   }
 
   if (modelSelect) {
@@ -2233,12 +2325,16 @@ function initChatbot() {
     CHAT_STATE.reasoningEffort = restoreSelectValue(reasoningSelect, CHAT_STATE.reasoningEffort, 'openrouter_reasoning_effort');
   }
 
+  updateChatSettingsState();
+
   // Drawer, settings, and input event handlers.
   fab.addEventListener('click', () => {
     CHAT_STATE.isOpen = !CHAT_STATE.isOpen;
     setChatDrawerOpen(drawer, CHAT_STATE.isOpen);
     if (CHAT_STATE.isOpen) {
-      if (!CHAT_STATE.apiKey) {
+      if (window.matchMedia(MOBILE_CHAT_QUERY).matches) {
+        closeBtn.focus({ preventScroll: true });
+      } else if (!CHAT_STATE.apiKey) {
         apiKeyInput.focus();
       } else {
         chatInput.focus();
@@ -2275,6 +2371,7 @@ function initChatbot() {
 
   settingsBtn.addEventListener('click', () => {
     apiKeyView.classList.toggle('hide');
+    updateChatSettingsState();
   });
 
   saveKeyBtn.addEventListener('click', () => {
@@ -2283,6 +2380,7 @@ function initChatbot() {
       CHAT_STATE.apiKey = key;
       localStorage.setItem('openrouter_api_key', key);
       apiKeyView.classList.add('hide');
+      updateChatSettingsState();
       clearKeyBtn.classList.remove('hide');
       addSystemMessage('API key saved successfully.');
     } else {
@@ -2296,6 +2394,7 @@ function initChatbot() {
     apiKeyInput.value = '';
     clearKeyBtn.classList.add('hide');
     apiKeyView.classList.remove('hide');
+    updateChatSettingsState();
     addSystemMessage('API key cleared.');
   });
 
@@ -2319,7 +2418,7 @@ function initChatbot() {
   });
 
   chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && !window.matchMedia('(pointer: coarse)').matches) {
       e.preventDefault();
       handleChatSubmit();
     }
@@ -2361,6 +2460,7 @@ function handleChatSubmit() {
   if (!CHAT_STATE.apiKey) {
     const keyView = document.getElementById('chatApiKeyView');
     if (keyView) keyView.classList.remove('hide');
+    updateChatSettingsState();
     const keyInput = document.getElementById('chatApiKeyInput');
     if (keyInput) keyInput.focus();
     return;
@@ -3533,6 +3633,7 @@ async function init() {
   updateSliderBounds();
   updatePriceRangeSliderHighlight();
   initChatbot();
+  initMobileOverlays();
   initTableScrollHints();
 
   // Re-render when crossing the phone breakpoint (e.g. rotation) so bar-chart
