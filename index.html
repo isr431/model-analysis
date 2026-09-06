@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260907-409ba0">
+  <link rel="stylesheet" href="styles.css?v=20260907-735299">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260907-409ba0" defer></script>
+  <script src="app.js?v=20260907-735299" defer></script>
 </head>
 <body>
   <main class="app">
@@ -390,7 +390,30 @@
           </span>
           model_comparison_dataset
         </div>
-        <p class="mobile-only table-scroll-hint">Swipe for metrics · Tap + to compare</p>
+        <div class="dataset-mobile" id="datasetMobile">
+          <div class="dataset-toolbar">
+            <div class="dataset-toolbar-heading">
+              <label for="datasetSort">Sort models</label>
+              <span id="datasetResultCount" role="status"></span>
+            </div>
+            <div class="dataset-sort-controls">
+              <select id="datasetSort" class="metric-select">
+                <option value="value" selected>Value</option>
+                <option value="performance">Performance</option>
+                <option value="blended">Blended cost</option>
+                <option value="inputPrice">Input price</option>
+                <option value="outputPrice">Output price</option>
+                <option value="cachePrice">Cache read</option>
+                <option value="livebench">LiveBench</option>
+                <option value="aaScore">AA Score</option>
+                <option value="model">Model name</option>
+                <option value="provider">Provider</option>
+              </select>
+              <button type="button" id="datasetSortDirection" class="action-link">↓ High first</button>
+            </div>
+          </div>
+          <div class="dataset-list" id="datasetList"></div>
+        </div>
         <div class="empty-state hide" id="tableEmptyState"><p>No models match your filters</p><button class="reset-btn" onclick="resetFilters()">Reset Filters</button></div>
         <div class="table-wrapper" tabindex="0" role="region" aria-label="Model metrics, horizontally scrollable">
         <table id="modelTable">

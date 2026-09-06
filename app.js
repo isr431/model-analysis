@@ -1084,6 +1084,57 @@ function updateRadarChart(filtered) {
   radarChart.update();
 }
 
+// Cards share the table's sorted data and selection state; native details stay
+// open through sorting and workload changes.
+const DATASET_EXPANDED = new Set();
+
+function updateDatasetCards(models) {
+  document.getElementById('datasetSort').value = state.sortColumn;
+  const textSort = state.sortColumn === 'model' || state.sortColumn === 'provider';
+  const ascending = state.sortDirection === 'asc';
+  const direction = document.getElementById('datasetSortDirection');
+  direction.textContent = textSort ? (ascending ? '↑ A–Z' : '↓ Z–A') : (ascending ? '↑ Low first' : '↓ High first');
+  direction.setAttribute('aria-label', `Sort direction: ${ascending ? 'ascending' : 'descending'}. Reverse sort order`);
+  document.getElementById('datasetResultCount').textContent = `${models.length} model${models.length === 1 ? '' : 's'}`;
+  document.getElementById('datasetList').innerHTML = models.map(m => {
+    const key = escapeHtml(modelKey(m));
+    const selected = isCompared(modelKey(m));
+    const highlighted = state.highlightedModel === modelKey(m);
+    return `
+      <article class="dataset-card${highlighted ? ' highlighted' : ''}" data-key="${key}" aria-label="${escapeHtml(m.model)}">
+        <div class="dataset-card-header">
+          <div class="dataset-identity">
+            <button type="button" class="dataset-model-name" data-key="${key}" aria-pressed="${highlighted}" aria-label="Highlight ${escapeHtml(m.model)} in charts">${escapeHtml(m.model)}</button>
+            <div class="dataset-meta"><span>${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</div>
+          </div>
+          <button type="button" class="compare-toggle dataset-compare${selected ? ' active' : ''}" data-key="${key}" aria-pressed="${selected}" aria-label="Compare ${escapeHtml(m.model)}">${selected ? '✓ Added' : '+ Compare'}</button>
+        </div>
+        <dl class="dataset-scores">
+          <div><dt>Value</dt><dd>${m.value.toFixed(1)}</dd></div>
+          <div><dt>Performance</dt><dd>${m.performance.toFixed(1)}</dd></div>
+          <div><dt>Blended /1M</dt><dd>${fmtBlended(m.blended)}</dd></div>
+        </dl>
+        <details class="dataset-details" data-key="${key}"${DATASET_EXPANDED.has(modelKey(m)) ? ' open' : ''}>
+          <summary>Details <span aria-hidden="true">⌄</span></summary>
+          <div class="dataset-detail-content">
+            <h3>Token prices <span>USD / 1M</span></h3>
+            <dl class="dataset-detail-grid">
+              <div><dt>Input</dt><dd>$${m.inputPrice.toFixed(2)}</dd></div>
+              <div><dt>Output</dt><dd>$${m.outputPrice.toFixed(2)}</dd></div>
+              <div><dt>Cache read</dt><dd>${fmtCachePrice(m.cachePrice)}</dd></div>
+              <div><dt>Cache write</dt><dd>${fmtCachePrice(m.cacheWritePrice)}</dd></div>
+            </dl>
+            <h3>Benchmarks</h3>
+            <dl class="dataset-detail-grid">
+              <div><dt>LiveBench</dt><dd>${benchCellHtml(m, 'livebench')}</dd></div>
+              <div><dt>AA Score</dt><dd>${benchCellHtml(m, 'aaScore')}</dd></div>
+            </dl>
+          </div>
+        </details>
+      </article>`;
+  }).join('');
+}
+
 function updateTable(filtered) {
   const tbody = document.getElementById('tableBody');
   const col = state.sortColumn;
@@ -1112,13 +1163,7 @@ function updateTable(filtered) {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${escapeHtml(modelKey(m))}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
-        <td>
-          <div class="table-model-cell">
-            <span class="table-model-name">${escapeHtml(m.model)}<span class="desktop-label">${openBadgeHtml(m)}</span></span>
-            <span class="mobile-only">${compareToggleHtml(m)}</span>
-          </div>
-          <span class="mobile-only table-model-meta"><span class="table-model-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
-        </td>
+        <td>${escapeHtml(m.model)}${openBadgeHtml(m)}</td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num" title="Cache write: ${fmtCachePrice(m.cacheWritePrice)} /1M; unknown write rates use regular input in the estimate">${fmtCachePrice(m.cachePrice)}</td>
@@ -1140,40 +1185,20 @@ function updateTable(filtered) {
     }
   });
 
-  updateTableScrollHints();
+  updateDatasetCards(sorted);
 }
 
-// CSS scopes these scroll affordances to phones; updating them everywhere keeps
-// the JS independent of media-query state.
-function updateTableScrollHints() {
-  const wrap = document.querySelector('.table-wrapper');
-  const container = document.getElementById('tableContainer');
-  if (!wrap || !container) return;
-  wrap.classList.toggle('scrolled-x', wrap.scrollLeft > 4);
-  container.classList.toggle('more-x', wrap.scrollLeft < wrap.scrollWidth - wrap.clientWidth - 4);
-}
-
-// The Compare table uses the same cue on its sticky metric-label column.
+// Keep metric labels identifiable while the comparison scrolls horizontally.
 function updateCompareScrollHint() {
   const wrap = document.getElementById('compareTableWrap');
   if (!wrap) return;
   wrap.classList.toggle('scrolled-x', wrap.scrollLeft > 4);
 }
 
-function initTableScrollHints() {
-  const wrap = document.querySelector('.table-wrapper');
-  if (wrap) {
-    wrap.addEventListener('scroll', updateTableScrollHints, { passive: true });
-    updateTableScrollHints();
-  }
-  const compareWrap = document.getElementById('compareTableWrap');
-  if (compareWrap) {
-    compareWrap.addEventListener('scroll', updateCompareScrollHint, { passive: true });
-  }
-  window.addEventListener('resize', () => {
-    updateTableScrollHints();
-    updateCompareScrollHint();
-  }, { passive: true });
+function initCompareScrollHint() {
+  const wrap = document.getElementById('compareTableWrap');
+  if (wrap) wrap.addEventListener('scroll', updateCompareScrollHint, { passive: true });
+  window.addEventListener('resize', updateCompareScrollHint, { passive: true });
 }
 
 function updateFormulaP() {
@@ -1236,7 +1261,8 @@ function updateCompareToggleButtons() {
     const active = isCompared(btn.dataset.key);
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-pressed', String(active));
-    btn.textContent = active ? '✓' : '+';
+    btn.textContent = btn.classList.contains('dataset-compare')
+      ? (active ? '✓ Added' : '+ Compare') : (active ? '✓' : '+');
   });
 }
 
@@ -1807,6 +1833,28 @@ function initEventListeners() {
     });
   });
 
+  document.getElementById('datasetSort').addEventListener('change', e => {
+    state.sortColumn = e.target.value;
+    state.sortDirection = ['model', 'provider', 'blended', 'inputPrice', 'outputPrice', 'cachePrice'].includes(state.sortColumn) ? 'asc' : 'desc';
+    updateAll();
+  });
+  document.getElementById('datasetSortDirection').addEventListener('click', () => {
+    state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+    updateAll();
+  });
+  const datasetList = document.getElementById('datasetList');
+  datasetList.addEventListener('click', e => {
+    const compare = e.target.closest('.compare-toggle');
+    if (compare) { toggleCompare(compare.dataset.key); return; }
+    const name = e.target.closest('.dataset-model-name');
+    if (name) toggleHighlight(name.dataset.key);
+  });
+  datasetList.addEventListener('toggle', e => {
+    if (!e.target.matches('.dataset-details')) return;
+    if (e.target.open) DATASET_EXPANDED.add(e.target.dataset.key);
+    else DATASET_EXPANDED.delete(e.target.dataset.key);
+  }, true);
+
   document.getElementById('barMetricSelect').addEventListener('change', e => {
     state.barMetric = e.target.value;
     updateAll();
@@ -1889,7 +1937,6 @@ function switchTab(tabName) {
       if (radarChart) radarChart.resize();
     }, 50);
   }
-  if (tabName === 'table') requestAnimationFrame(updateTableScrollHints);
   if (tabName === 'compare') {
     setTimeout(() => {
       if (compareRadarChart) compareRadarChart.resize();
@@ -2095,6 +2142,12 @@ function updateHighlights() {
     if (tr.dataset.key) {
       tr.classList.toggle('highlighted', tr.dataset.key === modelName);
     }
+  });
+
+  document.querySelectorAll('.dataset-card').forEach(card => {
+    const highlighted = card.dataset.key === modelName;
+    card.classList.toggle('highlighted', highlighted);
+    card.querySelector('.dataset-model-name').setAttribute('aria-pressed', String(highlighted));
   });
 
   document.querySelectorAll('.leaderboard-row').forEach(row => {
@@ -3640,10 +3693,10 @@ async function init() {
   updatePriceRangeSliderHighlight();
   initChatbot();
   initMobileOverlays();
-  initTableScrollHints();
+  initCompareScrollHint();
 
   // Re-render when crossing the phone breakpoint (e.g. rotation) so bar-chart
-  // labels and table scroll hints re-derive for the new width.
+  // labels re-derive for the new width.
   window.matchMedia('(max-width: 640px)').addEventListener('change', () => updateAll());
 
   // Complete first paint before removing skeleton styles.
