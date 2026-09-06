@@ -881,7 +881,7 @@ function updateLeaderboard(filtered) {
   list.innerHTML = display.map((m, i) => `
     <div class="leaderboard-row ${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" data-key="${escapeHtml(modelKey(m))}" tabindex="0" role="button">
       <span class="leaderboard-rank ${i < 3 ? 'top' : ''}">#${i + 1}</span>
-      <span class="leaderboard-name" title="${escapeHtml(m.model)} — ${escapeHtml(m.provider)}"><span class="leaderboard-model">${escapeHtml(m.model)}</span><span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
+      <span class="leaderboard-name" title="${escapeHtml(m.model)} — ${escapeHtml(m.provider)}"><span class="leaderboard-model">${escapeHtml(m.model)}</span><span class="leaderboard-meta"><span class="leaderboard-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span></span>
       <div class="leaderboard-bar-track">
         <div class="leaderboard-bar-fill" style="width:0%; background:${providerColor(m.provider)}" data-width="${m.performance.toFixed(1)}%"></div>
       </div>
@@ -1112,7 +1112,13 @@ function updateTable(filtered) {
     tbody.innerHTML = sorted.map(m => `
       <tr data-key="${escapeHtml(modelKey(m))}" class="${state.highlightedModel === modelKey(m) ? 'highlighted' : ''}" tabindex="0" role="row">
         <td><span class="provider-badge" style="color:${providerColor(m.provider)}; background:rgba(${providerRgb(m.provider)}, 0.08); border:1px solid rgba(${providerRgb(m.provider)}, 0.15);">${escapeHtml(m.provider)}</span></td>
-        <td><div class="table-model-cell"><span class="table-model-name">${escapeHtml(m.model)}${openBadgeHtml(m)}<span class="mobile-only table-model-provider">${escapeHtml(m.provider)}</span></span><span class="mobile-only">${compareToggleHtml(m)}</span></div></td>
+        <td>
+          <div class="table-model-cell">
+            <span class="table-model-name">${escapeHtml(m.model)}<span class="desktop-label">${openBadgeHtml(m)}</span></span>
+            <span class="mobile-only">${compareToggleHtml(m)}</span>
+          </div>
+          <span class="mobile-only table-model-meta"><span class="table-model-provider">${escapeHtml(m.provider)}</span>${openBadgeHtml(m)}</span>
+        </td>
         <td class="num">$${m.inputPrice.toFixed(2)}</td>
         <td class="num">$${m.outputPrice.toFixed(2)}</td>
         <td class="num" title="Cache write: ${fmtCachePrice(m.cacheWritePrice)} /1M; unknown write rates use regular input in the estimate">${fmtCachePrice(m.cachePrice)}</td>
