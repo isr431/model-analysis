@@ -1867,9 +1867,9 @@ function switchTab(tabName) {
   });
   section.classList.add('active');
 
-  // On phones the bottom nav can be tapped from anywhere in a long tab, so
-  // reset scroll to the top of the newly shown tab. Desktop scroll is untouched.
-  if (window.matchMedia('(max-width: 640px)').matches) {
+  // Match the bottom navigation's portrait and touch-landscape visibility.
+  // It can be tapped from anywhere in a long tab, so return to the top.
+  if (window.matchMedia('(max-width: 640px), (max-width: 1024px) and (max-height: 500px) and (pointer: coarse)').matches) {
     document.getElementById('filtersPanel').hidden = true;
     document.getElementById('filtersToggle').setAttribute('aria-expanded', 'false');
     if (document.body.classList.contains('overlay-open')) overlayScrollY = 0;

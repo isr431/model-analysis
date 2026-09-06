@@ -1505,7 +1505,7 @@ body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
   .header h1 { padding: 0 48px 0 0; font-size: clamp(17px, 4.9vw, 24px); text-align: left; }
   .header { margin-bottom: 20px; }
   .header .subtitle { text-align: left; margin-top: 8px; }
-  .header-meta { gap: 6px; justify-content: flex-start; }
+  .header-meta { gap: 18px 6px; justify-content: flex-start; }
   .header-meta .meta-chip { padding: 4px 8px; }
   .app-header-controls { top: max(16px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
   .theme-toggle-btn { width: 44px; height: 44px; }
@@ -1519,7 +1519,17 @@ body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
 
   .mobile-only { display: block; }
   .desktop-label { display: none; }
-  .header-meta .meta-chip-action { min-height: 44px; }
+  .header-meta .meta-chip-action {
+    position: relative;
+    line-height: inherit;
+  }
+  /* Keep the visible chip aligned with its neighbours and extend only its hit area.
+     The row gap reserves room for this 44px target without overlapping other rows. */
+  .header-meta .meta-chip-action::after {
+    content: "";
+    position: absolute;
+    inset: -9px 0;
+  }
   .filters-bar { top: env(safe-area-inset-top); padding: 6px; gap: 6px; background: var(--table-sticky-bg); }
   .filters-bar-title, .filters-bar .window-controls,
   .filters-toggle-icon, .filters-toggle-arrow,
@@ -1578,7 +1588,6 @@ body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
   .modal-close { flex-shrink: 0; }
   .formula-desc, .formula-item code { font-size: 12px; }
   .footer { overflow-wrap: anywhere; margin-top: 24px; }
-  .bottom-nav { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 
   /* A two-line grid prevents horizontal clipping; the compare toggle spans both rows. */
   .leaderboard-row {
@@ -1711,6 +1720,12 @@ body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
   }
   .table-container.more-x::after { opacity: 0.9; }
 
+}
+
+/* Keep phone navigation available after rotation, even above the portrait cutoff.
+   Match this condition in switchTab so long views return to the top consistently. */
+@media (max-width: 640px), (max-width: 1024px) and (max-height: 500px) and (pointer: coarse) {
+  .app { padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
   /* Replace top tabs with a fixed bottom navigation on phones. */
   .tab-nav { display: none; }
   .bottom-nav {
@@ -1723,6 +1738,8 @@ body.overlay-open { position: fixed; width: 100%; overflow: hidden; }
     background: var(--table-sticky-bg);
     height: calc(60px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     border-radius: 0;
     border-left: none;
     border-right: none;
