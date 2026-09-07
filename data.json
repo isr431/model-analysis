@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-06",
+  "lastUpdated": "2026-09-07",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -94,9 +94,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 1.12068,
-      "outputPrice": 3.36204,
-      "cachePrice": 0.037356,
+      "inputPrice": 1.0494,
+      "outputPrice": 3.1482,
+      "cachePrice": 0.03498,
       "cacheWritePrice": null,
       "livebench": 77.44,
       "aaScore": 42,
@@ -107,7 +107,7 @@
       "model": "GLM 5.3",
       "inputPrice": 1.4,
       "outputPrice": 4.4,
-      "cachePrice": 0.14,
+      "cachePrice": 0.26,
       "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 49,
@@ -138,9 +138,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.04998,
-      "outputPrice": 0.09996,
-      "cachePrice": 0.009996,
+      "inputPrice": 0.14,
+      "outputPrice": 0.28,
+      "cachePrice": 0.028,
       "cacheWritePrice": null,
       "livebench": 74.17,
       "aaScore": 41,
