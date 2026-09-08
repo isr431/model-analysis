@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-07",
+  "lastUpdated": "2026-09-08",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -44,7 +44,7 @@
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
       "livebench": 81.05,
-      "aaScore": 51,
+      "aaScore": 47,
       "open": false
     },
     {
@@ -55,7 +55,7 @@
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
       "livebench": 77.94,
-      "aaScore": 47,
+      "aaScore": 42,
       "open": false
     },
     {
@@ -66,7 +66,7 @@
       "cachePrice": 0.02,
       "cacheWritePrice": 0.25,
       "livebench": 73.56,
-      "aaScore": 43,
+      "aaScore": 38,
       "open": false
     },
     {
@@ -77,7 +77,7 @@
       "cachePrice": 0.5,
       "cacheWritePrice": null,
       "livebench": 78.04,
-      "aaScore": 51,
+      "aaScore": 44,
       "open": false
     },
     {
@@ -88,7 +88,7 @@
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
       "livebench": 76.04,
-      "aaScore": 45,
+      "aaScore": 38,
       "open": false
     },
     {
@@ -99,7 +99,7 @@
       "cachePrice": 0.03498,
       "cacheWritePrice": null,
       "livebench": 77.44,
-      "aaScore": 42,
+      "aaScore": 36,
       "open": true
     },
     {
@@ -110,7 +110,7 @@
       "cachePrice": 0.26,
       "cacheWritePrice": null,
       "livebench": 76.14,
-      "aaScore": 49,
+      "aaScore": 45,
       "open": true
     },
     {
@@ -121,7 +121,7 @@
       "cachePrice": 0.015,
       "cacheWritePrice": null,
       "livebench": 71.59,
-      "aaScore": 46,
+      "aaScore": 42,
       "open": true
     },
     {
@@ -132,7 +132,7 @@
       "cachePrice": 0.06,
       "cacheWritePrice": null,
       "livebench": 67.26,
-      "aaScore": 36,
+      "aaScore": 30,
       "open": true
     },
     {
@@ -143,7 +143,7 @@
       "cachePrice": 0.028,
       "cacheWritePrice": null,
       "livebench": 74.17,
-      "aaScore": 41,
+      "aaScore": 35,
       "open": true
     },
     {
@@ -154,7 +154,7 @@
       "cachePrice": 0.2,
       "cacheWritePrice": 2.375,
       "livebench": 76.95,
-      "aaScore": 37,
+      "aaScore": 30,
       "open": false
     },
     {
@@ -165,7 +165,7 @@
       "cachePrice": 0.25,
       "cacheWritePrice": 2.5,
       "livebench": 78.46,
-      "aaScore": 47,
+      "aaScore": 40,
       "open": true
     },
     {
@@ -176,7 +176,7 @@
       "cachePrice": 1,
       "cacheWritePrice": 12.5,
       "livebench": 82.97,
-      "aaScore": 53,
+      "aaScore": 50,
       "open": false
     },
     {
@@ -187,7 +187,7 @@
       "cachePrice": 0.3,
       "cacheWritePrice": null,
       "livebench": 79.19,
-      "aaScore": 50,
+      "aaScore": 44,
       "open": true
     },
     {
@@ -198,7 +198,7 @@
       "cachePrice": 0.15,
       "cacheWritePrice": null,
       "livebench": 77.95,
-      "aaScore": 47,
+      "aaScore": 40,
       "open": false
     },
     {
@@ -209,7 +209,7 @@
       "cachePrice": 0.17,
       "cacheWritePrice": null,
       "livebench": 71.92,
-      "aaScore": 32,
+      "aaScore": 26,
       "open": true
     },
     {
@@ -220,7 +220,7 @@
       "cachePrice": 0.075,
       "cacheWritePrice": 0.791667,
       "livebench": 78.83,
-      "aaScore": 45,
+      "aaScore": 39,
       "open": false
     },
     {
@@ -231,7 +231,7 @@
       "cachePrice": 0.03,
       "cacheWritePrice": 0.383333,
       "livebench": 63.94,
-      "aaScore": 28,
+      "aaScore": 23,
       "open": false
     },
     {
@@ -242,7 +242,7 @@
       "cachePrice": 0.5,
       "cacheWritePrice": 6.25,
       "livebench": 80.08,
-      "aaScore": 54,
+      "aaScore": 51,
       "open": false
     },
     {
@@ -253,7 +253,7 @@
       "cachePrice": 0.016,
       "cacheWritePrice": 0.2,
       "livebench": 76.19,
-      "aaScore": 46,
+      "aaScore": 42,
       "open": true,
       "openrouterId": "qwen/qwen3.8-flash"
     },
@@ -265,7 +265,7 @@
       "cachePrice": 0.014,
       "cacheWritePrice": null,
       "livebench": 76.76,
-      "aaScore": 42,
+      "aaScore": 35,
       "open": true
     },
     {
@@ -276,7 +276,7 @@
       "cachePrice": 0.25,
       "cacheWritePrice": 12.5,
       "livebench": 83.41,
-      "aaScore": 57,
+      "aaScore": 53,
       "open": false
     },
     {
@@ -287,7 +287,7 @@
       "cachePrice": 0.085,
       "cacheWritePrice": null,
       "livebench": 75.27,
-      "aaScore": 42,
+      "aaScore": 34,
       "open": true
     },
     {
@@ -298,7 +298,7 @@
       "cachePrice": 0.075,
       "cacheWritePrice": 0.791667,
       "livebench": 75.83,
-      "aaScore": 47,
+      "aaScore": 41,
       "open": false
     },
     {
@@ -309,7 +309,7 @@
       "cachePrice": 0.15,
       "cacheWritePrice": null,
       "livebench": 81.59,
-      "aaScore": 53,
+      "aaScore": 48,
       "open": false
     },
     {
@@ -320,7 +320,7 @@
       "cachePrice": 1,
       "cacheWritePrice": 12.5,
       "livebench": 82.16,
-      "aaScore": 55,
+      "aaScore": 53,
       "open": false
     }
   ]
