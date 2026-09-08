@@ -27,9 +27,9 @@
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="styles.css?v=20260908-577fc8">
+  <link rel="stylesheet" href="styles.css?v=20260908-949c39">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=20260908-577fc8" defer></script>
+  <script src="app.js?v=20260908-949c39" defer></script>
 </head>
 <body>
   <main class="app">
@@ -528,20 +528,17 @@
         <div class="formula-item">
           <div class="formula-label">Blended Cost</div>
           <code>blendedCost = (R * (h * cacheRead + (1 - h) * cacheWrite) + outputPrice) / (R + 1);</code>
-          <div class="formula-desc">Current scenario: R = <span id="formulaRatio">165</span> input tokens per output token, h = <span id="formulaCacheHit">90%</span> cache hits. Output includes billable reasoning. New input is assumed to be written to the short-duration cache; cacheWrite is the full creation price, not an extra charge on top of input. Unknown write pricing uses regular input. Without cache-read pricing, all input uses regular input price.</div>
-          <div class="formula-desc">An estimate per million combined tokens, not per completed task. Adjust the workload in Filters. Gemini writes include input plus five-minute explicit-cache storage; implicit caching can avoid that storage charge. Actual usage, longer storage, long-context surcharges and tool fees can change the bill.</div>
+          <div class="formula-desc">Estimated $/million combined tokens. R = <span id="formulaRatio">165</span> input tokens per output token; h = <span id="formulaCacheHit">90%</span> cache hits. Cache writes include input cost; unavailable cache rates use regular input pricing. Adjust the workload in Filters.</div>
         </div>
         <div class="formula-item">
           <div class="formula-label">Performance</div>
-          <div class="formula-desc">AA scores use Intelligence Index v4.3, checked September 8, 2026. Qwen 3.8 Flash Next uses AA's estimated score of 42, pending independent evaluation. LiveBench scores and the fixed calibration below are unchanged.</div>
-          <code><span class="syntax-keyword">const</span> performance = (wLive * (liveBench / maxLiveBench) + wAA * (aaScore / maxAaScore)) * <span class="syntax-number">100</span>;</code>
-          <div class="formula-desc">Weighting is calibrated to the 26-model snapshot of September 5, 2026. A one-standard-deviation improvement on either benchmark has equal influence. Current normalized weights: wLive <span id="formulaWLive">0.694</span>, wAA <span id="formulaWAa">0.306</span>. Adding models can rescale scores through new maxima, but cannot reverse existing performance rankings.</div>
+          <code>performance = 100 * (wLive * liveBench / maxLiveBench + wAA * aaScore / maxAaScore);</code>
+          <div class="formula-desc">Equal influence after adjusting for score spread. Calibration: September 8, 2026, 26 models, AA v4.3. Weights: wLive <span id="formulaWLive">0.732</span>, wAA <span id="formulaWAa">0.268</span>.</div>
         </div>
-        <div class="formula-desc">Performance is an overall benchmark index, not a coding success rate. Treat small differences as near-ties. Equal influence does not establish equal reliability.</div>
         <div class="formula-item">
           <div class="formula-label">Value</div>
-          <code><span class="syntax-keyword">const</span> value = performance / Math.pow(blendedCost / minBlendedCost, P);</code>
-          <div class="formula-desc">Cost is measured against the cheapest model in the dataset (currently $<span id="formulaCostAnchor">0.164</span>/1M), so Value shares Performance's 0&ndash;100 ceiling. P controls cost sensitivity (currently <span id="formulaPVal">0.07</span>)</div>
+          <code>value = performance / (blendedCost / minBlendedCost) ** P;</code>
+          <div class="formula-desc">Cheapest model: $<span id="formulaCostAnchor">0.022</span>/million tokens. P = <span id="formulaPVal">0.07</span>; higher P gives cost more influence. P = 0 ranks by performance alone.</div>
         </div>
       </div>
     </div>

@@ -54,45 +54,6 @@ node scripts/update-prices.mjs --write   # apply it
 
 Set `cachePrice` to `null` when it isn't published; every model needs both benchmark scores (`livebench` and `aaScore`). [AGENTS.md](AGENTS.md) has the full workflow.
 
-### Artificial Analysis score audit — September 8, 2026
-
-All 26 dashboard models remain listed on the [current AA leaderboard](https://artificialanalysis.ai/leaderboards/models); none were removed. Scores below are the displayed, rounded **Intelligence Index v4.3** values, checked on September 8, 2026. Each source link identifies the exact AA model and reasoning configuration used. Dashboard names are preserved so shared compare links continue to work. Gemini 3.1 Pro maps to AA’s Gemini 3.1 Pro Preview entry; DeepSeek’s dated releases map to the current Pro and Flash pages, not the older 0424 entries.
-
-[v4.3, released September 7](https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v4-3), replaces τ³-Banking with AutomationBench-AA (5%) and upgrades Terminal-Bench v2.1 to v4.0 (10%). Category weights remain Agents 30%, Coding 20%, General 30%, and Scientific Reasoning 20%. The changed evaluation suite means score decreases are not evidence that the models became less capable.
-
-Qwen 3.8 Flash Next remains supported with a published score, but AA marks **42 as an estimate (independent evaluation forthcoming)**. It is retained with that qualification. A published estimate is not treated as a missing score.
-
-LiveBench scores and the dashboard’s September 5 fixed performance calibration are retained. This update changes the AA inputs, not the dashboard’s benchmark weighting methodology.
-
-| Dashboard model | AA model / configuration (source) | Previous AA | v4.3 AA |
-| --- | --- | ---: | ---: |
-| GPT-5.6 Sol | [GPT-5.6 Sol (max)](https://artificialanalysis.ai/models/gpt-5-6-sol) | 51 | 47 |
-| GPT-5.6 Terra | [GPT-5.6 Terra (max)](https://artificialanalysis.ai/models/gpt-5-6-terra) | 47 | 42 |
-| GPT-5.6 Luna | [GPT-5.6 Luna (max)](https://artificialanalysis.ai/models/gpt-5-6-luna) | 43 | 38 |
-| Grok 4.6 | [Grok 4.6 (high)](https://artificialanalysis.ai/models/grok-4-6) | 51 | 44 |
-| Claude Sonnet 5 | [Claude Sonnet 5 (max)](https://artificialanalysis.ai/models/claude-sonnet-5) | 45 | 38 |
-| DeepSeek V4 Pro 0813 | [DeepSeek V4 Pro 0813 (max)](https://artificialanalysis.ai/models/deepseek-v4-pro) | 42 | 36 |
-| GLM 5.3 | [GLM-5.3 (max)](https://artificialanalysis.ai/models/glm-5-3) | 49 | 45 |
-| GLM 5.3 Flash | [GLM-5.3-Flash](https://artificialanalysis.ai/models/glm-5-3-flash) | 46 | 42 |
-| MiniMax M3 | [MiniMax-M3](https://artificialanalysis.ai/models/minimax-m3) | 36 | 30 |
-| DeepSeek V4 Flash 0731 | [DeepSeek V4 Flash 0731 (max)](https://artificialanalysis.ai/models/deepseek-v4-flash) | 41 | 35 |
-| Gemini 3.1 Pro | [Gemini 3.1 Pro Preview](https://artificialanalysis.ai/models/gemini-3-1-pro-preview) | 37 | 30 |
-| Qwen 3.8 Max | [Qwen3.8 Max](https://artificialanalysis.ai/models/qwen3-8-max) | 47 | 40 |
-| Claude Fable 5 | [Claude Fable 5 (with fallback)](https://artificialanalysis.ai/models/claude-fable-5) | 53 | 50 |
-| Kimi K3 | [Kimi K3 (max)](https://artificialanalysis.ai/models/kimi-k3) | 50 | 44 |
-| Muse Spark 1.2 | [Muse Spark 1.2 (xhigh)](https://artificialanalysis.ai/models/muse-spark-1-2) | 47 | 40 |
-| Inkling | [Inkling](https://artificialanalysis.ai/models/inkling) | 32 | 26 |
-| Gemini 3.7 Flash | [Gemini 3.7 Flash (high)](https://artificialanalysis.ai/models/gemini-3-7-flash) | 45 | 39 |
-| Gemini 3.5 Flash-Lite | [Gemini 3.5 Flash-Lite](https://artificialanalysis.ai/models/gemini-3-5-flash-lite) | 28 | 23 |
-| Claude Opus 5 | [Claude Opus 5 (max)](https://artificialanalysis.ai/models/claude-opus-5) | 54 | 51 |
-| Qwen 3.8 Flash Next | [Qwen3.8-Flash-Next](https://artificialanalysis.ai/models/qwen3-8-flash-next) | 46 | 42 (estimate) |
-| DeepSeek V4 Flash Vision | [DeepSeek V4 Flash Vision (max)](https://artificialanalysis.ai/models/deepseek-v4-flash-vision) | 42 | 35 |
-| Claude Fable 5.1 | [Claude Fable 5.1 (max with fallback)](https://artificialanalysis.ai/models/claude-fable-5-1) | 57 | 53 |
-| Qwen 3.8 27B | [Qwen3.8 27B (xhigh)](https://artificialanalysis.ai/models/qwen3-8-27b) | 42 | 34 |
-| Gemini 3.8 Flash | [Gemini 3.8 Flash (high)](https://artificialanalysis.ai/models/gemini-3-8-flash) | 47 | 41 |
-| Muse Spark 1.3 | [Muse Spark 1.3 (max)](https://artificialanalysis.ai/models/muse-spark-1-3) | 53 | 48 |
-| GPT-6 Astra | [GPT-6 Astra (max)](https://artificialanalysis.ai/models/gpt-6-astra) | 55 | 53 |
-
 ## AI assistant
 
 A built-in assistant, powered by OpenRouter, that answers questions about the current leaderboard, ranks and compares models, explains why a model is filtered out, and applies filters on request — "show me only open models under \$1".
@@ -128,13 +89,9 @@ $$
 \text{Performance} = 100 \times \frac{\text{LiveBench}/s_{LB} + \text{AA Score}/s_{AA}}{\max(\text{LiveBench})/s_{LB} + \max(\text{AA Score})/s_{AA}}
 $$
 
-The reference is the **26-model repository snapshot of September 5, 2026**, with sample standard deviations `sLB = 4.510893907658862` and `sAA = 6.997581999959261`. These constants live in `PERFORMANCE_CALIBRATION` in `app.js`. This is a dashboard calibration baseline, not a claimed benchmark release identifier.
+Calibration: **September 8, 2026, 26 models, AA Intelligence Index v4.3**. Sample standard deviations are `sLB = 4.510893907658862` and `sAA = 7.839937205400014`, stored in `PERFORMANCE_CALIBRATION` in `app.js`. AA's spread was recalibrated for v4.3 to restore equal influence.
 
-A one-reference-standard-deviation improvement on either benchmark contributes equally. On the initial roster this exactly preserves the previous inverse-spread scores. Adding or removing models no longer refits the tradeoff between benchmarks. New maxima can rescale all scores equally to keep the 0–100 ceiling, but cannot reverse existing performance rankings. Filters do not alter calibration or maxima.
-
-The modal expresses this same formula using max-normalized weights: `wLB = (lbMax/sLB) / (lbMax/sLB + aaMax/sAA)`, with the corresponding AA weight. Recalibrate deliberately when benchmark methodologies change; record the reference population and new spreads here and in the modal. Do not recalibrate on every roster edit.
-
-This is an **overall benchmark index**, not a coding task success rate. Equal spread influence does not establish equal reliability or independence. Treat small score differences as near-ties. Benchmark values remain curated; their release and reasoning configuration should be verified together before updating them.
+A one-standard-deviation improvement on either benchmark adds the same performance points. Calibration stays fixed across roster and filter changes; new maxima only rescale scores. Recalibrate when benchmark methodology changes. This is a relative benchmark index, not a task success rate.
 
 ### Value
 

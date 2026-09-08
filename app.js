@@ -291,14 +291,14 @@ function cmpNumericNullLast(va, vb, asc) {
 const CONTEXT_TO_OUTPUT = 165;
 const CACHE_HIT_RATE = 0.90;
 
-// Raw-score spreads from the 26-model data.json snapshot on 2026-09-05.
+// Raw-score spreads from the 26-model snapshot on 2026-09-08 (AA v4.3).
 // Freeze calibration independently of the display roster: adding/removing a
 // model must not change the tradeoff between the two benchmarks. Recalibrate
 // deliberately when benchmark methodology changes, and document the new baseline.
 const PERFORMANCE_CALIBRATION = Object.freeze({
-  reference: '2026-09-05 (26 models)',
+  reference: '2026-09-08 (26 models, AA v4.3)',
   lbSd: 4.510893907658862,
-  aaSd: 6.997581999959261,
+  aaSd: 7.839937205400014,
 });
 
 function computeBlended(m) {
@@ -3184,7 +3184,7 @@ Get numbers from your tools rather than memory, since the data and the user's fi
 
 HOW TO ANSWER
 - Answer the actual question first, conversationally. Use a number or two to back up your point, not as the point — you're a guide, not a spreadsheet. One clear recommendation beats an exhaustive rundown.
-- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost estimates dollars per million combined input/output tokens for the selected workload: ${state.contextRatio} input tokens per output token and ${Math.round(state.cacheHitRate * 100)}% cache hits. It includes short-duration cache creation where priced, assumes new context is written to cache, and includes reasoning in output. Unknown cache-write pricing falls back to regular input; without a cache-read price all input pays regular input. This is not a measured cost per task. Performance combines general benchmark scores using fixed spread calibration from 2026-09-05, with maxima setting a relative 0–100 scale. Equal spread influence does not establish unbiased coding ability or task success probability; value = performance / (cost / cheapest model's cost)^P, so the cheapest model in the dataset sets the bar for cost the same way the best scorer sets it for performance.)
+- Prefer plain words to jargon: "blended cost" is roughly what a model costs to use, "performance" is how well it scores on benchmarks, "value" is bang for buck (the P slider sets how much price matters to it). Only explain the formulas if someone asks. (For reference: blended cost estimates dollars per million combined input/output tokens for the selected workload: ${state.contextRatio} input tokens per output token and ${Math.round(state.cacheHitRate * 100)}% cache hits. It includes short-duration cache creation where priced, assumes new context is written to cache, and includes reasoning in output. Unknown cache-write pricing falls back to regular input; without a cache-read price all input pays regular input. This is not a measured cost per task. Performance combines general benchmark scores using fixed spread calibration from ${PERFORMANCE_CALIBRATION.reference}, with maxima setting a relative 0–100 scale. Equal spread influence does not establish unbiased coding ability or task success probability; value = performance / (cost / cheapest model's cost)^P, so the cheapest model in the dataset sets the bar for cost the same way the best scorer sets it for performance.)
 - Near-identical scores are a tie. Don't crown a winner over a decimal point — point to what genuinely separates the models, like price or open weights.
 - If a name could mean several models (like "Opus"), just ask which one they meant.
 
