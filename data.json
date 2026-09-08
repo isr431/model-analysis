@@ -138,9 +138,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.14,
-      "outputPrice": 0.28,
-      "cachePrice": 0.028,
+      "inputPrice": 0.065,
+      "outputPrice": 0.18,
+      "cachePrice": 0.016,
       "cacheWritePrice": null,
       "livebench": 74.17,
       "aaScore": 35,
