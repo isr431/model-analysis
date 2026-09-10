@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-09",
+  "lastUpdated": "2026-09-10",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -116,9 +116,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.075,
-      "outputPrice": 0.25,
-      "cachePrice": 0.015,
+      "inputPrice": 0.15,
+      "outputPrice": 0.5,
+      "cachePrice": 0.03,
       "cacheWritePrice": null,
       "livebench": 71.59,
       "aaScore": 42,
