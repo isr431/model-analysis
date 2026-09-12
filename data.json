@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-11",
+  "lastUpdated": "2026-09-12",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -94,9 +94,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 0.66,
-      "outputPrice": 1.98,
-      "cachePrice": 0.066,
+      "inputPrice": 0.57816,
+      "outputPrice": 1.73448,
+      "cachePrice": 0.018396,
       "cacheWritePrice": null,
       "livebench": 77.44,
       "aaScore": 36,
@@ -116,9 +116,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.15,
-      "outputPrice": 0.5,
-      "cachePrice": 0.03,
+      "inputPrice": 0.075,
+      "outputPrice": 0.25,
+      "cachePrice": 0.015,
       "cacheWritePrice": null,
       "livebench": 71.59,
       "aaScore": 42,
@@ -138,9 +138,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.065,
-      "outputPrice": 0.18,
-      "cachePrice": 0.016,
+      "inputPrice": 0.04,
+      "outputPrice": 0.08,
+      "cachePrice": 0.008,
       "cacheWritePrice": null,
       "livebench": 74.17,
       "aaScore": 35,
@@ -182,9 +182,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 2.34,
-      "outputPrice": 11.7,
-      "cachePrice": 0.261,
+      "inputPrice": 2.302729,
+      "outputPrice": 11.550195,
+      "cachePrice": 0.263169,
       "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 44,
@@ -282,9 +282,9 @@
     {
       "provider": "Alibaba",
       "model": "Qwen 3.8 27B",
-      "inputPrice": 0.42,
-      "outputPrice": 3,
-      "cachePrice": 0.085,
+      "inputPrice": 0.214,
+      "outputPrice": 2.55,
+      "cachePrice": 0.15,
       "cacheWritePrice": null,
       "livebench": 75.27,
       "aaScore": 34,
