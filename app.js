@@ -2175,7 +2175,7 @@ function removeSkeletons() {
 const CHAT_STATE = {
   isOpen: false,
   apiKey: localStorage.getItem('openrouter_api_key') || '',
-  selectedModel: localStorage.getItem('openrouter_chat_model') || 'google/gemini-3.7-flash',
+  selectedModel: localStorage.getItem('openrouter_chat_model') || 'google/gemini-3.8-flash',
   reasoningEffort: localStorage.getItem('openrouter_reasoning_effort') || 'high',
   messages: [],
   abortController: null
