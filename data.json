@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-12",
+  "lastUpdated": "2026-09-13",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -105,9 +105,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 1.4,
-      "outputPrice": 4.4,
-      "cachePrice": 0.26,
+      "inputPrice": 1.092,
+      "outputPrice": 3.432,
+      "cachePrice": 0.2028,
       "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 45,
@@ -116,9 +116,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.075,
-      "outputPrice": 0.25,
-      "cachePrice": 0.015,
+      "inputPrice": 0.15,
+      "outputPrice": 0.5,
+      "cachePrice": 0.03,
       "cacheWritePrice": null,
       "livebench": 71.59,
       "aaScore": 42,
@@ -182,9 +182,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 2.302729,
-      "outputPrice": 11.550195,
-      "cachePrice": 0.263169,
+      "inputPrice": 2.648138,
+      "outputPrice": 13.282724,
+      "cachePrice": 0.302644,
       "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 44,
