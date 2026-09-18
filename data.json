@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-17",
+  "lastUpdated": "2026-09-18",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -182,9 +182,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 3,
-      "outputPrice": 15,
-      "cachePrice": 0.3,
+      "inputPrice": 2.1,
+      "outputPrice": 10.95,
+      "cachePrice": 0.23,
       "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 44,
@@ -260,9 +260,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash Vision",
-      "inputPrice": 0.22,
-      "outputPrice": 0.66,
-      "cachePrice": 0.007,
+      "inputPrice": 0.2156,
+      "outputPrice": 0.6468,
+      "cachePrice": 0.00686,
       "cacheWritePrice": null,
       "livebench": 76.76,
       "aaScore": 35,
