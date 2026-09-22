@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-21",
+  "lastUpdated": "2026-09-22",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -105,9 +105,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.91,
-      "outputPrice": 2.86,
-      "cachePrice": 0.169,
+      "inputPrice": 0.7,
+      "outputPrice": 2.2,
+      "cachePrice": 0.13,
       "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 45,
@@ -116,9 +116,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.09,
-      "outputPrice": 0.3,
-      "cachePrice": 0.018,
+      "inputPrice": 0.15,
+      "outputPrice": 0.5,
+      "cachePrice": 0.05,
       "cacheWritePrice": null,
       "livebench": 71.59,
       "aaScore": 42,
@@ -139,7 +139,7 @@
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
       "inputPrice": 0.04,
-      "outputPrice": 0.16,
+      "outputPrice": 0.64,
       "cachePrice": 0.016,
       "cacheWritePrice": null,
       "livebench": 74.17,
@@ -182,9 +182,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 1.7,
-      "outputPrice": 8.5,
-      "cachePrice": 0.17,
+      "inputPrice": 3,
+      "outputPrice": 15,
+      "cachePrice": 0.3,
       "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 44,
@@ -282,9 +282,9 @@
     {
       "provider": "Alibaba",
       "model": "Qwen 3.8 27B",
-      "inputPrice": 0.2,
-      "outputPrice": 2.5,
-      "cachePrice": 0.05,
+      "inputPrice": 0.42,
+      "outputPrice": 3,
+      "cachePrice": 0.085,
       "cacheWritePrice": null,
       "livebench": 75.27,
       "aaScore": 34,
@@ -333,6 +333,17 @@
       "livebench": 81.11,
       "aaScore": 40,
       "open": true
+    },
+    {
+      "provider": "xAI",
+      "model": "Grok 4.7",
+      "inputPrice": 1.6,
+      "outputPrice": 4.8,
+      "cachePrice": 0.4,
+      "cacheWritePrice": null,
+      "livebench": 77.08,
+      "aaScore": 46,
+      "open": false
     }
   ]
 }
