@@ -105,9 +105,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.7,
-      "outputPrice": 2.2,
-      "cachePrice": 0.13,
+      "inputPrice": 0.84,
+      "outputPrice": 2.64,
+      "cachePrice": 0.156,
       "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 45,

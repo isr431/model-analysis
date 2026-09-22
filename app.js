@@ -22,7 +22,7 @@ const FALLBACK_DATA = {
     { provider: 'xAI',               model: 'Grok 4.6',                 inputPrice: 2.0,  outputPrice: 6.0,  cachePrice: 0.5,   cacheWritePrice: null,     livebench: 78.04, aaScore: 44, open: false },
     { provider: 'Anthropic',         model: 'Claude Sonnet 5',          inputPrice: 2.0,  outputPrice: 10.0, cachePrice: 0.2,   cacheWritePrice: 2.5,      livebench: 76.04, aaScore: 38, open: false },
     { provider: 'DeepSeek',          model: 'DeepSeek V4 Pro 0813',     inputPrice: 1.32, outputPrice: 3.96, cachePrice: 0.044, cacheWritePrice: null,     livebench: 77.44, aaScore: 36, open: true },
-    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 0.7,  outputPrice: 2.2,  cachePrice: 0.13,  cacheWritePrice: null,     livebench: 76.14, aaScore: 45, open: true },
+    { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 0.84, outputPrice: 2.64, cachePrice: 0.156, cacheWritePrice: null,     livebench: 76.14, aaScore: 45, open: true },
     { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.15, outputPrice: 0.5,  cachePrice: 0.05,  cacheWritePrice: null,     livebench: 71.59, aaScore: 42, open: true },
     { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,  outputPrice: 1.2,  cachePrice: 0.06,  cacheWritePrice: null,     livebench: 67.26, aaScore: 30, open: true },
     { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.04, outputPrice: 0.64, cachePrice: 0.016, cacheWritePrice: null,     livebench: 74.17, aaScore: 35, open: true },
