@@ -94,9 +94,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 1.32,
-      "outputPrice": 3.96,
-      "cachePrice": 0.044,
+      "inputPrice": 0.498696,
+      "outputPrice": 1.496088,
+      "cachePrice": 0.016623,
       "cacheWritePrice": null,
       "livebench": 77.44,
       "aaScore": 36,
