@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-09-22',
+  lastUpdated: '2026-09-23',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -43,7 +43,10 @@ const FALLBACK_DATA = {
     { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25, outputPrice: 4.25, cachePrice: 0.15,  cacheWritePrice: null,     livebench: 81.59, aaScore: 48, open: false },
     { provider: 'OpenAI',            model: 'GPT-6 Astra',              inputPrice: 10.0, outputPrice: 50.0, cachePrice: 1.0,   cacheWritePrice: 12.5,     livebench: 82.16, aaScore: 53, open: false },
     { provider: 'DeepSeek',          model: 'DeepSeek V4.1 Flash',      inputPrice: 0.3,  outputPrice: 1.2,  cachePrice: 0.006, cacheWritePrice: null,     livebench: 81.11, aaScore: 40, open: true },
-    { provider: 'xAI',               model: 'Grok 4.7',                 inputPrice: 1.6,  outputPrice: 4.8,  cachePrice: 0.4,   cacheWritePrice: null,     livebench: 77.08, aaScore: 46, open: false },
+    { provider: 'xAI',               model: 'Grok 4.7',                 inputPrice: 1.6,  outputPrice: 4.8,  cachePrice: 0.4,   cacheWritePrice: null,     livebench: 77.4,  aaScore: 46, open: false },
+    { provider: 'Anthropic',         model: 'Claude Opus 5.5',          inputPrice: 4.0,  outputPrice: 20.0, cachePrice: 0.2,   cacheWritePrice: 5.0,      livebench: 83.22, aaScore: 58, open: false },
+    { provider: 'OpenAI',            model: 'GPT-6 Sol',                inputPrice: 2.0,  outputPrice: 10.0, cachePrice: 0.2,   cacheWritePrice: 2.5,      livebench: 79.25, aaScore: 48, open: false },
+    { provider: 'OpenAI',            model: 'GPT-6 Luna',               inputPrice: 0.1,  outputPrice: 0.5,  cachePrice: 0.01,  cacheWritePrice: 0.125,    livebench: 72.03, aaScore: 37, open: false },
   ],
 };
 
