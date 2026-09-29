@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-29",
+  "lastUpdated": "2026-09-30",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -94,9 +94,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 0.48,
-      "outputPrice": 4.2,
-      "cachePrice": 0.384,
+      "inputPrice": 0.3915,
+      "outputPrice": 3.49,
+      "cachePrice": 0.3132,
       "cacheWritePrice": null,
       "livebench": 77.44,
       "aaScore": 36,
@@ -160,13 +160,14 @@
     {
       "provider": "Alibaba",
       "model": "Qwen 3.8 Max",
-      "inputPrice": 4,
-      "outputPrice": 12,
-      "cachePrice": 0.5,
-      "cacheWritePrice": null,
+      "inputPrice": 2,
+      "outputPrice": 6,
+      "cachePrice": 0.25,
+      "cacheWritePrice": 2.5,
       "livebench": 78.46,
       "aaScore": 40,
-      "open": true
+      "open": true,
+      "openrouterId": "qwen/qwen3.8-max-0902"
     },
     {
       "provider": "Anthropic",
@@ -283,9 +284,9 @@
     {
       "provider": "Alibaba",
       "model": "Qwen 3.8 27B",
-      "inputPrice": 0.0428,
-      "outputPrice": 4.4,
-      "cachePrice": 0.0342,
+      "inputPrice": 0.0249,
+      "outputPrice": 4.35,
+      "cachePrice": 0.0199,
       "cacheWritePrice": null,
       "livebench": 75.27,
       "aaScore": 34,
@@ -349,13 +350,14 @@
     {
       "provider": "Anthropic",
       "model": "Claude Opus 5.5",
-      "inputPrice": 5,
-      "outputPrice": 25,
-      "cachePrice": 0.5,
-      "cacheWritePrice": 6.25,
+      "inputPrice": 4,
+      "outputPrice": 20,
+      "cachePrice": 0.2,
+      "cacheWritePrice": 5,
       "livebench": 83.22,
       "aaScore": 58,
-      "open": false
+      "open": false,
+      "openrouterId": "anthropic/claude-opus-5.5"
     },
     {
       "provider": "OpenAI",
@@ -378,6 +380,30 @@
       "livebench": 72.03,
       "aaScore": 37,
       "open": false
+    },
+    {
+      "provider": "Anthropic",
+      "model": "Claude Sonnet 5.5",
+      "inputPrice": 2,
+      "outputPrice": 10,
+      "cachePrice": 0.2,
+      "cacheWritePrice": 2.5,
+      "livebench": 77.75,
+      "aaScore": 56,
+      "open": false,
+      "openrouterId": "anthropic/claude-sonnet-5.5"
+    },
+    {
+      "provider": "OpenAI",
+      "model": "GPT-6.1 Sol",
+      "inputPrice": 2,
+      "outputPrice": 10,
+      "cachePrice": 0.1,
+      "cacheWritePrice": 2.5,
+      "livebench": 81.62,
+      "aaScore": 52,
+      "open": false,
+      "openrouterId": "openai/gpt-6.1-sol"
     }
   ]
 }
