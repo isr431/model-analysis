@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-08",
+  "lastUpdated": "2026-10-09",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -105,9 +105,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.049,
-      "outputPrice": 3.39,
-      "cachePrice": 0.048,
+      "inputPrice": 0.04,
+      "outputPrice": 4.8,
+      "cachePrice": 0.039,
       "cacheWritePrice": null,
       "livebench": 76.14,
       "aaScore": 45,
@@ -138,9 +138,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.006,
+      "inputPrice": 0.018,
       "outputPrice": 1.28,
-      "cachePrice": 0.006,
+      "cachePrice": 0.018,
       "cacheWritePrice": null,
       "livebench": 74.17,
       "aaScore": 35,
@@ -183,9 +183,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.62,
-      "outputPrice": 12.3,
-      "cachePrice": 0.43,
+      "inputPrice": 0.5,
+      "outputPrice": 12,
+      "cachePrice": 0.3,
       "cacheWritePrice": null,
       "livebench": 79.19,
       "aaScore": 44,
@@ -328,9 +328,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.0356,
-      "outputPrice": 1,
-      "cachePrice": 0.01,
+      "inputPrice": 0.3,
+      "outputPrice": 1.2,
+      "cachePrice": 0.006,
       "cacheWritePrice": null,
       "livebench": 81.11,
       "aaScore": 40,
