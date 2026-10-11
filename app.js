@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-10-10',
+  lastUpdated: '2026-10-11',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -25,11 +25,11 @@ const FALLBACK_DATA = {
     { provider: 'Z.ai',              model: 'GLM 5.3',                  inputPrice: 0.039,  outputPrice: 4.8,    cachePrice: 0.038,   cacheWritePrice: null,     livebench: 76.14, aaScore: 45, open: true },
     { provider: 'Z.ai',              model: 'GLM 5.3 Flash',            inputPrice: 0.15,   outputPrice: 0.5,    cachePrice: 0.03,    cacheWritePrice: null,     livebench: 71.59, aaScore: 42, open: true },
     { provider: 'MiniMax',           model: 'MiniMax M3',               inputPrice: 0.3,    outputPrice: 1.2,    cachePrice: 0.06,    cacheWritePrice: null,     livebench: 67.26, aaScore: 30, open: true },
-    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.0107, outputPrice: 1.28,   cachePrice: 0.0107,  cacheWritePrice: null,     livebench: 74.17, aaScore: 35, open: true },
+    { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash 0731',   inputPrice: 0.018,  outputPrice: 0.64,   cachePrice: 0.018,   cacheWritePrice: null,     livebench: 74.17, aaScore: 35, open: true },
     { provider: 'Google',            model: 'Gemini 3.1 Pro',           inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,     cacheWritePrice: 2.375,    livebench: 76.95, aaScore: 30, open: false },
     { provider: 'Alibaba',           model: 'Qwen 3.8 Max',             inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.25,    cacheWritePrice: null,     livebench: 78.46, aaScore: 40, open: true },
     { provider: 'Anthropic',         model: 'Claude Fable 5',           inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,     cacheWritePrice: 12.5,     livebench: 82.97, aaScore: 50, open: false },
-    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 0.64,   outputPrice: 13.5,   cachePrice: 0.28,    cacheWritePrice: null,     livebench: 79.19, aaScore: 44, open: true },
+    { provider: 'Moonshot AI',       model: 'Kimi K3',                  inputPrice: 0.8,    outputPrice: 10.0,   cachePrice: 0.55,    cacheWritePrice: null,     livebench: 79.19, aaScore: 44, open: true },
     { provider: 'Meta',              model: 'Muse Spark 1.2',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    cacheWritePrice: null,     livebench: 77.95, aaScore: 40, open: false },
     { provider: 'Thinking Machines', model: 'Inkling',                  inputPrice: 1.0,    outputPrice: 4.05,   cachePrice: 0.17,    cacheWritePrice: null,     livebench: 71.92, aaScore: 26, open: true },
     { provider: 'Google',            model: 'Gemini 3.7 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   cacheWritePrice: 0.791667, livebench: 78.83, aaScore: 39, open: false },
@@ -38,7 +38,7 @@ const FALLBACK_DATA = {
     { provider: 'Alibaba',           model: 'Qwen 3.8 Flash Next',      inputPrice: 0.15,   outputPrice: 0.47,   cachePrice: 0.016,   cacheWritePrice: null,     livebench: 76.19, aaScore: 42, open: true },
     { provider: 'DeepSeek',          model: 'DeepSeek V4 Flash Vision', inputPrice: 0.2156, outputPrice: 0.6468, cachePrice: 0.00686, cacheWritePrice: null,     livebench: 76.76, aaScore: 35, open: true },
     { provider: 'Anthropic',         model: 'Claude Fable 5.1',         inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 0.25,    cacheWritePrice: 12.5,     livebench: 83.41, aaScore: 53, open: false },
-    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.425,  outputPrice: 2.55,   cachePrice: 0.085,   cacheWritePrice: 0.53125,  livebench: 75.27, aaScore: 34, open: true },
+    { provider: 'Alibaba',           model: 'Qwen 3.8 27B',             inputPrice: 0.04,   outputPrice: 2.3,    cachePrice: 0.0198,  cacheWritePrice: null,     livebench: 75.27, aaScore: 34, open: true },
     { provider: 'Google',            model: 'Gemini 3.8 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   cacheWritePrice: 0.791667, livebench: 75.83, aaScore: 41, open: false },
     { provider: 'Meta',              model: 'Muse Spark 1.3',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    cacheWritePrice: null,     livebench: 81.59, aaScore: 48, open: false },
     { provider: 'OpenAI',            model: 'GPT-6 Astra',              inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,     cacheWritePrice: 12.5,     livebench: 82.16, aaScore: 53, open: false },
