@@ -43,7 +43,7 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
-      "livebench": 81.05,
+      "livebench": 76.26,
       "aaScore": 47,
       "open": false
     },
@@ -54,7 +54,7 @@
       "outputPrice": 12,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
-      "livebench": 77.94,
+      "livebench": 74.99,
       "aaScore": 42,
       "open": false
     },
@@ -65,8 +65,8 @@
       "outputPrice": 1.2,
       "cachePrice": 0.02,
       "cacheWritePrice": 0.25,
-      "livebench": 73.56,
-      "aaScore": 38,
+      "livebench": 66.09,
+      "aaScore": 37,
       "open": false
     },
     {
@@ -76,7 +76,7 @@
       "outputPrice": 6,
       "cachePrice": 0.5,
       "cacheWritePrice": null,
-      "livebench": 78.04,
+      "livebench": 74.64,
       "aaScore": 44,
       "open": false
     },
@@ -87,20 +87,9 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
-      "livebench": 76.04,
+      "livebench": 74.63,
       "aaScore": 38,
       "open": false
-    },
-    {
-      "provider": "DeepSeek",
-      "model": "DeepSeek V4 Pro 0813",
-      "inputPrice": 1.32,
-      "outputPrice": 3.96,
-      "cachePrice": 0.044,
-      "cacheWritePrice": null,
-      "livebench": 77.44,
-      "aaScore": 36,
-      "open": true
     },
     {
       "provider": "Z.ai",
@@ -109,7 +98,7 @@
       "outputPrice": 4.8,
       "cachePrice": 0.059,
       "cacheWritePrice": null,
-      "livebench": 76.14,
+      "livebench": 60.74,
       "aaScore": 45,
       "open": true
     },
@@ -120,30 +109,8 @@
       "outputPrice": 0.9,
       "cachePrice": 0.0108,
       "cacheWritePrice": null,
-      "livebench": 71.59,
+      "livebench": 70.61,
       "aaScore": 42,
-      "open": true
-    },
-    {
-      "provider": "MiniMax",
-      "model": "MiniMax M3",
-      "inputPrice": 0.3,
-      "outputPrice": 1.2,
-      "cachePrice": 0.06,
-      "cacheWritePrice": null,
-      "livebench": 67.26,
-      "aaScore": 30,
-      "open": true
-    },
-    {
-      "provider": "DeepSeek",
-      "model": "DeepSeek V4 Flash 0731",
-      "inputPrice": 0.016,
-      "outputPrice": 0.64,
-      "cachePrice": 0.016,
-      "cacheWritePrice": null,
-      "livebench": 74.17,
-      "aaScore": 35,
       "open": true
     },
     {
@@ -153,7 +120,7 @@
       "outputPrice": 12,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.375,
-      "livebench": 76.95,
+      "livebench": 54.91,
       "aaScore": 30,
       "open": false
     },
@@ -164,8 +131,8 @@
       "outputPrice": 6,
       "cachePrice": 0.25,
       "cacheWritePrice": null,
-      "livebench": 78.46,
-      "aaScore": 40,
+      "livebench": 64.24,
+      "aaScore": 45,
       "open": true,
       "openrouterId": "qwen/qwen3.8-max-0902"
     },
@@ -176,7 +143,7 @@
       "outputPrice": 50,
       "cachePrice": 1,
       "cacheWritePrice": 12.5,
-      "livebench": 82.97,
+      "livebench": 83.61,
       "aaScore": 50,
       "open": false
     },
@@ -187,7 +154,7 @@
       "outputPrice": 15,
       "cachePrice": 0.32,
       "cacheWritePrice": null,
-      "livebench": 79.19,
+      "livebench": 63.39,
       "aaScore": 44,
       "open": true
     },
@@ -198,20 +165,9 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "cacheWritePrice": null,
-      "livebench": 77.95,
+      "livebench": 61.8,
       "aaScore": 40,
       "open": false
-    },
-    {
-      "provider": "Thinking Machines",
-      "model": "Inkling",
-      "inputPrice": 1,
-      "outputPrice": 4.05,
-      "cachePrice": 0.17,
-      "cacheWritePrice": null,
-      "livebench": 71.92,
-      "aaScore": 26,
-      "open": true
     },
     {
       "provider": "Google",
@@ -220,19 +176,8 @@
       "outputPrice": 3.75,
       "cachePrice": 0.075,
       "cacheWritePrice": 0.791667,
-      "livebench": 78.83,
+      "livebench": 67.19,
       "aaScore": 39,
-      "open": false
-    },
-    {
-      "provider": "Google",
-      "model": "Gemini 3.5 Flash-Lite",
-      "inputPrice": 0.3,
-      "outputPrice": 2.5,
-      "cachePrice": 0.03,
-      "cacheWritePrice": 0.383333,
-      "livebench": 63.94,
-      "aaScore": 23,
       "open": false
     },
     {
@@ -242,7 +187,7 @@
       "outputPrice": 25,
       "cachePrice": 0.5,
       "cacheWritePrice": 6.25,
-      "livebench": 80.08,
+      "livebench": 82.09,
       "aaScore": 51,
       "open": false,
       "openrouterId": "anthropic/claude-opus-5"
@@ -254,8 +199,8 @@
       "outputPrice": 0.47,
       "cachePrice": 0.016,
       "cacheWritePrice": null,
-      "livebench": 76.19,
-      "aaScore": 42,
+      "livebench": 46.96,
+      "aaScore": 40,
       "open": true,
       "openrouterId": "qwen/qwen3.8-flash"
     },
@@ -266,7 +211,7 @@
       "outputPrice": 0.6468,
       "cachePrice": 0.00686,
       "cacheWritePrice": null,
-      "livebench": 76.76,
+      "livebench": 63.63,
       "aaScore": 35,
       "open": true
     },
@@ -277,20 +222,9 @@
       "outputPrice": 50,
       "cachePrice": 0.25,
       "cacheWritePrice": 12.5,
-      "livebench": 83.41,
+      "livebench": 87.99,
       "aaScore": 53,
       "open": false
-    },
-    {
-      "provider": "Alibaba",
-      "model": "Qwen 3.8 27B",
-      "inputPrice": 0.04,
-      "outputPrice": 2.3,
-      "cachePrice": 0.0198,
-      "cacheWritePrice": null,
-      "livebench": 75.27,
-      "aaScore": 34,
-      "open": true
     },
     {
       "provider": "Google",
@@ -299,7 +233,7 @@
       "outputPrice": 3.75,
       "cachePrice": 0.075,
       "cacheWritePrice": 0.791667,
-      "livebench": 75.83,
+      "livebench": 67.34,
       "aaScore": 41,
       "open": false
     },
@@ -310,7 +244,7 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "cacheWritePrice": null,
-      "livebench": 81.59,
+      "livebench": 74.9,
       "aaScore": 48,
       "open": false
     },
@@ -321,7 +255,7 @@
       "outputPrice": 50,
       "cachePrice": 1,
       "cacheWritePrice": 12.5,
-      "livebench": 82.16,
+      "livebench": 86.14,
       "aaScore": 53,
       "open": false
     },
@@ -332,8 +266,8 @@
       "outputPrice": 0.891,
       "cachePrice": 0.0054,
       "cacheWritePrice": null,
-      "livebench": 81.11,
-      "aaScore": 40,
+      "livebench": 77.26,
+      "aaScore": 39,
       "open": true
     },
     {
@@ -343,7 +277,7 @@
       "outputPrice": 6,
       "cachePrice": 0.5,
       "cacheWritePrice": null,
-      "livebench": 77.4,
+      "livebench": 74.09,
       "aaScore": 46,
       "open": false
     },
@@ -354,7 +288,7 @@
       "outputPrice": 20,
       "cachePrice": 0.2,
       "cacheWritePrice": 5,
-      "livebench": 83.22,
+      "livebench": 86.53,
       "aaScore": 58,
       "open": false,
       "openrouterId": "anthropic/claude-opus-5.5"
@@ -366,7 +300,7 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
-      "livebench": 79.25,
+      "livebench": 81.91,
       "aaScore": 48,
       "open": false
     },
@@ -377,8 +311,8 @@
       "outputPrice": 0.5,
       "cachePrice": 0.01,
       "cacheWritePrice": 0.125,
-      "livebench": 72.03,
-      "aaScore": 37,
+      "livebench": 69.4,
+      "aaScore": 38,
       "open": false
     },
     {
@@ -388,7 +322,7 @@
       "outputPrice": 10,
       "cachePrice": 0.1,
       "cacheWritePrice": 2.5,
-      "livebench": 77.75,
+      "livebench": 82.46,
       "aaScore": 56,
       "open": false,
       "openrouterId": "anthropic/claude-sonnet-5.5"
@@ -400,7 +334,7 @@
       "outputPrice": 10,
       "cachePrice": 0.1,
       "cacheWritePrice": 2.5,
-      "livebench": 81.62,
+      "livebench": 85.41,
       "aaScore": 52,
       "open": false,
       "openrouterId": "openai/gpt-6.1-sol"

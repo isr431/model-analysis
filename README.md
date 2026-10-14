@@ -54,6 +54,10 @@ node scripts/update-prices.mjs --write   # apply it
 
 Set `cachePrice` to `null` when it isn't published; every model needs both benchmark scores (`livebench` and `aaScore`). [AGENTS.md](AGENTS.md) has the full workflow.
 
+Benchmark snapshot checked **October 14, 2026**: [LiveBench 2.0](https://livebench.ai/), release **October 13, 2026**, and [Artificial Analysis Intelligence Index v4.3.2](https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index). LiveBench scores use the unweighted overall mean of the scored suites, stored to two decimal places; AA scores use the leaderboard's rounded integer scores. Model versions and reasoning settings are matched to the published entries, including deprecated AA entries where a score is still available. Qwen 3.8 Max uses AA's **0902** version, matching its OpenRouter ID, and Qwen 3.8 Flash Next is listed as **Qwen3.8 Flash (next)** on LiveBench.
+
+The active roster contains only models with results on both current benchmark versions. MiniMax M3, DeepSeek V4 Pro 0813, DeepSeek V4 Flash 0731, Inkling, Gemini 3.5 Flash-Lite, and Qwen 3.8 27B were removed because the LiveBench 2.0 release has no result for them.
+
 ## AI assistant
 
 A built-in assistant, powered by OpenRouter, that answers questions about the current leaderboard, ranks and compares models, explains why a model is filtered out, and applies filters on request — "show me only open models under \$1".
@@ -89,7 +93,7 @@ $$
 \text{Performance} = 100 \times \frac{\text{LiveBench}/s_{LB} + \text{AA Score}/s_{AA}}{\max(\text{LiveBench})/s_{LB} + \max(\text{AA Score})/s_{AA}}
 $$
 
-Calibration: **September 8, 2026, 26 models, AA Intelligence Index v4.3**. Sample standard deviations are `sLB = 4.510893907658862` and `sAA = 7.839937205400014`, stored in `PERFORMANCE_CALIBRATION` in `app.js`. AA's spread was recalibrated for v4.3 to restore equal influence.
+Calibration: **October 14, 2026, 27 models, LiveBench 2.0, AA Intelligence Index v4.3.2**. Sample standard deviations are `sLB = 10.389373269022387` and `sAA = 6.761715590055361`, stored in `PERFORMANCE_CALIBRATION` in `app.js`. The move from LiveBench 1.0 to 2.0 changes the evaluated tasks and score distribution, so this methodology migration deliberately replaces the September 8, 2026 calibration to restore equal spread influence. This baseline remains frozen for subsequent roster edits.
 
 A one-standard-deviation improvement on either benchmark adds the same performance points. Calibration stays fixed across roster and filter changes; new maxima only rescale scores. Recalibrate when benchmark methodology changes. This is a relative benchmark index, not a task success rate.
 
