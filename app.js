@@ -43,6 +43,9 @@ const FALLBACK_DATA = {
     { provider: 'OpenAI',      model: 'GPT-6 Luna',               inputPrice: 0.1,     outputPrice: 0.5,    cachePrice: 0.01,    cacheWritePrice: 0.125,    livebench: 69.4,  aaScore: 38, open: false },
     { provider: 'Anthropic',   model: 'Claude Sonnet 5.5',        inputPrice: 2.0,     outputPrice: 10.0,   cachePrice: 0.1,     cacheWritePrice: 2.5,      livebench: 82.46, aaScore: 56, open: false },
     { provider: 'OpenAI',      model: 'GPT-6.1 Sol',              inputPrice: 2.0,     outputPrice: 10.0,   cachePrice: 0.1,     cacheWritePrice: 2.5,      livebench: 85.41, aaScore: 52, open: false },
+    { provider: 'Google',      model: 'Gemini 4 Argon',           inputPrice: 2.0,     outputPrice: 10.0,   cachePrice: 0.1,     cacheWritePrice: 2.1875,   livebench: 84.1,  aaScore: 53, open: false },
+    { provider: 'Meta',        model: 'Muse Wonder 1.0',          inputPrice: 4.0,     outputPrice: 20.0,   cachePrice: 0.2,     cacheWritePrice: null,     livebench: 78.1,  aaScore: 52, open: false },
+    { provider: 'Anthropic',   model: 'Claude Haiku 5.5',         inputPrice: 0.1,     outputPrice: 0.5,    cachePrice: 0.01,    cacheWritePrice: 0.125,    livebench: 74.49, aaScore: 43, open: false },
   ],
 };
 

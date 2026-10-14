@@ -338,6 +338,42 @@
       "aaScore": 52,
       "open": false,
       "openrouterId": "openai/gpt-6.1-sol"
+    },
+    {
+      "provider": "Google",
+      "model": "Gemini 4 Argon",
+      "inputPrice": 2,
+      "outputPrice": 10,
+      "cachePrice": 0.1,
+      "cacheWritePrice": 2.1875,
+      "livebench": 84.1,
+      "aaScore": 53,
+      "open": false,
+      "openrouterId": "google/gemini-4-argon"
+    },
+    {
+      "provider": "Meta",
+      "model": "Muse Wonder 1.0",
+      "inputPrice": 4,
+      "outputPrice": 20,
+      "cachePrice": 0.2,
+      "cacheWritePrice": null,
+      "livebench": 78.1,
+      "aaScore": 52,
+      "open": false,
+      "openrouterId": "meta/muse-wonder"
+    },
+    {
+      "provider": "Anthropic",
+      "model": "Claude Haiku 5.5",
+      "inputPrice": 0.1,
+      "outputPrice": 0.5,
+      "cachePrice": 0.01,
+      "cacheWritePrice": 0.125,
+      "livebench": 74.49,
+      "aaScore": 43,
+      "open": false,
+      "openrouterId": "anthropic/claude-haiku-5.5"
     }
   ]
 }

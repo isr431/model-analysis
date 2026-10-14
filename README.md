@@ -58,6 +58,8 @@ Benchmark snapshot checked **October 14, 2026**: [LiveBench 2.0](https://liveben
 
 The active roster contains only models with results on both current benchmark versions. MiniMax M3, DeepSeek V4 Pro 0813, DeepSeek V4 Flash 0731, Inkling, Gemini 3.5 Flash-Lite, and Qwen 3.8 27B were removed because the LiveBench 2.0 release has no result for them.
 
+The October 14 additions use the highest published reasoning efforts on both leaderboards: [Gemini 4 Argon](https://artificialanalysis.ai/models/gemini-4-argon) at **high** (LiveBench 84.10, AA 53), [Muse Wonder 1.0](https://artificialanalysis.ai/models/muse-wonder) at **max** (LiveBench 78.10, AA 52), and [Claude Haiku 5.5](https://artificialanalysis.ai/models/claude-haiku-5-5) at **max** (LiveBench 74.49, AA 43). Muse Wonder 1.0 is AA's Muse Wonder; Muse Wonder Full is a separate entry without a LiveBench 2.0 result. These additions preserve the frozen 27-model performance calibration.
+
 ## AI assistant
 
 A built-in assistant, powered by OpenRouter, that answers questions about the current leaderboard, ranks and compares models, explains why a model is filtered out, and applies filters on request — "show me only open models under \$1".
