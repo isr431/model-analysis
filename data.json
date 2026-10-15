@@ -97,9 +97,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.09,
+      "inputPrice": 0.03,
       "outputPrice": 4.8,
-      "cachePrice": 0.089,
+      "cachePrice": 0.029,
       "cacheWritePrice": null,
       "livebench": 60.74,
       "aaScore": 45,
@@ -153,7 +153,7 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.48,
+      "inputPrice": 0.45,
       "outputPrice": 15,
       "cachePrice": 0.28,
       "cacheWritePrice": null,
@@ -265,8 +265,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.01584,
-      "outputPrice": 0.891,
+      "inputPrice": 0.02376,
+      "outputPrice": 0.72,
       "cachePrice": 0.0054,
       "cacheWritePrice": null,
       "livebench": 77.26,
