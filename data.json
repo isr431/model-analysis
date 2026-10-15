@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-14",
+  "lastUpdated": "2026-10-15",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -33,16 +33,19 @@
     },
     "Thinking Machines": {
       "color": "#78716c"
+    },
+    "Xiaomi": {
+      "color": "#ff6900"
     }
   },
   "models": [
     {
       "provider": "OpenAI",
       "model": "GPT-5.6 Sol",
-      "inputPrice": 2,
-      "outputPrice": 10,
-      "cachePrice": 0.2,
-      "cacheWritePrice": 2.5,
+      "inputPrice": 4,
+      "outputPrice": 20,
+      "cachePrice": 0.4,
+      "cacheWritePrice": 5,
       "livebench": 76.26,
       "aaScore": 47,
       "open": false
@@ -94,9 +97,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.079,
+      "inputPrice": 0.09,
       "outputPrice": 4.8,
-      "cachePrice": 0.059,
+      "cachePrice": 0.089,
       "cacheWritePrice": null,
       "livebench": 60.74,
       "aaScore": 45,
@@ -105,9 +108,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.036,
-      "outputPrice": 0.9,
-      "cachePrice": 0.0108,
+      "inputPrice": 0.15,
+      "outputPrice": 0.5,
+      "cachePrice": 0.03,
       "cacheWritePrice": null,
       "livebench": 70.61,
       "aaScore": 42,
@@ -150,9 +153,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.7,
+      "inputPrice": 0.48,
       "outputPrice": 15,
-      "cachePrice": 0.32,
+      "cachePrice": 0.28,
       "cacheWritePrice": null,
       "livebench": 63.39,
       "aaScore": 44,
@@ -262,7 +265,7 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.02016,
+      "inputPrice": 0.01584,
       "outputPrice": 0.891,
       "cachePrice": 0.0054,
       "cacheWritePrice": null,
@@ -374,6 +377,18 @@
       "aaScore": 43,
       "open": false,
       "openrouterId": "anthropic/claude-haiku-5.5"
+    },
+    {
+      "provider": "Xiaomi",
+      "model": "MiMo V2.6 Pro",
+      "inputPrice": 0.435,
+      "outputPrice": 0.87,
+      "cachePrice": 0.0036,
+      "cacheWritePrice": null,
+      "livebench": 74.87,
+      "aaScore": 46,
+      "open": true,
+      "openrouterId": "xiaomi/mimo-v2.6-pro"
     }
   ]
 }

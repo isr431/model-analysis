@@ -60,6 +60,8 @@ The active roster contains only models with results on both current benchmark ve
 
 The October 14 additions use the highest published reasoning efforts on both leaderboards: [Gemini 4 Argon](https://artificialanalysis.ai/models/gemini-4-argon) at **high** (LiveBench 84.10, AA 53), [Muse Wonder 1.0](https://artificialanalysis.ai/models/muse-wonder) at **max** (LiveBench 78.10, AA 52), and [Claude Haiku 5.5](https://artificialanalysis.ai/models/claude-haiku-5-5) at **max** (LiveBench 74.49, AA 43). Muse Wonder 1.0 is AA's Muse Wonder; Muse Wonder Full is a separate entry without a LiveBench 2.0 result. These additions preserve the frozen 27-model performance calibration.
 
+The October 15 addition, [MiMo V2.6 Pro](https://artificialanalysis.ai/models/mimo-v2-6-pro), uses **LiveBench 2.0, latest release October 14, 2026** (74.87, the mean of its seven suite scores, evaluated at **high** reasoning effort) and **Artificial Analysis Intelligence Index v4.3.2** (46, rounded from 46.3242). Both benchmark versions were checked on October 15, 2026. AA identifies it as an open-weights Xiaomi model; pricing is pinned to OpenRouter's `xiaomi/mimo-v2.6-pro`, not the separate UltraSpeed variant. The frozen performance calibration is unchanged.
+
 ## AI assistant
 
 A built-in assistant, powered by OpenRouter, that answers questions about the current leaderboard, ranks and compares models, explains why a model is filtered out, and applies filters on request — "show me only open models under \$1".

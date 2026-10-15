@@ -222,6 +222,12 @@ const block = findBlock(app);
 const nextBlock = renderFallbackModels(orderedModels);
 const snapshotStale = block.body !== nextBlock;
 const stampInApp = app.match(/const FALLBACK_DATA = \{\n  lastUpdated: '([^']*)'/)?.[1];
+const providersPattern = /  providers: \{\n[\s\S]*?\n  \},\n  models: \[/;
+if (!providersPattern.test(app)) throw new Error('FALLBACK_DATA: providers block not found in app.js');
+const nextProviders = `  providers: {\n${Object.entries(data.providers)
+  .map(([name, config]) => `    ${(str(name) + ':').padEnd(14)} { color: ${str(config.color)} },`)
+  .join('\n')}\n  },\n  models: [`;
+const providersStale = app.match(providersPattern)[0] !== nextProviders;
 
 const before = modelNames(block.body);
 const after = modelNames(nextBlock);
@@ -251,7 +257,8 @@ if (snapshotStale) {
   if (!added.length && !removed.length) console.log('  field-level edits only');
 }
 
-if (!changes.length && !snapshotStale) { console.log('\nEverything is in sync. Nothing to write.'); process.exit(0); }
+if (providersStale) console.log('\nFALLBACK_DATA provider colors are out of date and will be regenerated.');
+if (!changes.length && !snapshotStale && !providersStale) { console.log('\nEverything is in sync. Nothing to write.'); process.exit(0); }
 if (!write) { console.log('\nDry run. Re-run with --write to apply.'); process.exit(0); }
 
 // ===== WRITE =====
@@ -266,6 +273,7 @@ await writeFile(DATA_PATH, JSON.stringify(data, null, 2) + '\n');
 
 app = app.replace(/(const FALLBACK_DATA = \{\n  lastUpdated: ')[^']*(')/, `$1${stamp}$2`);
 app = app.slice(0, block.from) + nextBlock + app.slice(block.to);
+app = app.replace(providersPattern, () => nextProviders);
 await writeFile(APP_PATH, app);
 
 // Hash the served assets rather than trusting the date: two runs on the same day
