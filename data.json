@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-15",
+  "lastUpdated": "2026-10-16",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -97,9 +97,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.03,
+      "inputPrice": 0.079,
       "outputPrice": 4.8,
-      "cachePrice": 0.029,
+      "cachePrice": 0.078,
       "cacheWritePrice": null,
       "livebench": 60.74,
       "aaScore": 45,
@@ -108,9 +108,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.15,
-      "outputPrice": 0.5,
-      "cachePrice": 0.03,
+      "inputPrice": 0.01521,
+      "outputPrice": 0.9,
+      "cachePrice": 0.01125,
       "cacheWritePrice": null,
       "livebench": 70.61,
       "aaScore": 42,
@@ -153,9 +153,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.45,
-      "outputPrice": 15,
-      "cachePrice": 0.28,
+      "inputPrice": 0.304,
+      "outputPrice": 11.936,
+      "cachePrice": 0.21,
       "cacheWritePrice": null,
       "livebench": 63.39,
       "aaScore": 44,
@@ -232,10 +232,10 @@
     {
       "provider": "Google",
       "model": "Gemini 3.8 Flash",
-      "inputPrice": 0.75,
-      "outputPrice": 3.75,
-      "cachePrice": 0.075,
-      "cacheWritePrice": 0.791667,
+      "inputPrice": 0.825,
+      "outputPrice": 4.125,
+      "cachePrice": 0.0825,
+      "cacheWritePrice": 0.866667,
       "livebench": 67.34,
       "aaScore": 41,
       "open": false
@@ -265,8 +265,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.02376,
-      "outputPrice": 0.72,
+      "inputPrice": 0.036,
+      "outputPrice": 0.684,
       "cachePrice": 0.0054,
       "cacheWritePrice": null,
       "livebench": 77.26,
