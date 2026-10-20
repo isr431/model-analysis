@@ -108,7 +108,7 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.048,
+      "inputPrice": 0.037476,
       "outputPrice": 0.16,
       "cachePrice": 0.006,
       "cacheWritePrice": null,
@@ -265,8 +265,8 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.0352,
-      "outputPrice": 0.0112,
+      "inputPrice": 0.056,
+      "outputPrice": 0.12,
       "cachePrice": 0.0016,
       "cacheWritePrice": null,
       "livebench": 77.26,
