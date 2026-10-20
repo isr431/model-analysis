@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-10-19',
+  lastUpdated: '2026-10-20',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -37,7 +37,8 @@ const FALLBACK_DATA = {
     { provider: 'Google',      model: 'Gemini 3.8 Flash',         inputPrice: 0.825,  outputPrice: 4.125,  cachePrice: 0.0825,  cacheWritePrice: 0.866667, livebench: 67.34, aaScore: 41, open: false },
     { provider: 'Meta',        model: 'Muse Spark 1.3',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    cacheWritePrice: null,     livebench: 74.9,  aaScore: 48, open: false },
     { provider: 'OpenAI',      model: 'GPT-6 Astra',              inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,     cacheWritePrice: 12.5,     livebench: 86.14, aaScore: 53, open: false },
-    { provider: 'DeepSeek',    model: 'DeepSeek V4.1 Flash',      inputPrice: 0.0376, outputPrice: 0.08,   cachePrice: 0.0016,  cacheWritePrice: null,     livebench: 77.26, aaScore: 39, open: true },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4.1 Flash',      inputPrice: 0.0352, outputPrice: 0.0112, cachePrice: 0.0016,  cacheWritePrice: null,     livebench: 77.26, aaScore: 39, open: true },
+    { provider: 'DeepSeek',    model: 'DeepSeek V4.1 Flash 1017', inputPrice: 0.3,    outputPrice: 1.2,    cachePrice: 0.006,   cacheWritePrice: null,     livebench: 79.2,  aaScore: 45, open: true },
     { provider: 'xAI',         model: 'Grok 4.7',                 inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.5,     cacheWritePrice: null,     livebench: 74.09, aaScore: 46, open: false },
     { provider: 'Anthropic',   model: 'Claude Opus 5.5',          inputPrice: 4.0,    outputPrice: 20.0,   cachePrice: 0.2,     cacheWritePrice: 5.0,      livebench: 86.53, aaScore: 58, open: false },
     { provider: 'OpenAI',      model: 'GPT-6 Sol',                inputPrice: 2.0,    outputPrice: 10.0,   cachePrice: 0.2,     cacheWritePrice: 2.5,      livebench: 81.91, aaScore: 48, open: false },
