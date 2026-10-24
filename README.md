@@ -64,6 +64,8 @@ The October 15 addition, [MiMo V2.6 Pro](https://artificialanalysis.ai/models/mi
 
 The October 20 addition, [DeepSeek V4.1 Flash 1017](https://artificialanalysis.ai/models/deepseek-v4-1-flash-1017), uses **LiveBench 2.0, latest release October 14, 2026** (79.20, the mean of its seven suite scores) and **Artificial Analysis Intelligence Index v4.3.2** (45, evaluated at **max** reasoning effort). Both benchmark versions were checked on October 20, 2026. It is the October 17, 2026 checkpoint, scored separately from the September DeepSeek V4.1 Flash; AA identifies it as an MIT-licensed open-weights model. Pricing is pinned to OpenRouter's `deepseek/deepseek-v4.1-flash-1017`. The frozen performance calibration is unchanged.
 
+The October 24 addition, [Kimi K3.1 Pro](https://artificialanalysis.ai/models/kimi-k3-1-pro), uses **LiveBench 2.0, latest release October 14, 2026** (76.74, the mean of its seven suite scores) and **Artificial Analysis Intelligence Index v4.3.2** (55, reasoning variant). Both benchmark versions were checked on October 24, 2026. AA lists it as proprietary for now; Moonshot AI plans to publish the weights, at which point `open` should be flipped to `true`. Pricing is pinned to OpenRouter's `moonshotai/kimi-k3.1-pro`. The frozen performance calibration is unchanged.
+
 ## AI assistant
 
 A built-in assistant, powered by OpenRouter, that answers questions about the current leaderboard, ranks and compares models, explains why a model is filtered out, and applies filters on request — "show me only open models under \$1".
