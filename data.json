@@ -79,7 +79,7 @@
       "outputPrice": 6,
       "cachePrice": 0.5,
       "cacheWritePrice": null,
-      "livebench": 74.64,
+      "livebench": 74.94,
       "aaScore": 44,
       "open": false
     },
@@ -90,7 +90,7 @@
       "outputPrice": 10,
       "cachePrice": 0.2,
       "cacheWritePrice": 2.5,
-      "livebench": 74.63,
+      "livebench": 72.99,
       "aaScore": 38,
       "open": false
     },
@@ -179,7 +179,7 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "cacheWritePrice": null,
-      "livebench": 61.8,
+      "livebench": 62.4,
       "aaScore": 40,
       "open": false
     },
@@ -213,7 +213,7 @@
       "outputPrice": 0.47,
       "cachePrice": 0.016,
       "cacheWritePrice": null,
-      "livebench": 46.96,
+      "livebench": 68.79,
       "aaScore": 40,
       "open": true,
       "openrouterId": "qwen/qwen3.8-flash"
@@ -258,7 +258,7 @@
       "outputPrice": 4.25,
       "cachePrice": 0.15,
       "cacheWritePrice": null,
-      "livebench": 74.9,
+      "livebench": 74.76,
       "aaScore": 48,
       "open": false
     },
@@ -280,7 +280,7 @@
       "outputPrice": 1,
       "cachePrice": 0.015,
       "cacheWritePrice": null,
-      "livebench": 77.26,
+      "livebench": 78.04,
       "aaScore": 39,
       "open": true
     },
@@ -396,7 +396,7 @@
       "outputPrice": 0.5,
       "cachePrice": 0.01,
       "cacheWritePrice": 0.125,
-      "livebench": 74.49,
+      "livebench": 75.64,
       "aaScore": 43,
       "open": false,
       "openrouterId": "anthropic/claude-haiku-5.5"
