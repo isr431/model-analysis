@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-24",
+  "lastUpdated": "2026-10-26",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -97,9 +97,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3",
-      "inputPrice": 0.079,
+      "inputPrice": 0.0699,
       "outputPrice": 1.4,
-      "cachePrice": 0.078,
+      "cachePrice": 0.0689,
       "cacheWritePrice": null,
       "livebench": 60.74,
       "aaScore": 45,
@@ -153,9 +153,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.239,
-      "outputPrice": 10.8,
-      "cachePrice": 0.21,
+      "inputPrice": 0.191,
+      "outputPrice": 20,
+      "cachePrice": 0.181,
       "cacheWritePrice": null,
       "livebench": 63.39,
       "aaScore": 44,
