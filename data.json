@@ -154,7 +154,7 @@
       "provider": "Moonshot AI",
       "model": "Kimi K3",
       "inputPrice": 0.15,
-      "outputPrice": 11.5,
+      "outputPrice": 20,
       "cachePrice": 0.14,
       "cacheWritePrice": null,
       "livebench": 63.39,

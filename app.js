@@ -27,7 +27,7 @@ const FALLBACK_DATA = {
     { provider: 'Google',      model: 'Gemini 3.1 Pro',           inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,     cacheWritePrice: 2.375,    livebench: 54.91, aaScore: 30, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.8 Max',             inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.25,    cacheWritePrice: null,     livebench: 64.24, aaScore: 45, open: true },
     { provider: 'Anthropic',   model: 'Claude Fable 5',           inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,     cacheWritePrice: 12.5,     livebench: 83.61, aaScore: 50, open: false },
-    { provider: 'Moonshot AI', model: 'Kimi K3',                  inputPrice: 0.15,   outputPrice: 11.5,   cachePrice: 0.14,    cacheWritePrice: null,     livebench: 63.39, aaScore: 44, open: true },
+    { provider: 'Moonshot AI', model: 'Kimi K3',                  inputPrice: 0.15,   outputPrice: 20.0,   cachePrice: 0.14,    cacheWritePrice: null,     livebench: 63.39, aaScore: 44, open: true },
     { provider: 'Moonshot AI', model: 'Kimi K3.1 Pro',            inputPrice: 2.0,    outputPrice: 10.0,   cachePrice: 0.2,     cacheWritePrice: null,     livebench: 76.74, aaScore: 55, open: false },
     { provider: 'Meta',        model: 'Muse Spark 1.2',           inputPrice: 1.25,   outputPrice: 4.25,   cachePrice: 0.15,    cacheWritePrice: null,     livebench: 62.4,  aaScore: 40, open: false },
     { provider: 'Google',      model: 'Gemini 3.7 Flash',         inputPrice: 0.75,   outputPrice: 3.75,   cachePrice: 0.075,   cacheWritePrice: 0.791667, livebench: 67.19, aaScore: 39, open: false },
