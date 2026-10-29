@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-28",
+  "lastUpdated": "2026-10-29",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -88,7 +88,7 @@
       "model": "Claude Sonnet 5",
       "inputPrice": 2,
       "outputPrice": 10,
-      "cachePrice": 0.2,
+      "cachePrice": 0.1,
       "cacheWritePrice": 2.5,
       "livebench": 72.99,
       "aaScore": 38,
@@ -108,8 +108,8 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.15,
-      "outputPrice": 0.5,
+      "inputPrice": 0.0457,
+      "outputPrice": 0.0742,
       "cachePrice": 0.03,
       "cacheWritePrice": null,
       "livebench": 70.61,
@@ -153,9 +153,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3",
-      "inputPrice": 0.189,
-      "outputPrice": 20,
-      "cachePrice": 0.179,
+      "inputPrice": 0.239,
+      "outputPrice": 10.8,
+      "cachePrice": 0.21,
       "cacheWritePrice": null,
       "livebench": 63.39,
       "aaScore": 44,
@@ -276,9 +276,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.14,
-      "outputPrice": 0.42,
-      "cachePrice": 0.0042,
+      "inputPrice": 0.045,
+      "outputPrice": 0.5,
+      "cachePrice": 0.006,
       "cacheWritePrice": null,
       "livebench": 78.04,
       "aaScore": 39,
