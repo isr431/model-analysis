@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-01",
+  "lastUpdated": "2026-11-03",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -108,9 +108,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.0285,
-      "outputPrice": 0.0923,
-      "cachePrice": 0.0285,
+      "inputPrice": 0.0313,
+      "outputPrice": 0.0846,
+      "cachePrice": 0.03,
       "cacheWritePrice": null,
       "livebench": 70.61,
       "aaScore": 42,
@@ -278,7 +278,7 @@
       "model": "DeepSeek V4.1 Flash",
       "inputPrice": 0.045,
       "outputPrice": 0.5,
-      "cachePrice": 0.006,
+      "cachePrice": 0.012,
       "cacheWritePrice": null,
       "livebench": 78.04,
       "aaScore": 39,
