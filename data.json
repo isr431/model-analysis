@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-13",
+  "lastUpdated": "2026-11-14",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -42,10 +42,10 @@
     {
       "provider": "OpenAI",
       "model": "GPT-5.6 Sol",
-      "inputPrice": 4.4,
-      "outputPrice": 22,
-      "cachePrice": 0.44,
-      "cacheWritePrice": 5.5,
+      "inputPrice": 4,
+      "outputPrice": 20,
+      "cachePrice": 0.4,
+      "cacheWritePrice": 5,
       "livebench": 76.26,
       "aaScore": 47,
       "open": false

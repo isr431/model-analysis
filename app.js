@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-11-13',
+  lastUpdated: '2026-11-14',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -17,7 +17,7 @@ const FALLBACK_DATA = {
     'Xiaomi':      { color: '#ff6900' },
   },
   models: [
-    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',              inputPrice: 4.4,    outputPrice: 22.0,   cachePrice: 0.44,     cacheWritePrice: 5.5,      livebench: 76.26, aaScore: 47, open: false },
+    { provider: 'OpenAI',      model: 'GPT-5.6 Sol',              inputPrice: 4.0,    outputPrice: 20.0,   cachePrice: 0.4,      cacheWritePrice: 5.0,      livebench: 76.26, aaScore: 47, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Terra',            inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,      cacheWritePrice: 2.5,      livebench: 74.99, aaScore: 42, open: false },
     { provider: 'OpenAI',      model: 'GPT-5.6 Luna',             inputPrice: 0.2,    outputPrice: 1.2,    cachePrice: 0.02,     cacheWritePrice: 0.25,     livebench: 66.09, aaScore: 37, open: false },
     { provider: 'xAI',         model: 'Grok 4.6',                 inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.5,      cacheWritePrice: null,     livebench: 74.94, aaScore: 44, open: false },
