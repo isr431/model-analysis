@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-20",
+  "lastUpdated": "2026-11-21",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -221,9 +221,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash Vision",
-      "inputPrice": 0.44,
-      "outputPrice": 1.32,
-      "cachePrice": 0.014,
+      "inputPrice": 0.2156,
+      "outputPrice": 0.6468,
+      "cachePrice": 0.00686,
       "cacheWritePrice": null,
       "livebench": 63.63,
       "aaScore": 35,
@@ -276,9 +276,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash",
-      "inputPrice": 0.3,
-      "outputPrice": 1.2,
-      "cachePrice": 0.006,
+      "inputPrice": 0.0498,
+      "outputPrice": 0.1992,
+      "cachePrice": 0.000996,
       "cacheWritePrice": null,
       "livebench": 78.04,
       "aaScore": 39,
