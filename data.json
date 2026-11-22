@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-21",
+  "lastUpdated": "2026-11-22",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -164,9 +164,9 @@
     {
       "provider": "Moonshot AI",
       "model": "Kimi K3.1 Pro",
-      "inputPrice": 0.253,
-      "outputPrice": 8.8,
-      "cachePrice": 0.18,
+      "inputPrice": 0.2403,
+      "outputPrice": 8.4023,
+      "cachePrice": 0.2,
       "cacheWritePrice": null,
       "livebench": 76.74,
       "aaScore": 55,
