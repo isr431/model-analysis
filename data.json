@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-24",
+  "lastUpdated": "2026-11-25",
   "providers": {
     "DeepSeek": {
       "color": "#06b6d4"
@@ -108,9 +108,9 @@
     {
       "provider": "Z.ai",
       "model": "GLM 5.3 Flash",
-      "inputPrice": 0.15,
-      "outputPrice": 0.5,
-      "cachePrice": 0.03,
+      "inputPrice": 0.12,
+      "outputPrice": 0.38,
+      "cachePrice": 0.02,
       "cacheWritePrice": null,
       "livebench": 70.61,
       "aaScore": 42,
@@ -221,9 +221,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4 Flash Vision",
-      "inputPrice": 0.2156,
-      "outputPrice": 0.6468,
-      "cachePrice": 0.00686,
+      "inputPrice": 0.44,
+      "outputPrice": 1.32,
+      "cachePrice": 0.028,
       "cacheWritePrice": null,
       "livebench": 63.63,
       "aaScore": 35,
@@ -287,9 +287,9 @@
     {
       "provider": "DeepSeek",
       "model": "DeepSeek V4.1 Flash 1017",
-      "inputPrice": 0.03,
-      "outputPrice": 0.2,
-      "cachePrice": 0.001,
+      "inputPrice": 0.3,
+      "outputPrice": 1.2,
+      "cachePrice": 0.006,
       "cacheWritePrice": null,
       "livebench": 79.2,
       "aaScore": 45,
