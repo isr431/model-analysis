@@ -1,7 +1,7 @@
 // ===== FALLBACK DATA =====
 // Embedded snapshot for instant rendering. Overridden by data.json when available.
 const FALLBACK_DATA = {
-  lastUpdated: '2026-11-25',
+  lastUpdated: '2026-11-26',
   providers: {
     'DeepSeek':    { color: '#06b6d4' },
     'Z.ai':        { color: '#a855f7' },
@@ -23,7 +23,7 @@ const FALLBACK_DATA = {
     { provider: 'xAI',         model: 'Grok 4.6',                 inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.5,      cacheWritePrice: null,     livebench: 74.94, aaScore: 44, open: false },
     { provider: 'Anthropic',   model: 'Claude Sonnet 5',          inputPrice: 2.0,    outputPrice: 10.0,   cachePrice: 0.1,      cacheWritePrice: 2.5,      livebench: 72.99, aaScore: 38, open: false },
     { provider: 'Z.ai',        model: 'GLM 5.3',                  inputPrice: 0.0699, outputPrice: 1.4,    cachePrice: 0.0689,   cacheWritePrice: null,     livebench: 60.74, aaScore: 45, open: true },
-    { provider: 'Z.ai',        model: 'GLM 5.3 Flash',            inputPrice: 0.12,   outputPrice: 0.38,   cachePrice: 0.02,     cacheWritePrice: null,     livebench: 70.61, aaScore: 42, open: true },
+    { provider: 'Z.ai',        model: 'GLM 5.3 Flash',            inputPrice: 0.15,   outputPrice: 0.5,    cachePrice: 0.03,     cacheWritePrice: null,     livebench: 70.61, aaScore: 42, open: true },
     { provider: 'Google',      model: 'Gemini 3.1 Pro',           inputPrice: 2.0,    outputPrice: 12.0,   cachePrice: 0.2,      cacheWritePrice: 2.375,    livebench: 54.91, aaScore: 30, open: false },
     { provider: 'Alibaba',     model: 'Qwen 3.8 Max',             inputPrice: 2.0,    outputPrice: 6.0,    cachePrice: 0.25,     cacheWritePrice: null,     livebench: 64.24, aaScore: 45, open: true },
     { provider: 'Anthropic',   model: 'Claude Fable 5',           inputPrice: 10.0,   outputPrice: 50.0,   cachePrice: 1.0,      cacheWritePrice: 12.5,     livebench: 83.61, aaScore: 50, open: false },
